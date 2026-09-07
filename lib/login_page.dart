@@ -117,10 +117,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // ============================================================
   // DESKTOP / TABLET MAIN BOX
-  // ============================================================
-
   Widget _mainBox() {
     return Container(
       decoration: BoxDecoration(
@@ -146,10 +143,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // ============================================================
   // MOBILE MAIN BOX
-  // ============================================================
-
   Widget _mobileBox() {
     return Container(
       decoration: BoxDecoration(
@@ -168,10 +162,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // ============================================================
   // DESKTOP LEFT SIDE
-  // ============================================================
-
   Widget _brandSection() {
     return Container(
       padding: const EdgeInsets.all(45),
@@ -232,10 +223,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // ============================================================
   // MOBILE BRANDING
-  // ============================================================
-
   Widget _mobileBrand() {
     return Container(
       width: double.infinity,
@@ -271,9 +259,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // ============================================================
   // LOGO
-  // ============================================================
 
   Widget _logo() {
     return Container(
@@ -296,9 +282,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // ============================================================
   // DECORATIVE SHAPE
-  // ============================================================
 
   Widget _shape(double width) {
     return Transform.rotate(
@@ -314,9 +298,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // ============================================================
   // FEATURE
-  // ============================================================
 
   Widget _feature(String text) {
     return Padding(
@@ -331,9 +313,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // ============================================================
   // LOGIN SECTION
-  // ============================================================
 
   Widget _loginSection() {
     return Container(
@@ -458,9 +438,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // ============================================================
   // INPUT STYLE
-  // ============================================================
 
   InputDecoration _input(String hint, IconData icon, [Widget? suffix]) {
     return InputDecoration(

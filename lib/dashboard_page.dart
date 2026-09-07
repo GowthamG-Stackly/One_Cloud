@@ -25,7 +25,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // ================= HEADER =================
+  //  HEADER
 
   PreferredSizeWidget _header(BuildContext context, UserProvider user) {
     return AppBar(
@@ -131,7 +131,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // ================= BODY =================
+  //  BODY
 
   Widget _body(BuildContext context, UserProvider user) {
     return LayoutBuilder(
@@ -300,7 +300,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // ================= SUMMARY CARD =================
+  // SUMMARY CARD
 
   Widget _card(String title, String value, IconData icon) {
     return Container(
@@ -357,7 +357,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // ================= SECTION =================
+  //  SECTION
 
   Widget _section({
     required String title,
@@ -404,7 +404,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // ================= STOCK ROW =================
+  //  STOCK ROW
 
   Widget _stockRow(String title, String value, double percentage) {
     return Column(
@@ -442,7 +442,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // ================= ACTION =================
+  //  ACTION
 
   Widget _action(String title, IconData icon) {
     return InkWell(
@@ -469,7 +469,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // ================= ACTIVITY =================
+  //  ACTIVITY
 
   Widget _activity(
     IconData icon,
@@ -513,7 +513,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // ================= DRAWER =================
+  //  DRAWER
 
   Widget _drawer(BuildContext context) {
     final user = Provider.of<UserProvider>(context);
@@ -660,7 +660,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // ================= LOGOUT =================
+  //  LOGOUT
 
   void _logout(BuildContext context) {
     Provider.of<UserProvider>(context, listen: false).logout();
