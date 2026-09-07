@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'login_page.dart';
+import 'user_provider.dart';
 
 void main() {
-  runApp(const GTInStockApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => UserProvider(),
+      child: const GTInStockApp(),
+    ),
+  );
 }
 
 class GTInStockApp extends StatelessWidget {
@@ -14,13 +21,10 @@ class GTInStockApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'GT-InStock',
-
       theme: ThemeData(
-        primaryColor: const Color(0xFF16A34A),
-        scaffoldBackgroundColor: const Color(0xFFF3F8F4),
-        fontFamily: 'Arial',
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        useMaterial3: true,
       ),
-
       home: const LoginPage(),
     );
   }
