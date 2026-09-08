@@ -35,6 +35,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   provider: ^6.1.5+1
+  go_router: ^18.0.1
 
 dev_dependencies:
   flutter_test:
@@ -59,8 +60,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/background.png
-  #   - images/a_dot_ham.jpeg
+    # - assets/images/background.png
+    - assets/images/onecloud_logo.png
+    # - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

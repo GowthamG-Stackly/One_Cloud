@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'login_page.dart';
-import 'user_provider.dart';
+import 'routes/routes.dart';
+import 'providers/user_provider.dart';
+import 'app_theme.dart';
 
 void main() {
   runApp(
@@ -18,14 +19,11 @@ class GTInStockApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'GT-InStock',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
-      home: const LoginPage(),
+      title: 'Once Enterprise Cloud Platform',
+      theme: AppTheme.theme,
+      routerConfig: AppRoutes.router,
     );
   }
 }

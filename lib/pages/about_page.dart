@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'login_page.dart';
-import 'dashboard_page.dart';
-import 'user_provider.dart';
+import '../routes/routes.dart';
+import '../providers/user_provider.dart';
+import '../widgets/app_layout.dart';
+import '../app_theme.dart';
 
-class WelcomePage extends StatelessWidget {
-  const WelcomePage({super.key});
-
-  static const green = Color(0xFF16A34A);
-  static const darkGreen = Color(0xFF087443);
-  static const lightGreen = Color(0xFFE8F7EC);
+class AboutPage extends StatelessWidget {
+  const AboutPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,105 +16,31 @@ class WelcomePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4FAF6),
+      appBar: const AppHeader(),
+      drawer: const AppDrawer(),
+
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, size) {
-            final mobile = size.maxWidth < 700;
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              LayoutBuilder(
+                builder: (context, size) {
+                  final mobile = size.maxWidth < 700;
 
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  _header(context, mobile),
-                  _hero(context, mobile, userProvider),
-                  _features(mobile),
-                  _stats(mobile),
-                  const SizedBox(height: 25),
-                ],
+                  return Column(
+                    children: [
+                      _hero(context, mobile, userProvider),
+                      _features(mobile),
+                      _stats(mobile),
+                      const SizedBox(height: 25),
+                    ],
+                  );
+                },
               ),
-            );
-          },
+              const AppFooter(),
+            ],
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _header(BuildContext context, bool mobile) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: mobile ? 18 : 45, vertical: 14),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(colors: [darkGreen, green]),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Text(
-              'GT',
-              style: TextStyle(
-                color: green,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'GT-InStock',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 21,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Global Tracking InStock',
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-          if (!mobile)
-            const Row(
-              children: [
-                Text('Home', style: TextStyle(color: Colors.white)),
-                SizedBox(width: 28),
-                Text('About', style: TextStyle(color: Colors.white70)),
-                SizedBox(width: 28),
-                Text('Features', style: TextStyle(color: Colors.white70)),
-                SizedBox(width: 28),
-              ],
-            ),
-          TextButton.icon(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const DashboardPage()),
-              );
-            },
-            icon: const Icon(Icons.dashboard, color: Colors.white),
-            label: mobile
-                ? const SizedBox()
-                : const Text(
-                    'Dashboard',
-                    style: TextStyle(color: Colors.white),
-                  ),
-          ),
-          IconButton(
-            onPressed: () {
-              _logout(context);
-            },
-            icon: const Icon(Icons.logout, color: Colors.white),
-            tooltip: 'Logout',
-          ),
-        ],
       ),
     );
   }
@@ -131,11 +55,15 @@ class WelcomePage extends StatelessWidget {
         35,
       ),
       decoration: const BoxDecoration(
-        gradient: LinearGradient(colors: [Color(0xFFE8F7EC), Colors.white]),
+        gradient: LinearGradient(colors: [AppTheme.lightBlue, Colors.white]),
       ),
       child: Column(
         children: [
-          const Icon(Icons.inventory_2_rounded, size: 55, color: green),
+          const Icon(
+            Icons.inventory_2_rounded,
+            size: 55,
+            color: AppTheme.primaryBlue,
+          ),
           const SizedBox(height: 15),
           Text(
             'Welcome to GT-InStock',
@@ -148,12 +76,22 @@ class WelcomePage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
+            'One Cloud Enterprise Platform',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: mobile ? 25 : 30,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.darkNavy,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
             'Smart Inventory Management for a Better Tomorrow',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: mobile ? 16 : 21,
               fontWeight: FontWeight.w600,
-              color: darkGreen,
+              color: AppTheme.darkNavy,
             ),
           ),
           const SizedBox(height: 14),
@@ -184,24 +122,33 @@ class WelcomePage extends StatelessWidget {
               spacing: 30,
               runSpacing: 15,
               children: [
-                const Icon(Icons.account_circle, size: 55, color: green),
+                const Icon(
+                  Icons.account_circle,
+                  size: 55,
+                  color: AppTheme.primaryBlue,
+                ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'GT-InStock User',
-                      style: TextStyle(
+                    Text(
+                      userProvider.name.isEmpty
+                          ? 'GT-InStock User'
+                          : userProvider.name,
+                      style: const TextStyle(
                         fontSize: 19,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
                     const SizedBox(height: 3),
+
                     Text(
                       userProvider.email.isEmpty
                           ? 'No email available'
                           : userProvider.email,
                       style: const TextStyle(color: Colors.black87),
                     ),
+
                     const Text(
                       'Inventory Management User',
                       style: TextStyle(color: Colors.black54),
@@ -214,13 +161,13 @@ class WelcomePage extends StatelessWidget {
                     vertical: 9,
                   ),
                   decoration: BoxDecoration(
-                    color: lightGreen,
+                    color: AppTheme.lightBlue,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(
                     '●  Active User',
                     style: TextStyle(
-                      color: darkGreen,
+                      color: AppTheme.darkNavy,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -230,33 +177,6 @@ class WelcomePage extends StatelessWidget {
           ),
 
           const SizedBox(height: 22),
-
-          SizedBox(
-            width: mobile ? double.infinity : 320,
-            height: 55,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const DashboardPage(),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.dashboard),
-              label: const Text(
-                'Go to Dashboard  →',
-                style: TextStyle(fontSize: 17),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: green,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -299,7 +219,9 @@ class WelcomePage extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: green.withValues(alpha: .12)),
+              border: Border.all(
+                color: AppTheme.primaryBlue.withValues(alpha: .12),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: .04),
@@ -310,7 +232,11 @@ class WelcomePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(item[0] as IconData, color: green, size: 32),
+                Icon(
+                  item[0] as IconData,
+                  color: AppTheme.primaryBlue,
+                  size: 32,
+                ),
                 const SizedBox(height: 12),
                 Text(
                   item[1] as String,
@@ -353,16 +279,6 @@ class WelcomePage extends StatelessWidget {
       ),
     );
   }
-
-  void _logout(BuildContext context) {
-    Provider.of<UserProvider>(context, listen: false).logout();
-
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
-      (route) => false,
-    );
-  }
 }
 
 class _Stat extends StatelessWidget {
@@ -377,7 +293,7 @@ class _Stat extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: const Color(0xFF16A34A), size: 30),
+        Icon(icon, color: AppTheme.primaryBlue, size: 30),
         const SizedBox(width: 20),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,7 +301,7 @@ class _Stat extends StatelessWidget {
             Text(
               value,
               style: const TextStyle(
-                color: Color(0xFF087443),
+                color: AppTheme.darkNavy,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
