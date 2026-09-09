@@ -8,6 +8,8 @@ import '../pages/register_page.dart';
 import '../pages/about_page.dart';
 import '../pages/forgot_password_page.dart';
 import '../pages/dashboard_page.dart';
+import '../pages/features_page.dart';
+import '../pages/contact_page.dart';
 
 import '../pages/erp_modules/inventory_page.dart';
 import '../pages/erp_modules/warehouses_page.dart';
@@ -28,6 +30,8 @@ class AppRoutes {
   static const String dashboard = '/dashboard';
   static const String about = '/about';
   static const String profile = '/profile';
+  static const String features = '/features';
+  static const String contact = '/contact';
 
   static const String inventory = '/inventory';
   static const String warehouses = '/warehouses';
@@ -48,13 +52,18 @@ class AppRoutes {
 
       final isLoginPage = location == login;
 
-      final isAuthPage = location == register || location == forgotPassword;
+      final isPublicPage =
+          location == login ||
+          location == register ||
+          location == forgotPassword ||
+          location == features ||
+          location == contact;
 
       if (loggedIn && isLoginPage) {
         return dashboard;
       }
 
-      if (!loggedIn && !isLoginPage && !isAuthPage) {
+      if (!loggedIn && !isPublicPage) {
         return login;
       }
 
@@ -109,6 +118,20 @@ class AppRoutes {
           ),
 
           GoRoute(
+            path: features,
+            builder: (context, state) {
+              return const FeaturesPage();
+            },
+          ),
+
+          GoRoute(
+            path: contact,
+            builder: (context, state) {
+              return const ContactPage();
+            },
+          ),
+
+          GoRoute(
             path: about,
             builder: (context, state) {
               return const AboutPage();
@@ -122,6 +145,7 @@ class AppRoutes {
             },
           ),
 
+          // ERP MODULES
           GoRoute(
             path: inventory,
             builder: (context, state) {

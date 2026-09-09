@@ -119,7 +119,9 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
             ),
 
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                _navigate(context, AppRoutes.features);
+              },
               child: const Text(
                 'Features',
                 style: TextStyle(color: Colors.white, fontSize: 14),
@@ -127,7 +129,9 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
             ),
 
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                _navigate(context, AppRoutes.contact);
+              },
               child: const Text(
                 'Contact',
                 style: TextStyle(color: Colors.white, fontSize: 14),
@@ -232,9 +236,11 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                     break;
 
                   case 'features':
+                    _navigate(context, AppRoutes.features);
                     break;
 
                   case 'contact':
+                    _navigate(context, AppRoutes.contact);
                     break;
 
                   case 'about':
@@ -890,11 +896,12 @@ class _AppLayoutState extends State<AppLayout> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+
       body: Row(
         children: [
-          // ========================================================
+          // ==========================================================
           // DESKTOP / TABLET SIDEBAR
-          // ========================================================
+          // ==========================================================
 
           if (!isMobile)
             AnimatedContainer(
@@ -908,20 +915,27 @@ class _AppLayoutState extends State<AppLayout> {
               ),
             ),
 
-          // ========================================================
+          // ==========================================================
           // MAIN AREA
-          // ========================================================
+          // ==========================================================
           Expanded(
             child: Scaffold(
               backgroundColor: Colors.white,
 
+              // ------------------------------------------------------
+              // HEADER
+              // ------------------------------------------------------
               appBar: AppHeader(
                 sidebarOpen: sidebarOpen,
                 onMenuPressed: _toggleSidebar,
               ),
 
+              // ------------------------------------------------------
+              // PAGE CONTENT
+              // ------------------------------------------------------
               body: Stack(
                 children: [
+                  // Current page
                   widget.child,
 
                   // ==================================================
@@ -938,7 +952,7 @@ class _AppLayoutState extends State<AppLayout> {
                             child: GestureDetector(
                               onTap: _toggleSidebar,
                               child: Container(
-                                color: Colors.black.withValues(alpha: 0.35),
+                                color: Colors.black.withOpacity(0.35),
                               ),
                             ),
                           ),
@@ -947,6 +961,11 @@ class _AppLayoutState extends State<AppLayout> {
                     ),
                 ],
               ),
+
+              // ------------------------------------------------------
+              // FOOTER
+              // ------------------------------------------------------
+              bottomNavigationBar: const AppFooter(),
             ),
           ),
         ],

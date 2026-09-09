@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -71,6 +72,32 @@ class _LoginPageState extends State<LoginPage> {
   //   );
   // }
 
+  // void login() {
+  //   final email = emailController.text.trim();
+  //   final password = passwordController.text.trim();
+
+  //   setState(() {
+  //     errorMessage = '';
+  //   });
+
+  //   if (email.isEmpty || password.isEmpty) {
+  //     setState(() {
+  //       errorMessage = 'Please enter email and password';
+  //     });
+  //     return;
+  //   }
+
+  //   final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+  //   if (userProvider.validateLogin(email, password)) {
+  //     generateVerificationCode();
+  //   } else {
+  //     setState(() {
+  //       errorMessage = 'Invalid email or password';
+  //     });
+  //   }
+  // }
+
   void login() {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
@@ -88,13 +115,34 @@ class _LoginPageState extends State<LoginPage> {
 
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-    if (userProvider.validateLogin(email, password)) {
+    // Predefined test credentials
+    const testEmail = 'user@gmail.com';
+    const testPassword = '123456';
+
+    final isPredefinedUser = email == testEmail && password == testPassword;
+
+    final isRegisteredUser = userProvider.validateLogin(email, password);
+
+    if (isPredefinedUser || isRegisteredUser) {
       generateVerificationCode();
     } else {
       setState(() {
         errorMessage = 'Invalid email or password';
       });
     }
+  }
+
+  void loginWithGoogle() {
+    // Frontend-only Google login for POC
+
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    // Demo Google account
+    const googleEmail = 'googleuser@gmail.com';
+
+    userProvider.login(googleEmail);
+
+    context.go(AppRoutes.dashboard);
   }
 
   void verifyTwoStep() {
@@ -237,13 +285,34 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 25),
 
-              const Text(
-                'Welcome to\nOne Cloud Enterprise Platform',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  height: 1.15,
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Welcome to\n',
+                      style: GoogleFonts.roboto(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'ONE CLOUD\n',
+                      style: GoogleFonts.blackOpsOne(
+                        color: AppTheme.primaryBlue,
+                        fontSize: 30,
+                        height: 1.2,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'Enterprise Platform',
+                      style: GoogleFonts.roboto(
+                        color: const Color(0xFF7DD3FC),
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -475,6 +544,73 @@ class _LoginPageState extends State<LoginPage> {
                     child: const Text(
                       'LOGIN',
                       style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 5),
+
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.grey.shade300)),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        'OR',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: Colors.grey.shade300)),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: OutlinedButton(
+                    onPressed: loginWithGoogle,
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: AppTheme.darkNavy,
+                      side: const BorderSide(color: Color(0xFFE5E7EB)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 22,
+                          height: 22,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'G',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF4285F4),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'Continue with Google',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

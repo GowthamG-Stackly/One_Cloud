@@ -1,166 +1,211 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/user_provider.dart';
 import '../app_theme.dart';
+import '../providers/user_provider.dart';
 import '../widgets/app_layout.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
-
-  static const Color background = Color(0xFFF5F8FC);
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context);
 
     return Scaffold(
-      backgroundColor: background,
-      body: _DashboardBody(user: user),
+      backgroundColor: const Color(0xFFF5F7FA),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return _DashboardContent(width: constraints.maxWidth, user: user);
+        },
+      ),
     );
   }
 }
 
-// ================================================================
-// DASHBOARD BODY
-// ================================================================
+// ============================================================
+// DASHBOARD CONTENT
+// ============================================================
 
-class _DashboardBody extends StatelessWidget {
+class _DashboardContent extends StatelessWidget {
+  final double width;
   final UserProvider user;
 
-  const _DashboardBody({required this.user});
+  const _DashboardContent({required this.width, required this.user});
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
+    final bool smallMobile = width < 420;
+    final bool mobile = width >= 420 && width < 700;
+    final bool tablet = width >= 700 && width < 1100;
+    final bool desktop = width >= 1100;
 
-        final bool isMobile = width < 700;
-        final bool isTablet = width >= 700 && width < 1100;
+    final double horizontalPadding = width < 600
+        ? 14
+        : width < 1100
+        ? 20
+        : 28;
 
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isMobile ? 14 : 28,
-                  vertical: isMobile ? 18 : 24,
+    final String userName = user.name.trim().isEmpty
+        ? 'Administrator'
+        : user.name.trim();
+
+    return SafeArea(
+      bottom: false,
+      child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(
+          horizontalPadding,
+          18,
+          horizontalPadding,
+          28,
+        ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1500),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _DashboardHeader(
+                  userName: userName,
+                  compact: smallMobile || mobile,
                 ),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1400),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildPageHeader(context, isMobile: isMobile),
 
-                        const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-                        _buildKpiCards(isMobile: isMobile, isTablet: isTablet),
-
-                        const SizedBox(height: 20),
-
-                        _buildOverview(isMobile: isMobile),
-
-                        const SizedBox(height: 20),
-
-                        _buildRecentActivity(context, isMobile: isMobile),
-
-                        const SizedBox(height: 20),
-
-                        _buildQuickActions(isMobile: isMobile),
-                      ],
-                    ),
-                  ),
+                _SectionTitle(
+                  title: 'Overview',
+                  subtitle: 'Inventory and operations summary',
                 ),
-              ),
 
-              // Full-width page footer
-              const AppFooter(),
-            ],
+                const SizedBox(height: 12),
+
+                _KpiSection(width: width),
+
+                const SizedBox(height: 22),
+
+                _ChartsSection(width: width, desktop: desktop, tablet: tablet),
+
+                const SizedBox(height: 22),
+
+                _OperationalSection(width: width, desktop: desktop),
+
+                const SizedBox(height: 22),
+
+                _ActivitySection(width: width, desktop: desktop),
+
+                const SizedBox(height: 22),
+
+                _QuickActionsSection(width: width),
+              ],
+            ),
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// HEADER
+// ============================================================
+
+class _DashboardHeader extends StatelessWidget {
+  final String userName;
+  final bool compact;
+
+  const _DashboardHeader({required this.userName, required this.compact});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(compact ? 18 : 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFE4E9F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.035),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: compact
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _welcome(userName),
+                const SizedBox(height: 16),
+                const _DateBadge(),
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(child: _welcome(userName)),
+                const _DateBadge(),
+              ],
+            ),
     );
   }
 
-  // ================================================================
-  // PAGE HEADER
-  // ================================================================
-
-  Widget _buildPageHeader(BuildContext context, {required bool isMobile}) {
-    if (isMobile) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Dashboard',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.darkNavy,
-            ),
-          ),
-
-          const SizedBox(height: 5),
-
-          Text(
-            'Overview of your inventory and stock operations',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-          ),
-
-          const SizedBox(height: 14),
-
-          _todayBadge(),
-        ],
-      );
-    }
-
-    return Row(
+  Widget _welcome(String name) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Dashboard',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.darkNavy,
-                ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Good day,',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF737D8C),
               ),
+            ),
 
-              const SizedBox(height: 5),
+            const SizedBox(height: 2),
 
-              Text(
-                'Overview of your inventory and stock operations',
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+            Text(
+              name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.w800,
+                color: AppTheme.darkNavy,
               ),
-            ],
-          ),
+            ),
+
+            const SizedBox(height: 6),
+
+            const Text(
+              'Here is your inventory and operations overview.',
+              style: TextStyle(fontSize: 13, color: Color(0xFF737D8C)),
+            ),
+          ],
         ),
-
-        _todayBadge(),
       ],
     );
   }
+}
 
-  // ================================================================
-  // TODAY BADGE
-  // ================================================================
+class _DateBadge extends StatelessWidget {
+  const _DateBadge();
 
-  Widget _todayBadge() {
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(9),
-        border: Border.all(color: Colors.grey.shade200),
+        color: const Color(0xFFF3F7FC),
+        borderRadius: BorderRadius.circular(11),
       ),
-      child: Row(
+      child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
@@ -168,152 +213,213 @@ class _DashboardBody extends StatelessWidget {
             size: 16,
             color: AppTheme.primaryBlue,
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Text(
-            'Today',
+            '09 September 2026',
             style: TextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade700,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.darkNavy,
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  // ================================================================
-  // KPI CARDS
-  // ================================================================
+// ============================================================
+// SECTION TITLE
+// ============================================================
 
-  Widget _buildKpiCards({required bool isMobile, required bool isTablet}) {
-    final cards = [
+class _SectionTitle extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const _SectionTitle({required this.title, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.darkNavy,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                subtitle,
+                style: const TextStyle(fontSize: 11, color: Color(0xFF8992A3)),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================
+// KPI SECTION
+// ============================================================
+
+class _KpiSection extends StatelessWidget {
+  final double width;
+
+  const _KpiSection({required this.width});
+
+  @override
+  Widget build(BuildContext context) {
+    final List<_KpiData> items = [
       const _KpiData(
         title: 'Total Products',
         value: '1,248',
-        change: '+8.2%',
-        subtitle: 'vs last month',
+        subtitle: 'Active products',
         icon: Icons.inventory_2_outlined,
+        color: Color(0xFF2563EB),
       ),
       const _KpiData(
         title: 'Total Stock',
         value: '18,420',
-        change: '+5.4%',
-        subtitle: 'units available',
+        subtitle: 'Units in inventory',
         icon: Icons.warehouse_outlined,
+        color: Color(0xFF0891B2),
       ),
       const _KpiData(
         title: 'Low Stock',
         value: '24',
-        change: 'Needs attention',
-        subtitle: 'products',
-        icon: Icons.warning_amber_outlined,
+        subtitle: 'Need attention',
+        icon: Icons.warning_amber_rounded,
+        color: Color(0xFFD97706),
       ),
       const _KpiData(
         title: 'Out of Stock',
-        value: '07',
-        change: 'Critical',
-        subtitle: 'products',
+        value: '7',
+        subtitle: 'Items unavailable',
         icon: Icons.remove_shopping_cart_outlined,
+        color: Color(0xFFDC2626),
+      ),
+      const _KpiData(
+        title: 'Purchase Orders',
+        value: '6',
+        subtitle: '2 pending',
+        icon: Icons.shopping_cart_outlined,
+        color: Color(0xFF7C3AED),
+      ),
+      const _KpiData(
+        title: 'Sales Orders',
+        value: '8',
+        subtitle: '3 processing',
+        icon: Icons.receipt_long_outlined,
+        color: Color(0xFF059669),
+      ),
+      const _KpiData(
+        title: 'Ready to Dispatch',
+        value: '1',
+        subtitle: 'Awaiting dispatch',
+        icon: Icons.local_shipping_outlined,
+        color: Color(0xFFEA580C),
+      ),
+      const _KpiData(
+        title: 'In Transit',
+        value: '2',
+        subtitle: 'Active shipments',
+        icon: Icons.route_outlined,
+        color: Color(0xFF4F46E5),
       ),
     ];
 
-    if (isMobile) {
-      return Column(
-        children: [
-          for (int i = 0; i < cards.length; i++) ...[
-            _buildKpiCard(cards[i], compact: true),
-            if (i != cards.length - 1) const SizedBox(height: 10),
-          ],
-        ],
-      );
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double availableWidth = constraints.maxWidth;
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: cards.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: isTablet ? 2 : 4,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: isTablet ? 2.8 : 2.05,
-      ),
-      itemBuilder: (context, index) {
-        return _buildKpiCard(cards[index]);
+        int columns;
+
+        if (availableWidth < 500) {
+          columns = 1;
+        } else if (availableWidth < 850) {
+          columns = 2;
+        } else if (availableWidth < 1200) {
+          columns = 3;
+        } else {
+          columns = 4;
+        }
+
+        return Wrap(
+          spacing: 14,
+          runSpacing: 14,
+          children: items.map((item) {
+            final double cardWidth = columns == 1
+                ? availableWidth
+                : (availableWidth - (14 * (columns - 1))) / columns;
+
+            return SizedBox(
+              width: cardWidth,
+              child: _KpiCard(data: item),
+            );
+          }).toList(),
+        );
       },
     );
   }
+}
 
-  // ================================================================
-  // KPI CARD
-  // ================================================================
+class _KpiCard extends StatelessWidget {
+  final _KpiData data;
 
-  Widget _buildKpiCard(_KpiData data, {bool compact = false}) {
-    Color cardColor;
-    Color iconBackground;
-    Color iconColor;
+  const _KpiCard({required this.data});
 
-    switch (data.title) {
-      case 'Total Products':
-        cardColor = const Color(0xFFF2F7FF);
-        iconBackground = const Color(0xFFDCEAFF);
-        iconColor = AppTheme.primaryBlue;
-        break;
-
-      case 'Total Stock':
-        cardColor = const Color(0xFFF0F9FA);
-        iconBackground = const Color(0xFFD9F0F2);
-        iconColor = const Color(0xFF168A9B);
-        break;
-
-      case 'Low Stock':
-        cardColor = const Color(0xFFFFF8ED);
-        iconBackground = const Color(0xFFFFEBC7);
-        iconColor = const Color(0xFFD88900);
-        break;
-
-      default:
-        cardColor = const Color(0xFFFFF1F1);
-        iconBackground = const Color(0xFFFFDCDC);
-        iconColor = const Color(0xFFD94A4A);
-    }
-
-    final bool isWarning =
-        data.title == 'Low Stock' || data.title == 'Out of Stock';
-
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(compact ? 15 : 18),
+      constraints: const BoxConstraints(minHeight: 112),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: iconColor.withValues(alpha: 0.12)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: const Color(0xFFE5EAF0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: compact ? 44 : 46,
-            height: compact ? 44 : 46,
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
-              color: iconBackground,
-              borderRadius: BorderRadius.circular(10),
+              color: data.color.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(data.icon, size: compact ? 21 : 22, color: iconColor),
+            child: Icon(data.icon, color: data.color, size: 22),
           ),
 
           const SizedBox(width: 13),
 
           Expanded(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   data.title,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: compact ? 11 : 12,
-                    color: Colors.grey.shade700,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF7A8493),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -322,34 +428,26 @@ class _DashboardBody extends StatelessWidget {
 
                 Text(
                   data.value,
-                  style: TextStyle(
-                    fontSize: compact ? 21 : 22,
-                    fontWeight: FontWeight.w700,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
                     color: AppTheme.darkNavy,
                   ),
                 ),
 
                 const SizedBox(height: 2),
 
-                Wrap(
-                  spacing: 5,
-                  children: [
-                    Text(
-                      data.change,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: isWarning ? iconColor : Colors.green.shade700,
-                      ),
-                    ),
-                    Text(
-                      data.subtitle,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                  ],
+                Text(
+                  data.subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: data.color,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
@@ -358,131 +456,366 @@ class _DashboardBody extends StatelessWidget {
       ),
     );
   }
+}
 
-  // ================================================================
-  // OVERVIEW
-  // ================================================================
+// ============================================================
+// MAIN CHARTS
+// ============================================================
 
-  Widget _buildOverview({required bool isMobile}) {
-    if (isMobile) {
-      return Column(
+class _ChartsSection extends StatelessWidget {
+  final double width;
+  final bool desktop;
+  final bool tablet;
+
+  const _ChartsSection({
+    required this.width,
+    required this.desktop,
+    required this.tablet,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (desktop) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInventoryHealth(),
-
-          const SizedBox(height: 16),
-
-          _buildStockMovement(),
+          Expanded(flex: 7, child: _StockMovementCard()),
+          const SizedBox(width: 18),
+          Expanded(flex: 4, child: _InventoryHealthCard()),
         ],
       );
     }
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
       children: [
-        Expanded(child: _buildInventoryHealth()),
-
-        const SizedBox(width: 18),
-
-        Expanded(child: _buildStockMovement()),
+        _StockMovementCard(),
+        const SizedBox(height: 18),
+        _InventoryHealthCard(),
       ],
     );
   }
+}
 
-  // ================================================================
-  // INVENTORY HEALTH
-  // ================================================================
+// ============================================================
+// STOCK MOVEMENT
+// ============================================================
 
-  Widget _buildInventoryHealth() {
-    return _panel(
-      title: 'Inventory Health',
-      icon: Icons.inventory_2_outlined,
-      backgroundColor: const Color(0xFFF8FBFF),
-      borderColor: const Color(0xFFE1ECFA),
-      trailing: Text(
-        '1,248 products',
-        style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-      ),
+class _StockMovementCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _Panel(
+      title: 'Stock Movement',
+      subtitle: 'Inventory movement across the last 7 days',
+      trailing: const _SmallBadge(text: 'Last 7 Days'),
       child: Column(
         children: [
-          _healthRow(
-            label: 'Healthy Stock',
-            value: '1,217',
-            percentage: '97.5%',
-            progress: 0.975,
-            color: Colors.green.shade600,
-            icon: Icons.check_circle_outline,
+          const SizedBox(height: 14),
+
+          SizedBox(
+            height: 270,
+            width: double.infinity,
+            child: CustomPaint(
+              painter: _BarChartPainter(
+                values: const [320, 460, 280, 540, 390, 610, 480],
+                labels: const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+              ),
+            ),
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 12),
 
-          _healthRow(
-            label: 'Low Stock',
-            value: '24',
-            percentage: '1.9%',
-            progress: 0.019,
-            color: Colors.orange.shade600,
-            icon: Icons.warning_amber_outlined,
-          ),
-
-          const SizedBox(height: 18),
-
-          _healthRow(
-            label: 'Out of Stock',
-            value: '7',
-            percentage: '0.6%',
-            progress: 0.006,
-            color: Colors.red.shade500,
-            icon: Icons.error_outline,
+          Wrap(
+            spacing: 18,
+            runSpacing: 8,
+            children: const [
+              _LegendItem(text: 'Stock In', color: Color(0xFF2563EB)),
+              _LegendItem(text: 'Stock Out', color: Color(0xFF10B981)),
+              _LegendItem(text: 'Transfer', color: Color(0xFFF59E0B)),
+            ],
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _healthRow({
-    required String label,
-    required String value,
-    required String percentage,
-    required double progress,
-    required Color color,
-    required IconData icon,
-  }) {
+// ============================================================
+// INVENTORY HEALTH
+// ============================================================
+
+class _InventoryHealthCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _Panel(
+      title: 'Inventory Health',
+      subtitle: 'Current availability of products',
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
+
+          SizedBox(
+            height: 230,
+            width: double.infinity,
+            child: CustomPaint(
+              painter: _PieChartPainter(
+                values: const [1217, 24, 7],
+                colors: const [
+                  Color(0xFF10B981),
+                  Color(0xFFF59E0B),
+                  Color(0xFFEF4444),
+                ],
+                centerValue: '1,248',
+                centerLabel: 'Products',
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const _HealthRow(
+            title: 'Healthy Stock',
+            value: '1,217',
+            percentage: '97.5%',
+            color: Color(0xFF10B981),
+          ),
+
+          const SizedBox(height: 10),
+
+          const _HealthRow(
+            title: 'Low Stock',
+            value: '24',
+            percentage: '1.9%',
+            color: Color(0xFFF59E0B),
+          ),
+
+          const SizedBox(height: 10),
+
+          const _HealthRow(
+            title: 'Out of Stock',
+            value: '7',
+            percentage: '0.6%',
+            color: Color(0xFFEF4444),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HealthRow extends StatelessWidget {
+  final String title;
+  final String value;
+  final String percentage;
+  final Color color;
+
+  const _HealthRow({
+    required this.title,
+    required this.value,
+    required this.percentage,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 9,
+          height: 9,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+
+        const SizedBox(width: 9),
+
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color(0xFF626C7B),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppTheme.darkNavy,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+
+        const SizedBox(width: 8),
+
+        SizedBox(
+          width: 45,
+          child: Text(
+            percentage,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              fontSize: 11,
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================
+// OPERATIONAL SECTION
+// ============================================================
+
+class _OperationalSection extends StatelessWidget {
+  final double width;
+  final bool desktop;
+
+  const _OperationalSection({required this.width, required this.desktop});
+
+  @override
+  Widget build(BuildContext context) {
+    if (desktop) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: _ProcurementCard()),
+          const SizedBox(width: 18),
+          Expanded(child: _SalesOrderCard()),
+        ],
+      );
+    }
+
     return Column(
+      children: [
+        _ProcurementCard(),
+        const SizedBox(height: 18),
+        _SalesOrderCard(),
+      ],
+    );
+  }
+}
+
+// ============================================================
+// PROCUREMENT
+// ============================================================
+
+class _ProcurementCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _Panel(
+      title: 'Procurement Pipeline',
+      subtitle: 'Current purchase order status',
+      child: Column(
+        children: [
+          const SizedBox(height: 12),
+
+          _ProgressRow(
+            title: 'Pending',
+            value: 2,
+            total: 6,
+            color: const Color(0xFFF59E0B),
+          ),
+
+          const SizedBox(height: 20),
+
+          _ProgressRow(
+            title: 'Approved',
+            value: 2,
+            total: 6,
+            color: const Color(0xFF2563EB),
+          ),
+
+          const SizedBox(height: 20),
+
+          _ProgressRow(
+            title: 'Received',
+            value: 2,
+            total: 6,
+            color: const Color(0xFF10B981),
+          ),
+
+          const SizedBox(height: 18),
+
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Row(
+              children: [
+                Icon(
+                  Icons.payments_outlined,
+                  size: 18,
+                  color: AppTheme.primaryBlue,
+                ),
+                SizedBox(width: 9),
+                Expanded(
+                  child: Text(
+                    'Total PO Value',
+                    style: TextStyle(fontSize: 12, color: Color(0xFF697586)),
+                  ),
+                ),
+                Text(
+                  '₹6,32,050',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.darkNavy,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProgressRow extends StatelessWidget {
+  final String title;
+  final int value;
+  final int total;
+  final Color color;
+
+  const _ProgressRow({
+    required this.title,
+    required this.value,
+    required this.total,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final double progress = total == 0 ? 0 : value / total;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, size: 18, color: color),
-
-            const SizedBox(width: 9),
-
             Expanded(
               child: Text(
-                label,
+                title,
                 style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF263143),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.darkNavy,
                 ),
               ),
             ),
-
             Text(
-              value,
-              style: const TextStyle(
-                fontSize: 13,
+              '$value Orders',
+              style: TextStyle(
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: AppTheme.darkNavy,
-              ),
-            ),
-
-            const SizedBox(width: 8),
-
-            SizedBox(
-              width: 42,
-              child: Text(
-                percentage,
-                textAlign: TextAlign.right,
-                style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                color: color,
               ),
             ),
           ],
@@ -491,457 +824,428 @@ class _DashboardBody extends StatelessWidget {
         const SizedBox(height: 8),
 
         ClipRRect(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(20),
           child: LinearProgressIndicator(
             value: progress,
-            minHeight: 6,
-            backgroundColor: Colors.grey.shade200,
+            minHeight: 9,
+            backgroundColor: const Color(0xFFE9EEF5),
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),
       ],
     );
   }
+}
 
-  // ================================================================
-  // STOCK MOVEMENT
-  // ================================================================
+// ============================================================
+// SALES ORDERS
+// ============================================================
 
-  Widget _buildStockMovement() {
-    return _panel(
-      title: 'Stock Movement',
-      icon: Icons.swap_vert_rounded,
-      backgroundColor: const Color(0xFFF7FCFD),
-      borderColor: const Color(0xFFDDEFF1),
-      trailing: Text(
-        'This week',
-        style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-      ),
-      child: Column(
-        children: [
-          _movementRow(
-            'Stock Received',
-            '+2,450',
-            Icons.arrow_downward_rounded,
-            Colors.green.shade600,
-          ),
+class _SalesOrderCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _Panel(
+      title: 'Sales Order Pipeline',
+      subtitle: 'Current sales order distribution',
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final bool narrow = constraints.maxWidth < 500;
 
-          const Divider(height: 24),
+          if (narrow) {
+            return Column(
+              children: [
+                const SizedBox(height: 8),
 
-          _movementRow(
-            'Stock Dispatched',
-            '-1,820',
-            Icons.arrow_upward_rounded,
-            AppTheme.primaryBlue,
-          ),
+                SizedBox(
+                  height: 220,
+                  width: double.infinity,
+                  child: CustomPaint(
+                    painter: _PieChartPainter(
+                      values: const [2, 3, 3],
+                      colors: const [
+                        Color(0xFFF59E0B),
+                        Color(0xFF2563EB),
+                        Color(0xFF10B981),
+                      ],
+                      centerValue: '8',
+                      centerLabel: 'Orders',
+                    ),
+                  ),
+                ),
 
-          const Divider(height: 24),
+                const SizedBox(height: 10),
 
-          _movementRow(
-            'Stock Adjusted',
-            '+320',
-            Icons.sync_alt_rounded,
-            Colors.orange.shade600,
-          ),
+                const _OrderLegendList(),
+              ],
+            );
+          }
 
-          const SizedBox(height: 16),
+          return Row(
+            children: [
+              Expanded(
+                flex: 5,
+                child: SizedBox(
+                  height: 220,
+                  child: CustomPaint(
+                    painter: _PieChartPainter(
+                      values: const [2, 3, 3],
+                      colors: const [
+                        Color(0xFFF59E0B),
+                        Color(0xFF2563EB),
+                        Color(0xFF10B981),
+                      ],
+                      centerValue: '8',
+                      centerLabel: 'Orders',
+                    ),
+                  ),
+                ),
+              ),
 
-          _buildMiniChart(),
-        ],
+              Expanded(flex: 4, child: const _OrderLegendList()),
+            ],
+          );
+        },
       ),
     );
   }
+}
 
-  Widget _movementRow(String title, String value, IconData icon, Color color) {
+class _OrderLegendList extends StatelessWidget {
+  const _OrderLegendList();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        _OrderLegend(title: 'Pending', value: '2', color: Color(0xFFF59E0B)),
+        SizedBox(height: 18),
+        _OrderLegend(title: 'Processing', value: '3', color: Color(0xFF2563EB)),
+        SizedBox(height: 18),
+        _OrderLegend(title: 'Completed', value: '3', color: Color(0xFF10B981)),
+      ],
+    );
+  }
+}
+
+class _OrderLegend extends StatelessWidget {
+  final String title;
+  final String value;
+  final Color color;
+
+  const _OrderLegend({
+    required this.title,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       children: [
         Container(
-          width: 34,
-          height: 34,
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, size: 18, color: color),
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
 
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
 
         Expanded(
           child: Text(
             title,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF263143),
-            ),
+            style: const TextStyle(fontSize: 12, color: Color(0xFF667085)),
           ),
         ),
 
         Text(
           value,
           style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
             color: AppTheme.darkNavy,
           ),
         ),
       ],
     );
   }
+}
 
-  // ================================================================
-  // MINI CHART
-  // ================================================================
+// ============================================================
+// ACTIVITY SECTION
+// ============================================================
 
-  Widget _buildMiniChart() {
-    final values = [0.55, 0.72, 0.45, 0.85, 0.65, 0.92, 0.75];
+class _ActivitySection extends StatelessWidget {
+  final double width;
+  final bool desktop;
 
-    final labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const _ActivitySection({required this.width, required this.desktop});
 
-    return SizedBox(
-      height: 90,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: List.generate(values.length, (index) {
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: FractionallySizedBox(
-                        heightFactor: values[index],
-                        child: Container(
-                          width: 16,
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryBlue.withValues(alpha: 0.65),
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(4),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+  @override
+  Widget build(BuildContext context) {
+    if (desktop) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(flex: 7, child: _RecentActivityCard()),
+          const SizedBox(width: 18),
+          Expanded(flex: 4, child: _AttentionCard()),
+        ],
+      );
+    }
 
-                  const SizedBox(height: 6),
-
-                  Text(
-                    labels[index],
-                    style: TextStyle(fontSize: 9, color: Colors.grey.shade500),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
-  // ================================================================
-  // RECENT ACTIVITY
-  // ================================================================
-
-  Widget _buildRecentActivity(BuildContext context, {required bool isMobile}) {
-    return _panel(
-      title: 'Recent Activity',
-      icon: Icons.history_rounded,
-      backgroundColor: Colors.white,
-      borderColor: Colors.grey.shade200,
-      trailing: TextButton(
-        onPressed: () {},
-        style: TextButton.styleFrom(
-          padding: EdgeInsets.zero,
-          minimumSize: const Size(0, 30),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
-        child: Text(
-          'View all',
-          style: TextStyle(
-            fontSize: 12,
-            color: AppTheme.primaryBlue,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      child: isMobile ? _buildMobileActivity() : _buildDesktopActivity(),
-    );
-  }
-
-  // ================================================================
-  // DESKTOP ACTIVITY
-  // ================================================================
-
-  Widget _buildDesktopActivity() {
     return Column(
       children: [
-        _activityHeader(),
-
-        const Divider(height: 18),
-
-        _activityRow(
-          icon: Icons.add_box_outlined,
-          action: 'Product Added',
-          item: 'Wireless Keyboard',
-          user: 'Admin',
-          time: '10 min ago',
-          status: 'Completed',
-        ),
-
-        const Divider(height: 1),
-
-        _activityRow(
-          icon: Icons.inventory_2_outlined,
-          action: 'Stock Received',
-          item: 'Laptop Pro 14"',
-          user: 'Warehouse',
-          time: '35 min ago',
-          status: 'Completed',
-        ),
-
-        const Divider(height: 1),
-
-        _activityRow(
-          icon: Icons.local_shipping_outlined,
-          action: 'Stock Dispatched',
-          item: 'USB-C Cable',
-          user: 'Dispatch',
-          time: '1 hour ago',
-          status: 'Completed',
-        ),
-
-        const Divider(height: 1),
-
-        _activityRow(
-          icon: Icons.warning_amber_outlined,
-          action: 'Low Stock Alert',
-          item: 'Wireless Mouse',
-          user: 'System',
-          time: '2 hours ago',
-          status: 'Attention',
-        ),
+        _RecentActivityCard(),
+        const SizedBox(height: 18),
+        _AttentionCard(),
       ],
     );
   }
+}
 
-  Widget _activityHeader() {
-    return const Row(
-      children: [
-        SizedBox(width: 42),
+// ============================================================
+// RECENT ACTIVITY
+// ============================================================
 
-        Expanded(
-          flex: 2,
-          child: Text(
-            'ACTIVITY',
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF8992A3),
-            ),
+class _RecentActivityCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _Panel(
+      title: 'Recent Activity',
+      subtitle: 'Latest inventory and order updates',
+      trailing: TextButton(
+        onPressed: () {},
+        child: const Text(
+          'View All',
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.primaryBlue,
           ),
         ),
-
-        Expanded(
-          child: Text(
-            'USER',
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF8992A3),
-            ),
-          ),
-        ),
-
-        Expanded(
-          child: Text(
-            'TIME',
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF8992A3),
-            ),
-          ),
-        ),
-
-        SizedBox(
-          width: 80,
-          child: Text(
-            'STATUS',
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF8992A3),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ================================================================
-  // DESKTOP ACTIVITY ROW
-  // ================================================================
-
-  Widget _activityRow({
-    required IconData icon,
-    required String action,
-    required String item,
-    required String user,
-    required String time,
-    required String status,
-  }) {
-    final bool attention = status == 'Attention';
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
+      ),
+      child: Column(
         children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: AppTheme.lightBlue,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, size: 17, color: AppTheme.primaryBlue),
+          const _ActivityItem(
+            icon: Icons.inventory_2_outlined,
+            color: Color(0xFF2563EB),
+            title: 'Product Added',
+            description: 'Wireless Keyboard added to inventory',
+            time: '10 min ago',
           ),
 
-          const SizedBox(width: 8),
+          const Divider(height: 1, color: Color(0xFFEDF0F4)),
 
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  action,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF263143),
-                  ),
-                ),
-
-                const SizedBox(height: 2),
-
-                Text(
-                  item,
-                  style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
-                ),
-              ],
-            ),
+          const _ActivityItem(
+            icon: Icons.download_outlined,
+            color: Color(0xFF10B981),
+            title: 'Stock Received',
+            description: '120 pcs Wireless Keyboard received',
+            time: '35 min ago',
           ),
 
-          Expanded(
-            child: Text(
-              user,
-              style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-            ),
+          const Divider(height: 1, color: Color(0xFFEDF0F4)),
+
+          const _ActivityItem(
+            icon: Icons.upload_outlined,
+            color: Color(0xFFEA580C),
+            title: 'Stock Dispatched',
+            description: '45 pcs USB-C Cable dispatched',
+            time: '1 hour ago',
           ),
 
-          Expanded(
-            child: Text(
-              time,
-              style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-            ),
+          const Divider(height: 1, color: Color(0xFFEDF0F4)),
+
+          const _ActivityItem(
+            icon: Icons.warning_amber_rounded,
+            color: Color(0xFFF59E0B),
+            title: 'Low Stock Alert',
+            description: 'Wireless Mouse has reached low stock',
+            time: '2 hours ago',
           ),
 
-          SizedBox(
-            width: 80,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: _statusBadge(status, attention: attention),
-            ),
+          const Divider(height: 1, color: Color(0xFFEDF0F4)),
+
+          const _ActivityItem(
+            icon: Icons.shopping_cart_outlined,
+            color: Color(0xFF7C3AED),
+            title: 'Purchase Order Received',
+            description: 'PO-2026-00418 completed',
+            time: '3 hours ago',
           ),
         ],
       ),
     );
   }
+}
 
-  // ================================================================
-  // MOBILE ACTIVITY
-  // ================================================================
+class _ActivityItem extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String description;
+  final String time;
 
-  Widget _buildMobileActivity() {
-    return Column(
-      children: [
-        _mobileActivityItem(
-          icon: Icons.add_box_outlined,
-          title: 'Product Added',
-          item: 'Wireless Keyboard',
-          user: 'Admin',
-          time: '10 min ago',
-          status: 'Completed',
-        ),
+  const _ActivityItem({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.description,
+    required this.time,
+  });
 
-        const Divider(height: 1),
-
-        _mobileActivityItem(
-          icon: Icons.inventory_2_outlined,
-          title: 'Stock Received',
-          item: 'Laptop Pro 14"',
-          user: 'Warehouse',
-          time: '35 min ago',
-          status: 'Completed',
-        ),
-
-        const Divider(height: 1),
-
-        _mobileActivityItem(
-          icon: Icons.local_shipping_outlined,
-          title: 'Stock Dispatched',
-          item: 'USB-C Cable',
-          user: 'Dispatch',
-          time: '1 hour ago',
-          status: 'Completed',
-        ),
-
-        const Divider(height: 1),
-
-        _mobileActivityItem(
-          icon: Icons.warning_amber_outlined,
-          title: 'Low Stock Alert',
-          item: 'Wireless Mouse',
-          user: 'System',
-          time: '2 hours ago',
-          status: 'Attention',
-        ),
-      ],
-    );
-  }
-
-  // ================================================================
-  // MOBILE ACTIVITY ITEM
-  // ================================================================
-
-  Widget _mobileActivityItem({
-    required IconData icon,
-    required String title,
-    required String item,
-    required String user,
-    required String time,
-    required String status,
-  }) {
-    final bool attention = status == 'Attention';
-
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.10),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 19),
+          ),
+
+          const SizedBox(width: 12),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.darkNavy,
+                  ),
+                ),
+
+                const SizedBox(height: 3),
+
+                Text(
+                  description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Color(0xFF7A8493),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 8),
+
+          Text(
+            time,
+            style: const TextStyle(fontSize: 9, color: Color(0xFF98A2B3)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// ATTENTION
+// ============================================================
+
+class _AttentionCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _Panel(
+      title: 'Attention Required',
+      subtitle: 'Items that need immediate action',
+      child: Column(
+        children: [
+          const _AttentionItem(
+            icon: Icons.warning_amber_rounded,
+            color: Color(0xFFF59E0B),
+            title: 'Low Stock Items',
+            value: '24',
+            description: 'Products below reorder level',
+          ),
+
+          const SizedBox(height: 11),
+
+          const _AttentionItem(
+            icon: Icons.remove_shopping_cart_outlined,
+            color: Color(0xFFEF4444),
+            title: 'Out of Stock',
+            value: '7',
+            description: 'Products currently unavailable',
+          ),
+
+          const SizedBox(height: 11),
+
+          const _AttentionItem(
+            icon: Icons.pending_actions_outlined,
+            color: Color(0xFF7C3AED),
+            title: 'Pending Purchase Orders',
+            value: '2',
+            description: 'Orders awaiting approval',
+          ),
+
+          const SizedBox(height: 11),
+
+          const _AttentionItem(
+            icon: Icons.local_shipping_outlined,
+            color: Color(0xFFEA580C),
+            title: 'Delayed Dispatch',
+            value: '1',
+            description: 'Shipment requires attention',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AttentionItem extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String value;
+  final String description;
+
+  const _AttentionItem({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.value,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(color: const Color(0xFFECEFF3)),
+      ),
+      child: Row(
         children: [
           Container(
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: AppTheme.lightBlue,
-              borderRadius: BorderRadius.circular(9),
+              color: color.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, size: 18, color: AppTheme.primaryBlue),
+            child: Icon(icon, color: color, size: 18),
           ),
 
           const SizedBox(width: 10),
@@ -950,205 +1254,281 @@ class _DashboardBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.darkNavy,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 8),
-
-                    Text(
-                      time,
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                  ],
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.darkNavy,
+                  ),
                 ),
 
                 const SizedBox(height: 3),
 
                 Text(
-                  item,
-                  style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
-                ),
-
-                const SizedBox(height: 7),
-
-                Row(
-                  children: [
-                    Icon(
-                      Icons.person_outline,
-                      size: 13,
-                      color: Colors.grey.shade500,
-                    ),
-
-                    const SizedBox(width: 4),
-
-                    Text(
-                      user,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    _statusBadge(status, attention: attention),
-                  ],
+                  description,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 9, color: Color(0xFF8992A3)),
                 ),
               ],
             ),
           ),
+
+          const SizedBox(width: 8),
+
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
+          ),
         ],
       ),
     );
   }
+}
 
-  // ================================================================
-  // STATUS BADGE
-  // ================================================================
+// ============================================================
+// QUICK ACTIONS
+// ============================================================
 
-  Widget _statusBadge(String status, {required bool attention}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-      decoration: BoxDecoration(
-        color: attention ? const Color(0xFFFFF4E5) : const Color(0xFFEAF8EF),
-        borderRadius: BorderRadius.circular(5),
+class _QuickActionsSection extends StatelessWidget {
+  final double width;
+
+  const _QuickActionsSection({required this.width});
+
+  @override
+  Widget build(BuildContext context) {
+    const actions = [
+      _QuickAction(
+        title: 'Inventory',
+        subtitle: 'Manage stock',
+        icon: Icons.inventory_2_outlined,
+        color: Color(0xFF2563EB),
       ),
-      child: Text(
-        status,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 9,
-          fontWeight: FontWeight.w600,
-          color: attention ? Colors.orange.shade700 : Colors.green.shade700,
-        ),
+      _QuickAction(
+        title: 'Receive Stock',
+        subtitle: 'Stock inward',
+        icon: Icons.download_outlined,
+        color: Color(0xFF10B981),
       ),
-    );
-  }
+      _QuickAction(
+        title: 'Purchase Order',
+        subtitle: 'Create PO',
+        icon: Icons.shopping_cart_outlined,
+        color: Color(0xFF7C3AED),
+      ),
+      _QuickAction(
+        title: 'Sales Order',
+        subtitle: 'Create order',
+        icon: Icons.receipt_long_outlined,
+        color: Color(0xFF0891B2),
+      ),
+      _QuickAction(
+        title: 'Dispatch',
+        subtitle: 'Ship order',
+        icon: Icons.local_shipping_outlined,
+        color: Color(0xFFEA580C),
+      ),
+      _QuickAction(
+        title: 'Vendors',
+        subtitle: 'Manage vendors',
+        icon: Icons.business_outlined,
+        color: Color(0xFF4F46E5),
+      ),
+    ];
 
-  // ================================================================
-  // QUICK ACTIONS
-  // ================================================================
-
-  Widget _buildQuickActions({required bool isMobile}) {
-    return _panel(
+    return _Panel(
       title: 'Quick Actions',
-      icon: Icons.flash_on_outlined,
-      backgroundColor: const Color(0xFFF8FBFF),
-      borderColor: const Color(0xFFE1ECFA),
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        children: [
-          _quickAction('Add Product', Icons.add_box_outlined),
-          _quickAction('Receive Stock', Icons.add_circle_outline),
-          _quickAction('Dispatch Stock', Icons.local_shipping_outlined),
-          _quickAction('View Reports', Icons.analytics_outlined),
-        ],
+      subtitle: 'Frequently used operations',
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final double available = constraints.maxWidth;
+
+          int columns;
+
+          if (available < 450) {
+            columns = 1;
+          } else if (available < 750) {
+            columns = 2;
+          } else if (available < 1050) {
+            columns = 3;
+          } else {
+            columns = 6;
+          }
+
+          return Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: actions.map((action) {
+              final double cardWidth = columns == 1
+                  ? available
+                  : (available - (12 * (columns - 1))) / columns;
+
+              return SizedBox(
+                width: cardWidth,
+                child: _QuickActionCard(action: action),
+              );
+            }).toList(),
+          );
+        },
       ),
     );
   }
+}
 
-  Widget _quickAction(String title, IconData icon) {
-    return InkWell(
-      onTap: () {},
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: AppTheme.primaryBlue.withValues(alpha: 0.15),
+class _QuickActionCard extends StatelessWidget {
+  final _QuickAction action;
+
+  const _QuickActionCard({required this.action});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {},
+        borderRadius: BorderRadius.circular(13),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 92),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF9FAFB),
+            borderRadius: BorderRadius.circular(13),
+            border: Border.all(color: const Color(0xFFE7EBF0)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: action.color.withOpacity(0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(action.icon, color: action.color, size: 20),
+              ),
+
+              const SizedBox(width: 10),
+
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      action.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.darkNavy,
+                      ),
+                    ),
+
+                    const SizedBox(height: 3),
+
+                    Text(
+                      action.subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 9,
+                        color: Color(0xFF8992A3),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 17, color: AppTheme.primaryBlue),
-
-            const SizedBox(width: 7),
-
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.darkNavy,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
+}
 
-  // ================================================================
-  // COMMON PANEL
-  // ================================================================
+// ============================================================
+// COMMON PANEL
+// ============================================================
 
-  Widget _panel({
-    required String title,
-    required IconData icon,
-    required Widget child,
-    required Color backgroundColor,
-    required Color borderColor,
-    Widget? trailing,
-  }) {
+class _Panel extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final Widget child;
+  final Widget? trailing;
+
+  const _Panel({
+    required this.title,
+    required this.subtitle,
+    required this.child,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5EAF0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 11,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: AppTheme.lightBlue,
-                  borderRadius: BorderRadius.circular(7),
-                ),
-                child: Icon(icon, size: 16, color: AppTheme.primaryBlue),
-              ),
-
-              const SizedBox(width: 9),
-
               Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.darkNavy,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.darkNavy,
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    Text(
+                      subtitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: Color(0xFF8992A3),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
-              if (trailing != null) trailing,
+              if (trailing != null) ...[const SizedBox(width: 8), trailing!],
             ],
           ),
 
-          const SizedBox(height: 17),
+          const SizedBox(height: 4),
 
           child,
         ],
@@ -1157,22 +1537,349 @@ class _DashboardBody extends StatelessWidget {
   }
 }
 
-// ================================================================
-// KPI MODEL
-// ================================================================
+// ============================================================
+// SMALL BADGE
+// ============================================================
+
+class _SmallBadge extends StatelessWidget {
+  final String text;
+
+  const _SmallBadge({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFF6FF),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Text(
+        'Last 7 Days',
+        style: TextStyle(
+          fontSize: 9,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF2563EB),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// LEGEND
+// ============================================================
+
+class _LegendItem extends StatelessWidget {
+  final String text;
+  final Color color;
+
+  const _LegendItem({required this.text, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 10,
+            color: Color(0xFF737D8C),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================
+// BAR CHART
+// ============================================================
+
+class _BarChartPainter extends CustomPainter {
+  final List<double> values;
+  final List<String> labels;
+
+  _BarChartPainter({required this.values, required this.labels});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (values.isEmpty) {
+      return;
+    }
+
+    const double left = 35;
+    const double right = 12;
+    const double top = 20;
+    const double bottom = 35;
+
+    final double chartWidth = size.width - left - right;
+
+    final double chartHeight = size.height - top - bottom;
+
+    double maxValue = 0;
+
+    for (final value in values) {
+      if (value > maxValue) {
+        maxValue = value;
+      }
+    }
+
+    if (maxValue <= 0) {
+      maxValue = 1;
+    }
+
+    final Paint gridPaint = Paint()
+      ..color = const Color(0xFFE8EDF3)
+      ..strokeWidth = 1;
+
+    for (int i = 0; i <= 4; i++) {
+      final double y = top + chartHeight - (chartHeight * i / 4);
+
+      canvas.drawLine(
+        Offset(left, y),
+        Offset(size.width - right, y),
+        gridPaint,
+      );
+    }
+
+    final double slotWidth = chartWidth / values.length;
+
+    final double barWidth = math.min(34, slotWidth * 0.50);
+
+    final Paint barPaint = Paint()..color = const Color(0xFF2563EB);
+
+    for (int i = 0; i < values.length; i++) {
+      final double barHeight = values[i] / maxValue * chartHeight;
+
+      final double x = left + slotWidth * i + (slotWidth - barWidth) / 2;
+
+      final double y = top + chartHeight - barHeight;
+
+      final Rect rect = Rect.fromLTWH(x, y, barWidth, barHeight);
+
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, const Radius.circular(5)),
+        barPaint,
+      );
+
+      // Value
+      final TextPainter valuePainter = TextPainter(
+        text: TextSpan(
+          text: values[i].round().toString(),
+          style: const TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF667085),
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+
+      valuePainter.layout();
+
+      valuePainter.paint(
+        canvas,
+        Offset(
+          x + barWidth / 2 - valuePainter.width / 2,
+          math.max(0, y - valuePainter.height - 4),
+        ),
+      );
+
+      // Label
+      final String label = i < labels.length ? labels[i] : '';
+
+      final TextPainter labelPainter = TextPainter(
+        text: TextSpan(
+          text: label,
+          style: const TextStyle(fontSize: 9, color: Color(0xFF8992A3)),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+
+      labelPainter.layout();
+
+      labelPainter.paint(
+        canvas,
+        Offset(x + barWidth / 2 - labelPainter.width / 2, size.height - 22),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _BarChartPainter oldDelegate) {
+    return oldDelegate.values != values || oldDelegate.labels != labels;
+  }
+}
+
+// ============================================================
+// PIE / DONUT CHART
+// NO drawArc
+// ============================================================
+
+class _PieChartPainter extends CustomPainter {
+  final List<double> values;
+  final List<Color> colors;
+  final String centerValue;
+  final String centerLabel;
+
+  _PieChartPainter({
+    required this.values,
+    required this.colors,
+    required this.centerValue,
+    required this.centerLabel,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (values.isEmpty || colors.isEmpty) {
+      return;
+    }
+
+    double total = 0;
+
+    for (final value in values) {
+      total += value;
+    }
+
+    if (total <= 0) {
+      return;
+    }
+
+    final Offset center = Offset(size.width / 2, size.height / 2);
+
+    final double radius = math.min(size.width, size.height) / 2 - 12;
+
+    double startAngle = -math.pi / 2;
+
+    for (int i = 0; i < values.length; i++) {
+      final double sweep = values[i] / total * math.pi * 2;
+
+      final Path path = Path();
+
+      path.moveTo(center.dx, center.dy);
+
+      const int segments = 50;
+
+      for (int step = 0; step <= segments; step++) {
+        final double angle = startAngle + sweep * step / segments;
+
+        final double x = center.dx + math.cos(angle) * radius;
+
+        final double y = center.dy + math.sin(angle) * radius;
+
+        path.lineTo(x, y);
+      }
+
+      path.close();
+
+      final Paint paint = Paint()
+        ..color = colors[i % colors.length]
+        ..style = PaintingStyle.fill;
+
+      canvas.drawPath(path, paint);
+
+      startAngle += sweep;
+    }
+
+    // Donut center
+    final Paint centerPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(center, radius * 0.55, centerPaint);
+
+    // Center value
+    final TextPainter valuePainter = TextPainter(
+      text: TextSpan(
+        text: centerValue,
+        style: const TextStyle(
+          fontSize: 21,
+          fontWeight: FontWeight.w800,
+          color: AppTheme.darkNavy,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+
+    valuePainter.layout();
+
+    valuePainter.paint(
+      canvas,
+      Offset(center.dx - valuePainter.width / 2, center.dy - 13),
+    );
+
+    // Center label
+    final TextPainter labelPainter = TextPainter(
+      text: TextSpan(
+        text: centerLabel,
+        style: const TextStyle(
+          fontSize: 9,
+          fontWeight: FontWeight.w500,
+          color: Color(0xFF8992A3),
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+
+    labelPainter.layout();
+
+    labelPainter.paint(
+      canvas,
+      Offset(center.dx - labelPainter.width / 2, center.dy + 13),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _PieChartPainter oldDelegate) {
+    return oldDelegate.values != values ||
+        oldDelegate.colors != colors ||
+        oldDelegate.centerValue != centerValue ||
+        oldDelegate.centerLabel != centerLabel;
+  }
+}
+
+// ============================================================
+// MODELS
+// ============================================================
 
 class _KpiData {
   final String title;
   final String value;
-  final String change;
   final String subtitle;
   final IconData icon;
+  final Color color;
 
   const _KpiData({
     required this.title,
     required this.value,
-    required this.change,
     required this.subtitle,
     required this.icon,
+    required this.color,
+  });
+}
+
+class _QuickAction {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+
+  const _QuickAction({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
   });
 }

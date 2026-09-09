@@ -35,7 +35,6 @@ class AboutPage extends StatelessWidget {
                   );
                 },
               ),
-              const AppFooter(),
             ],
           ),
         ),

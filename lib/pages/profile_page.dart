@@ -114,8 +114,6 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
           ),
-
-          const AppFooter(),
         ],
       ),
     );
