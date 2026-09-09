@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
+import 'dart:math';
+
 import '../routes/routes.dart';
 import '../providers/user_provider.dart';
 import '../app_theme.dart';
@@ -26,8 +28,8 @@ class _LoginPageState extends State<LoginPage> {
   final verificationController = TextEditingController();
 
   void generateVerificationCode() {
-    final code = (100000 + DateTime.now().millisecondsSinceEpoch % 900000)
-        .toString();
+    final random = Random();
+    final code = (100000 + random.nextInt(900000)).toString();
 
     setState(() {
       verificationCode = code;
@@ -236,10 +238,10 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 25),
 
               const Text(
-                'Welcome to\nGT-InStock',
+                'Welcome to\nOne Cloud Enterprise Platform',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 34,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
                   height: 1.15,
                 ),

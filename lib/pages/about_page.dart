@@ -16,8 +16,6 @@ class AboutPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4FAF6),
-      appBar: const AppHeader(),
-      drawer: const AppDrawer(),
 
       body: SafeArea(
         child: SingleChildScrollView(

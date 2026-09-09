@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static const Color primaryBlue = Color(0xFF159FE3);
@@ -12,6 +13,9 @@ class AppTheme {
 
     colorScheme: ColorScheme.fromSeed(seedColor: primaryBlue),
 
+    // Global application font
+    textTheme: GoogleFonts.poppinsTextTheme(ThemeData.light().textTheme),
+    
     appBarTheme: const AppBarTheme(
       backgroundColor: darkNavy,
       foregroundColor: Colors.white,

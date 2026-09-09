@@ -13,9 +13,6 @@ class ProfilePage extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
-      appBar: const AppHeader(),
-      drawer: const AppDrawer(),
-
       backgroundColor: const Color(0xFFF5F7FB),
 
       body: Column(
@@ -24,30 +21,24 @@ class ProfilePage extends StatelessWidget {
             child: Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
-
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 700),
-
                   child: Card(
                     elevation: 3,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
-
                     child: Padding(
                       padding: const EdgeInsets.all(30),
-
                       child: Column(
                         children: [
                           CircleAvatar(
                             radius: 45,
                             backgroundColor: AppTheme.primaryBlue,
-
                             child: Text(
                               userProvider.name.isNotEmpty
                                   ? userProvider.name[0].toUpperCase()
                                   : 'U',
-
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 32,
@@ -62,7 +53,6 @@ class ProfilePage extends StatelessWidget {
                             userProvider.name.isNotEmpty
                                 ? userProvider.name
                                 : 'User',
-
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
