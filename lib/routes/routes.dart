@@ -11,6 +11,53 @@ import '../pages/dashboard_page.dart';
 import '../pages/features_page.dart';
 import '../pages/contact_page.dart';
 
+import '../pages/admin/admin_dashboard_page.dart';
+import '../pages/hrms/hrms_dashboard_page.dart';
+import '../pages/crm/crm_dashboard_page.dart';
+import '../pages/erp_modules/erp_dashboard_page.dart';
+import '../pages/finance/finance_dashboard_page.dart';
+import '../pages/workflow/workflow_dashboard_page.dart';
+import '../pages/documents/document_dashboard_page.dart';
+import '../pages/subscription/subscription_dashboard_page.dart';
+import '../pages/revenue/revenue_dashboard_page.dart';
+import '../pages/reporting/reporting_dashboard_page.dart';
+import '../pages/ai/ai_dashboard_page.dart';
+import '../pages/notification/notification_dashboard_page.dart';
+import '../pages/calendar/calendar_dashboard_page.dart';
+import '../pages/integration/integration_dashboard_page.dart';
+import '../pages/search/search_dashboard_page.dart';
+import '../pages/security/security_dashboard_page.dart';
+
+import '../pages/admin/global_settings_page.dart';
+import '../pages/admin/platform_config_page.dart';
+import '../pages/admin/license_management_page.dart';
+import '../pages/admin/feature_management_page.dart';
+import '../pages/admin/resource_management_page.dart';
+import '../pages/admin/system_health_page.dart';
+import '../pages/admin/tenant_templates_page.dart';
+
+import '../pages/hrms/hrms_dashboard_page.dart';
+import '../pages/hrms/employee_management_page.dart';
+import '../pages/hrms/attendance_page.dart';
+import '../pages/hrms/leave_page.dart';
+import '../pages/hrms/payroll_page.dart';
+import '../pages/hrms/recruitment_page.dart';
+import '../pages/hrms/performance_page.dart';
+import '../pages/hrms/learning_page.dart';
+import '../pages/hrms/ess_mss_page.dart';
+import '../pages/hrms/asset_management_page.dart';
+
+import '../pages/crm/crm_dashboard_page.dart';
+import '../pages/crm/leads_page.dart';
+import '../pages/crm/opportunities_page.dart';
+import '../pages/crm/accounts_page.dart';
+import '../pages/crm/contacts_page.dart';
+import '../pages/crm/activities_page.dart';
+import '../pages/crm/pipeline_page.dart';
+import '../pages/crm/quotations_page.dart';
+import '../pages/crm/campaigns_page.dart';
+import '../pages/crm/customer_support_page.dart';
+
 import '../pages/erp_modules/inventory_page.dart';
 import '../pages/erp_modules/warehouses_page.dart';
 import '../pages/erp_modules/stock_movements_page.dart';
@@ -23,9 +70,17 @@ import '../providers/user_provider.dart';
 import '../widgets/app_layout.dart';
 
 class AppRoutes {
+  // ==============================================================
+  // AUTHENTICATION
+  // ==============================================================
+
   static const String login = '/';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
+
+  // ==============================================================
+  // GENERAL
+  // ==============================================================
 
   static const String dashboard = '/dashboard';
   static const String about = '/about';
@@ -33,6 +88,61 @@ class AppRoutes {
   static const String features = '/features';
   static const String contact = '/contact';
 
+  // ==============================================================
+  // ==============================================================
+  // ONECLOUD ENTERPRISE SERVICES
+  // ==============================================================
+  // ==============================================================
+
+  static const String admin = '/admin';
+  static const String hrms = '/hrms';
+  static const String crm = '/crm';
+  static const String erp = '/erp';
+  static const String finance = '/finance';
+  static const String workflow = '/workflow';
+  static const String documents = '/documents';
+  static const String subscription = '/subscription';
+  static const String revenue = '/revenue';
+  static const String reporting = '/reporting';
+  static const String ai = '/ai';
+  static const String notification = '/notification';
+  static const String calendar = '/calendar';
+  static const String integration = '/integration';
+  static const String search = '/search';
+  static const String security = '/security';
+
+  // Admin MODULES
+  static const String globalSettings = '/admin/global-settings';
+  static const String platformConfig = '/admin/platform-config';
+  static const String licenseManagement = '/admin/license-management';
+  static const String featureManagement = '/admin/feature-management';
+  static const String resourceManagement = '/admin/resource-management';
+  static const String systemHealth = '/admin/system-health';
+  static const String tenantTemplates = '/admin/tenant-templates';
+
+  // HRMS MODULES
+  static const String hrmsEmployees = '/hrms/employees';
+  static const String hrmsAttendance = '/hrms/attendance';
+  static const String hrmsLeave = '/hrms/leave';
+  static const String hrmsPayroll = '/hrms/payroll';
+  static const String hrmsRecruitment = '/hrms/recruitment';
+  static const String hrmsPerformance = '/hrms/performance';
+  static const String hrmsLearning = '/hrms/learning';
+  static const String hrmsEssMss = '/hrms/ess-mss';
+  static const String hrmsAssets = '/hrms/assets';
+
+  // CRM MODULES
+  static const String crmLeads = '/crm/leads';
+  static const String crmOpportunities = '/crm/opportunities';
+  static const String crmAccounts = '/crm/accounts';
+  static const String crmContacts = '/crm/contacts';
+  static const String crmActivities = '/crm/activities';
+  static const String crmPipeline = '/crm/pipeline';
+  static const String crmQuotations = '/crm/quotations';
+  static const String crmCampaigns = '/crm/campaigns';
+  static const String crmCustomerSupport = '/crm/customer-support';
+
+  // ERP MODULES
   static const String inventory = '/inventory';
   static const String warehouses = '/warehouses';
   static const String stockMovements = '/stock-movements';
@@ -40,6 +150,10 @@ class AppRoutes {
   static const String vendors = '/vendors';
   static const String salesOrders = '/sales-orders';
   static const String dispatch = '/dispatch';
+
+  // ==============================================================
+  // ROUTER
+  // ==============================================================
 
   static final GoRouter router = GoRouter(
     initialLocation: login,
@@ -59,10 +173,12 @@ class AppRoutes {
           location == features ||
           location == contact;
 
+      // Logged-in users should not return to login.
       if (loggedIn && isLoginPage) {
         return dashboard;
       }
 
+      // Protect the application.
       if (!loggedIn && !isPublicPage) {
         return login;
       }
@@ -71,10 +187,9 @@ class AppRoutes {
     },
 
     routes: [
-      // ---------------------------------------------------------
-      // AUTHENTICATION PAGES
-      // These pages do NOT use AppLayout
-      // ---------------------------------------------------------
+      // ============================================================
+      // AUTHENTICATION
+      // ============================================================
 
       GoRoute(
         path: login,
@@ -97,19 +212,19 @@ class AppRoutes {
         },
       ),
 
-      // ---------------------------------------------------------
+      // ============================================================
       // MAIN APPLICATION
-      // AppLayout provides:
-      // Header
-      // Sidebar
-      // Footer
-      // ---------------------------------------------------------
+      // ============================================================
       ShellRoute(
         builder: (context, state, child) {
           return AppLayout(child: child);
         },
 
         routes: [
+          // ==========================================================
+          // MAIN DASHBOARD
+          // ==========================================================
+
           GoRoute(
             path: dashboard,
             builder: (context, state) {
@@ -117,6 +232,323 @@ class AppRoutes {
             },
           ),
 
+          // ==========================================================
+          // PLATFORM ADMINISTRATION
+          // ==========================================================
+          GoRoute(
+            path: admin,
+            builder: (context, state) {
+              return const AdminDashboardPage();
+            },
+          ),
+
+          GoRoute(
+            path: globalSettings,
+            builder: (context, state) {
+              return const GlobalSettingsPage();
+            },
+          ),
+
+          GoRoute(
+            path: platformConfig,
+            builder: (context, state) {
+              return const PlatformConfigPage();
+            },
+          ),
+
+          GoRoute(
+            path: licenseManagement,
+            builder: (context, state) {
+              return const LicenseManagementPage();
+            },
+          ),
+
+          GoRoute(
+            path: featureManagement,
+            builder: (context, state) {
+              return const FeatureManagementPage();
+            },
+          ),
+
+          GoRoute(
+            path: resourceManagement,
+            builder: (context, state) {
+              return const ResourceManagementPage();
+            },
+          ),
+
+          GoRoute(
+            path: systemHealth,
+            builder: (context, state) {
+              return const SystemHealthPage();
+            },
+          ),
+
+          GoRoute(
+            path: tenantTemplates,
+            builder: (context, state) {
+              return const TenantTemplatesPage();
+            },
+          ),
+
+          // ==========================================================
+          // HRMS
+          // ==========================================================
+          GoRoute(
+            path: hrms,
+            builder: (context, state) {
+              return const HrmsDashboardPage();
+            },
+          ),
+          GoRoute(
+            path: hrmsEmployees,
+            builder: (context, state) {
+              return const EmployeeManagementPage();
+            },
+          ),
+
+          GoRoute(
+            path: hrmsAttendance,
+            builder: (context, state) {
+              return const AttendancePage();
+            },
+          ),
+
+          GoRoute(
+            path: hrmsLeave,
+            builder: (context, state) {
+              return const LeavePage();
+            },
+          ),
+
+          GoRoute(
+            path: hrmsPayroll,
+            builder: (context, state) {
+              return const PayrollPage();
+            },
+          ),
+
+          GoRoute(
+            path: hrmsRecruitment,
+            builder: (context, state) {
+              return const RecruitmentPage();
+            },
+          ),
+
+          GoRoute(
+            path: hrmsPerformance,
+            builder: (context, state) {
+              return const PerformancePage();
+            },
+          ),
+
+          GoRoute(
+            path: hrmsLearning,
+            builder: (context, state) {
+              return const LearningPage();
+            },
+          ),
+
+          GoRoute(
+            path: hrmsEssMss,
+            builder: (context, state) {
+              return const EssMssPage();
+            },
+          ),
+
+          GoRoute(
+            path: hrmsAssets,
+            builder: (context, state) {
+              return const HrmsAssetManagementPage();
+            },
+          ),
+
+          // ==========================================================
+          // CRM
+          // ==========================================================
+          GoRoute(
+            path: AppRoutes.crm,
+            builder: (context, state) => const CrmDashboardPage(),
+          ),
+
+          GoRoute(
+            path: AppRoutes.crmLeads,
+            builder: (context, state) => const LeadsPage(),
+          ),
+
+          GoRoute(
+            path: AppRoutes.crmOpportunities,
+            builder: (context, state) => const OpportunitiesPage(),
+          ),
+
+          GoRoute(
+            path: AppRoutes.crmAccounts,
+            builder: (context, state) => const AccountsPage(),
+          ),
+
+          GoRoute(
+            path: AppRoutes.crmContacts,
+            builder: (context, state) => const ContactsPage(),
+          ),
+
+          GoRoute(
+            path: AppRoutes.crmActivities,
+            builder: (context, state) => const ActivitiesPage(),
+          ),
+
+          GoRoute(
+            path: AppRoutes.crmPipeline,
+            builder: (context, state) => const PipelinePage(),
+          ),
+
+          GoRoute(
+            path: AppRoutes.crmQuotations,
+            builder: (context, state) => const QuotationsPage(),
+          ),
+
+          GoRoute(
+            path: AppRoutes.crmCampaigns,
+            builder: (context, state) => const CampaignsPage(),
+          ),
+
+          GoRoute(
+            path: AppRoutes.crmCustomerSupport,
+            builder: (context, state) => const CustomerSupportPage(),
+          ),
+
+          // ==========================================================
+          // ERP
+          // ==========================================================
+          GoRoute(
+            path: erp,
+            builder: (context, state) {
+              return const ErpDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // FINANCE & ACCOUNTING
+          // ==========================================================
+          GoRoute(
+            path: finance,
+            builder: (context, state) {
+              return const FinanceDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // WORKFLOW & AUTOMATION
+          // ==========================================================
+          GoRoute(
+            path: workflow,
+            builder: (context, state) {
+              return const WorkflowDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // DOCUMENT MANAGEMENT
+          // ==========================================================
+          GoRoute(
+            path: documents,
+            builder: (context, state) {
+              return const DocumentDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // SUBSCRIPTION
+          // ==========================================================
+          GoRoute(
+            path: subscription,
+            builder: (context, state) {
+              return const SubscriptionDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // REVENUE
+          // ==========================================================
+          GoRoute(
+            path: revenue,
+            builder: (context, state) {
+              return const RevenueDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // REPORTING & BI
+          // ==========================================================
+          GoRoute(
+            path: reporting,
+            builder: (context, state) {
+              return const ReportingDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // ENTERPRISE AI
+          // ==========================================================
+          GoRoute(
+            path: ai,
+            builder: (context, state) {
+              return const AiDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // NOTIFICATION
+          // ==========================================================
+          GoRoute(
+            path: notification,
+            builder: (context, state) {
+              return const NotificationDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // CALENDAR
+          // ==========================================================
+          GoRoute(
+            path: calendar,
+            builder: (context, state) {
+              return const CalendarDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // INTEGRATION
+          // ==========================================================
+          GoRoute(
+            path: integration,
+            builder: (context, state) {
+              return const IntegrationDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // SEARCH
+          // ==========================================================
+          GoRoute(
+            path: search,
+            builder: (context, state) {
+              return const SearchDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // SECURITY & COMPLIANCE
+          // ==========================================================
+          GoRoute(
+            path: security,
+            builder: (context, state) {
+              return const SecurityDashboardPage();
+            },
+          ),
+
+          // ==========================================================
+          // EXISTING PAGES
+          // ==========================================================
           GoRoute(
             path: features,
             builder: (context, state) {
@@ -145,7 +577,9 @@ class AppRoutes {
             },
           ),
 
+          // ==========================================================
           // ERP MODULES
+          // ==========================================================
           GoRoute(
             path: inventory,
             builder: (context, state) {

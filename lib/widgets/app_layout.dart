@@ -30,7 +30,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
 
   void _logout(BuildContext context) {
     Provider.of<UserProvider>(context, listen: false).logout();
-
     context.go(AppRoutes.login);
   }
 
@@ -42,7 +41,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
     final userProvider = Provider.of<UserProvider>(context);
 
     final screenWidth = MediaQuery.of(context).size.width;
-
     final isMobile = screenWidth < 850;
 
     return AppBar(
@@ -53,9 +51,9 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
       titleSpacing: 0,
       title: Row(
         children: [
-          // --------------------------------------------------------
+          // ==========================================================
           // SIDEBAR TOGGLE
-          // --------------------------------------------------------
+          // ==========================================================
 
           Padding(
             padding: const EdgeInsets.only(left: 8, right: 6),
@@ -85,9 +83,9 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
 
           const SizedBox(width: 4),
 
-          // --------------------------------------------------------
+          // ==========================================================
           // LOGO
-          // --------------------------------------------------------
+          // ==========================================================
           Container(
             height: 44,
             width: isMobile ? 125 : 140,
@@ -104,9 +102,9 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
 
           const Spacer(),
 
-          // --------------------------------------------------------
+          // ==========================================================
           // DESKTOP MENU
-          // --------------------------------------------------------
+          // ==========================================================
           if (!isMobile) ...[
             TextButton(
               onPressed: () {
@@ -150,9 +148,9 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
 
             const SizedBox(width: 8),
 
-            // ------------------------------------------------------
+            // ========================================================
             // PROFILE
-            // ------------------------------------------------------
+            // ========================================================
             if (userProvider.email.isNotEmpty)
               TextButton(
                 onPressed: () {
@@ -189,9 +187,9 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
 
             const SizedBox(width: 6),
 
-            // ------------------------------------------------------
+            // ========================================================
             // LOGOUT
-            // ------------------------------------------------------
+            // ========================================================
             IconButton(
               tooltip: 'Logout',
               onPressed: () {
@@ -203,9 +201,9 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
             const SizedBox(width: 6),
           ],
 
-          // --------------------------------------------------------
+          // ==========================================================
           // MOBILE MENU
-          // --------------------------------------------------------
+          // ==========================================================
           if (isMobile)
             IconButton(
               tooltip: 'Profile',
@@ -218,6 +216,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                 context.push(AppRoutes.profile);
               },
             ),
+
           if (isMobile)
             PopupMenuButton<String>(
               tooltip: 'Menu',
@@ -297,21 +296,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                     ],
                   ),
                 ),
-                // if (userProvider.email.isNotEmpty)
-                //   PopupMenuItem<String>(
-                //     value: 'profile',
-                //     child: Row(
-                //       children: [
-                //         const Icon(Icons.account_circle_outlined, size: 20),
-                //         const SizedBox(width: 12),
-                //         Text(
-                //           userProvider.name.isNotEmpty
-                //               ? userProvider.name
-                //               : 'Profile',
-                //         ),
-                //       ],
-                //     ),
-                //   ),
                 const PopupMenuDivider(),
                 const PopupMenuItem<String>(
                   value: 'logout',
@@ -332,6 +316,36 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
 }
 
 // ================================================================
+// SIDEBAR MENU MODEL
+// ================================================================
+
+class SidebarChild {
+  final String title;
+  final IconData icon;
+  final String route;
+
+  const SidebarChild({
+    required this.title,
+    required this.icon,
+    required this.route,
+  });
+}
+
+class SidebarSection {
+  final String title;
+  final IconData icon;
+  final String route;
+  final List<SidebarChild> children;
+
+  const SidebarSection({
+    required this.title,
+    required this.icon,
+    required this.route,
+    this.children = const [],
+  });
+}
+
+// ================================================================
 // APP SIDEBAR
 // ================================================================
 
@@ -343,8 +357,985 @@ class AppSidebar extends StatefulWidget {
 }
 
 class _AppSidebarState extends State<AppSidebar> {
-  bool mainExpanded = true;
-  bool operationsExpanded = true;
+  final Map<String, bool> _expandedSections = {};
+
+  // ==============================================================
+  // ONECLOUD SIDEBAR STRUCTURE
+  // ==============================================================
+
+  final List<SidebarSection> _sections = const [
+    // ------------------------------------------------------------
+    // PLATFORM ADMINISTRATION
+    // ------------------------------------------------------------
+
+    SidebarSection(
+      title: 'Platform Administration',
+      icon: Icons.admin_panel_settings_outlined,
+      route: AppRoutes.admin,
+      children: [
+        SidebarChild(
+          title: 'Admin Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: AppRoutes.admin,
+        ),
+        SidebarChild(
+          title: 'Global Settings',
+          icon: Icons.settings_outlined,
+          route: AppRoutes.globalSettings,
+        ),
+        SidebarChild(
+          title: 'Platform Config',
+          icon: Icons.tune_outlined,
+          route: AppRoutes.platformConfig,
+        ),
+        SidebarChild(
+          title: 'License Management',
+          icon: Icons.key_outlined,
+          route: AppRoutes.licenseManagement,
+        ),
+        SidebarChild(
+          title: 'Feature Management',
+          icon: Icons.extension_outlined,
+          route: AppRoutes.featureManagement,
+        ),
+        SidebarChild(
+          title: 'Resource Management',
+          icon: Icons.storage_outlined,
+          route: AppRoutes.resourceManagement,
+        ),
+        SidebarChild(
+          title: 'System Health',
+          icon: Icons.monitor_heart_outlined,
+          route: AppRoutes.systemHealth,
+        ),
+        SidebarChild(
+          title: 'Tenant Templates',
+          icon: Icons.layers_outlined,
+          route: AppRoutes.tenantTemplates,
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // HRMS
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'HRMS',
+      icon: Icons.people_alt_outlined,
+      route: AppRoutes.hrms,
+      children: [
+        SidebarChild(
+          title: 'HRMS Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: AppRoutes.hrms,
+        ),
+        SidebarChild(
+          title: 'Employee Management',
+          icon: Icons.badge_outlined,
+          route: AppRoutes.hrmsEmployees,
+        ),
+        SidebarChild(
+          title: 'Attendance',
+          icon: Icons.access_time_outlined,
+          route: AppRoutes.hrmsAttendance,
+        ),
+        SidebarChild(
+          title: 'Leave',
+          icon: Icons.event_busy_outlined,
+          route: AppRoutes.hrmsLeave,
+        ),
+        SidebarChild(
+          title: 'Payroll',
+          icon: Icons.payments_outlined,
+          route: AppRoutes.hrmsPayroll,
+        ),
+        SidebarChild(
+          title: 'Recruitment',
+          icon: Icons.person_search_outlined,
+          route: AppRoutes.hrmsRecruitment,
+        ),
+        SidebarChild(
+          title: 'Performance',
+          icon: Icons.trending_up_outlined,
+          route: AppRoutes.hrmsPerformance,
+        ),
+        SidebarChild(
+          title: 'Learning',
+          icon: Icons.school_outlined,
+          route: AppRoutes.hrmsLearning,
+        ),
+        SidebarChild(
+          title: 'ESS / MSS',
+          icon: Icons.manage_accounts_outlined,
+          route: AppRoutes.hrmsEssMss,
+        ),
+        SidebarChild(
+          title: 'Asset Management',
+          icon: Icons.devices_outlined,
+          route: AppRoutes.hrmsAssets,
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // CRM
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'CRM',
+      icon: Icons.handshake_outlined,
+      route: AppRoutes.crm,
+      children: [
+        SidebarChild(
+          title: 'Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: AppRoutes.crm,
+        ),
+        SidebarChild(
+          title: 'Leads',
+          icon: Icons.person_search_outlined,
+          route: AppRoutes.crmLeads,
+        ),
+        SidebarChild(
+          title: 'Opportunities',
+          icon: Icons.trending_up_outlined,
+          route: AppRoutes.crmOpportunities,
+        ),
+        SidebarChild(
+          title: 'Accounts',
+          icon: Icons.business_outlined,
+          route: AppRoutes.crmAccounts,
+        ),
+        SidebarChild(
+          title: 'Contacts',
+          icon: Icons.contacts_outlined,
+          route: AppRoutes.crmContacts,
+        ),
+        SidebarChild(
+          title: 'Activities',
+          icon: Icons.task_alt_outlined,
+          route: AppRoutes.crmActivities,
+        ),
+        SidebarChild(
+          title: 'Pipeline',
+          icon: Icons.filter_alt_outlined,
+          route: AppRoutes.crmPipeline,
+        ),
+        SidebarChild(
+          title: 'Quotations',
+          icon: Icons.request_quote_outlined,
+          route: AppRoutes.crmQuotations,
+        ),
+        SidebarChild(
+          title: 'Campaigns',
+          icon: Icons.campaign_outlined,
+          route: AppRoutes.crmCampaigns,
+        ),
+        SidebarChild(
+          title: 'Customer Support',
+          icon: Icons.support_agent_outlined,
+          route: AppRoutes.crmCustomerSupport,
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // ERP
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'ERP',
+      icon: Icons.inventory_2_outlined,
+      route: '/erp',
+      children: [
+        SidebarChild(
+          title: 'ERP Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/erp',
+        ),
+        SidebarChild(
+          title: 'Inventory',
+          icon: Icons.inventory_2_outlined,
+          route: '/inventory',
+        ),
+        SidebarChild(
+          title: 'Warehouses',
+          icon: Icons.warehouse_outlined,
+          route: '/warehouses',
+        ),
+        SidebarChild(
+          title: 'Stock Movements',
+          icon: Icons.swap_horiz_outlined,
+          route: '/stock-movements',
+        ),
+        SidebarChild(
+          title: 'Procurement',
+          icon: Icons.shopping_cart_outlined,
+          route: '/procurement',
+        ),
+        SidebarChild(
+          title: 'Vendors',
+          icon: Icons.people_outline,
+          route: '/vendors',
+        ),
+        SidebarChild(
+          title: 'Sales Orders',
+          icon: Icons.receipt_long_outlined,
+          route: '/sales-orders',
+        ),
+        SidebarChild(
+          title: 'Dispatch',
+          icon: Icons.local_shipping_outlined,
+          route: '/dispatch',
+        ),
+        SidebarChild(
+          title: 'Production',
+          icon: Icons.precision_manufacturing_outlined,
+          route: '/erp/production',
+        ),
+        SidebarChild(
+          title: 'Asset Management',
+          icon: Icons.business_center_outlined,
+          route: '/erp/assets',
+        ),
+        SidebarChild(
+          title: 'Maintenance',
+          icon: Icons.build_outlined,
+          route: '/erp/maintenance',
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // FINANCE & ACCOUNTING
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'Finance & Accounting',
+      icon: Icons.account_balance_wallet_outlined,
+      route: '/finance',
+      children: [
+        SidebarChild(
+          title: 'Finance Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/finance',
+        ),
+        SidebarChild(
+          title: 'General Ledger',
+          icon: Icons.menu_book_outlined,
+          route: '/finance/general-ledger',
+        ),
+        SidebarChild(
+          title: 'Accounts Payable',
+          icon: Icons.arrow_circle_down_outlined,
+          route: '/finance/accounts-payable',
+        ),
+        SidebarChild(
+          title: 'Accounts Receivable',
+          icon: Icons.arrow_circle_up_outlined,
+          route: '/finance/accounts-receivable',
+        ),
+        SidebarChild(
+          title: 'Tax Management',
+          icon: Icons.receipt_outlined,
+          route: '/finance/tax',
+        ),
+        SidebarChild(
+          title: 'Budgeting',
+          icon: Icons.account_balance_outlined,
+          route: '/finance/budgeting',
+        ),
+        SidebarChild(
+          title: 'Costing',
+          icon: Icons.calculate_outlined,
+          route: '/finance/costing',
+        ),
+        SidebarChild(
+          title: 'Financial Reports',
+          icon: Icons.bar_chart_outlined,
+          route: '/finance/reports',
+        ),
+        SidebarChild(
+          title: 'Reconciliation',
+          icon: Icons.sync_alt_outlined,
+          route: '/finance/reconciliation',
+        ),
+        SidebarChild(
+          title: 'Multi-Currency',
+          icon: Icons.currency_exchange_outlined,
+          route: '/finance/multi-currency',
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // WORKFLOW & AUTOMATION
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'Workflow & Automation',
+      icon: Icons.account_tree_outlined,
+      route: '/workflow',
+      children: [
+        SidebarChild(
+          title: 'Workflow Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/workflow',
+        ),
+        SidebarChild(
+          title: 'Workflow Builder',
+          icon: Icons.account_tree_outlined,
+          route: '/workflow/builder',
+        ),
+        SidebarChild(
+          title: 'Approvals',
+          icon: Icons.approval_outlined,
+          route: '/workflow/approvals',
+        ),
+        SidebarChild(
+          title: 'Business Rules',
+          icon: Icons.rule_outlined,
+          route: '/workflow/business-rules',
+        ),
+        SidebarChild(
+          title: 'Process Automation',
+          icon: Icons.auto_awesome_outlined,
+          route: '/workflow/automation',
+        ),
+        SidebarChild(
+          title: 'Task Management',
+          icon: Icons.task_outlined,
+          route: '/workflow/tasks',
+        ),
+        SidebarChild(
+          title: 'Triggers',
+          icon: Icons.flash_on_outlined,
+          route: '/workflow/triggers',
+        ),
+        SidebarChild(
+          title: 'SLAs & Escalations',
+          icon: Icons.timer_outlined,
+          route: '/workflow/slas',
+        ),
+        SidebarChild(
+          title: 'Process Monitoring',
+          icon: Icons.monitor_outlined,
+          route: '/workflow/monitoring',
+        ),
+        SidebarChild(
+          title: 'Workflow Templates',
+          icon: Icons.dashboard_customize_outlined,
+          route: '/workflow/templates',
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // DOCUMENT MANAGEMENT
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'Document Management',
+      icon: Icons.folder_open_outlined,
+      route: '/documents',
+      children: [
+        SidebarChild(
+          title: 'Document Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/documents',
+        ),
+        SidebarChild(
+          title: 'Document Repository',
+          icon: Icons.folder_outlined,
+          route: '/documents/repository',
+        ),
+        SidebarChild(
+          title: 'Versioning',
+          icon: Icons.history_outlined,
+          route: '/documents/versioning',
+        ),
+        SidebarChild(
+          title: 'File Upload / Download',
+          icon: Icons.file_upload_outlined,
+          route: '/documents/files',
+        ),
+        SidebarChild(
+          title: 'Access Control',
+          icon: Icons.lock_outline,
+          route: '/documents/access-control',
+        ),
+        SidebarChild(
+          title: 'Document Templates',
+          icon: Icons.description_outlined,
+          route: '/documents/templates',
+        ),
+        SidebarChild(
+          title: 'Tagging & Search',
+          icon: Icons.local_offer_outlined,
+          route: '/documents/tagging',
+        ),
+        SidebarChild(
+          title: 'Retention Policies',
+          icon: Icons.policy_outlined,
+          route: '/documents/retention',
+        ),
+        SidebarChild(
+          title: 'OCR Integration',
+          icon: Icons.document_scanner_outlined,
+          route: '/documents/ocr',
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // SUBSCRIPTION
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'Subscription',
+      icon: Icons.card_membership_outlined,
+      route: '/subscription',
+      children: [
+        SidebarChild(
+          title: 'Subscription Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/subscription',
+        ),
+        SidebarChild(
+          title: 'Plans & Features',
+          icon: Icons.view_list_outlined,
+          route: '/subscription/plans',
+        ),
+        SidebarChild(
+          title: 'Tenant Subscriptions',
+          icon: Icons.apartment_outlined,
+          route: '/subscription/tenants',
+        ),
+        SidebarChild(
+          title: 'Usage & Quotas',
+          icon: Icons.data_usage_outlined,
+          route: '/subscription/usage',
+        ),
+        SidebarChild(
+          title: 'Payment Tracking',
+          icon: Icons.payment_outlined,
+          route: '/subscription/payments',
+        ),
+        SidebarChild(
+          title: 'License Allocation',
+          icon: Icons.key_outlined,
+          route: '/subscription/licenses',
+        ),
+        SidebarChild(
+          title: 'License Keys',
+          icon: Icons.vpn_key_outlined,
+          route: '/subscription/license-keys',
+        ),
+        SidebarChild(
+          title: 'Renewals',
+          icon: Icons.autorenew_outlined,
+          route: '/subscription/renewals',
+        ),
+        SidebarChild(
+          title: 'Trial Management',
+          icon: Icons.timer_outlined,
+          route: '/subscription/trials',
+        ),
+        SidebarChild(
+          title: 'Billing Integration',
+          icon: Icons.receipt_long_outlined,
+          route: '/subscription/billing',
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // REVENUE
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'Revenue',
+      icon: Icons.trending_up_outlined,
+      route: '/revenue',
+      children: [
+        SidebarChild(
+          title: 'Revenue Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/revenue',
+        ),
+        SidebarChild(
+          title: 'Revenue Tracking',
+          icon: Icons.track_changes_outlined,
+          route: '/revenue/tracking',
+        ),
+        SidebarChild(
+          title: 'Usage Analytics',
+          icon: Icons.analytics_outlined,
+          route: '/revenue/usage',
+        ),
+        SidebarChild(
+          title: 'Forecasting',
+          icon: Icons.insights_outlined,
+          route: '/revenue/forecasting',
+        ),
+        SidebarChild(
+          title: 'Revenue Reports',
+          icon: Icons.bar_chart_outlined,
+          route: '/revenue/reports',
+        ),
+        SidebarChild(
+          title: 'Revenue Recognition',
+          icon: Icons.verified_outlined,
+          route: '/revenue/recognition',
+        ),
+        SidebarChild(
+          title: 'Commission Management',
+          icon: Icons.percent_outlined,
+          route: '/revenue/commission',
+        ),
+        SidebarChild(
+          title: 'Financial Analytics',
+          icon: Icons.query_stats_outlined,
+          route: '/revenue/analytics',
+        ),
+        SidebarChild(
+          title: 'Invoicing',
+          icon: Icons.receipt_long_outlined,
+          route: '/revenue/invoicing',
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // REPORTING & BI
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'Reporting & BI',
+      icon: Icons.analytics_outlined,
+      route: '/reporting',
+      children: [
+        SidebarChild(
+          title: 'Reporting Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/reporting',
+        ),
+        SidebarChild(
+          title: 'Standard Reports',
+          icon: Icons.description_outlined,
+          route: '/reporting/standard',
+        ),
+        SidebarChild(
+          title: 'Ad-hoc Reports',
+          icon: Icons.edit_note_outlined,
+          route: '/reporting/ad-hoc',
+        ),
+        SidebarChild(
+          title: 'Data Exploration',
+          icon: Icons.explore_outlined,
+          route: '/reporting/exploration',
+        ),
+        SidebarChild(
+          title: 'BI Management',
+          icon: Icons.dashboard_customize_outlined,
+          route: '/reporting/bi',
+        ),
+        SidebarChild(
+          title: 'Data Export',
+          icon: Icons.file_download_outlined,
+          route: '/reporting/export',
+        ),
+        SidebarChild(
+          title: 'Scheduled Reports',
+          icon: Icons.schedule_outlined,
+          route: '/reporting/scheduled',
+        ),
+        SidebarChild(
+          title: 'Data Visualization',
+          icon: Icons.bar_chart_outlined,
+          route: '/reporting/visualization',
+        ),
+        SidebarChild(
+          title: 'Self-Service Analytics',
+          icon: Icons.auto_graph_outlined,
+          route: '/reporting/self-service',
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // ENTERPRISE AI
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'Enterprise AI',
+      icon: Icons.auto_awesome_outlined,
+      route: '/ai',
+      children: [
+        SidebarChild(
+          title: 'AI Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/ai',
+        ),
+        SidebarChild(
+          title: 'AI Models',
+          icon: Icons.psychology_outlined,
+          route: '/ai/models',
+        ),
+        SidebarChild(
+          title: 'Chat / Copilot',
+          icon: Icons.smart_toy_outlined,
+          route: '/ai/copilot',
+        ),
+        SidebarChild(
+          title: 'Document AI / OCR',
+          icon: Icons.document_scanner_outlined,
+          route: '/ai/document-ai',
+        ),
+        SidebarChild(
+          title: 'Predictive Analytics',
+          icon: Icons.insights_outlined,
+          route: '/ai/predictive',
+        ),
+        SidebarChild(
+          title: 'Recommendations',
+          icon: Icons.recommend_outlined,
+          route: '/ai/recommendations',
+        ),
+        SidebarChild(
+          title: 'AI Workflows',
+          icon: Icons.account_tree_outlined,
+          route: '/ai/workflows',
+        ),
+        SidebarChild(
+          title: 'Model Management',
+          icon: Icons.model_training_outlined,
+          route: '/ai/model-management',
+        ),
+        SidebarChild(
+          title: 'Prompt Engineering',
+          icon: Icons.code_outlined,
+          route: '/ai/prompts',
+        ),
+        SidebarChild(
+          title: 'AI Usage Logs',
+          icon: Icons.history_outlined,
+          route: '/ai/usage-logs',
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // NOTIFICATION
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'Notification',
+      icon: Icons.notifications_none_outlined,
+      route: '/notification',
+      children: [
+        SidebarChild(
+          title: 'Notification Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/notification',
+        ),
+        SidebarChild(
+          title: 'In-App Notifications',
+          icon: Icons.notifications_outlined,
+          route: '/notification/in-app',
+        ),
+        SidebarChild(
+          title: 'Email Notifications',
+          icon: Icons.email_outlined,
+          route: '/notification/email',
+        ),
+        SidebarChild(
+          title: 'SMS Notifications',
+          icon: Icons.sms_outlined,
+          route: '/notification/sms',
+        ),
+        SidebarChild(
+          title: 'Push Notifications',
+          icon: Icons.phone_android_outlined,
+          route: '/notification/push',
+        ),
+        SidebarChild(
+          title: 'Templates',
+          icon: Icons.article_outlined,
+          route: '/notification/templates',
+        ),
+        SidebarChild(
+          title: 'Preferences',
+          icon: Icons.tune_outlined,
+          route: '/notification/preferences',
+        ),
+        SidebarChild(
+          title: 'Schedules',
+          icon: Icons.schedule_outlined,
+          route: '/notification/schedules',
+        ),
+        SidebarChild(
+          title: 'Delivery Tracking',
+          icon: Icons.local_shipping_outlined,
+          route: '/notification/tracking',
+        ),
+        SidebarChild(
+          title: 'Multi-Channel',
+          icon: Icons.hub_outlined,
+          route: '/notification/multi-channel',
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // CALENDAR
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'Calendar',
+      icon: Icons.calendar_month_outlined,
+      route: '/calendar',
+      children: [
+        SidebarChild(
+          title: 'Calendar Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/calendar',
+        ),
+        SidebarChild(
+          title: 'User Calendars',
+          icon: Icons.calendar_today_outlined,
+          route: '/calendar/user',
+        ),
+        SidebarChild(
+          title: 'Team Calendars',
+          icon: Icons.groups_outlined,
+          route: '/calendar/team',
+        ),
+        SidebarChild(
+          title: 'Meeting Scheduler',
+          icon: Icons.event_available_outlined,
+          route: '/calendar/meetings',
+        ),
+        SidebarChild(
+          title: 'Resource Booking',
+          icon: Icons.event_seat_outlined,
+          route: '/calendar/resources',
+        ),
+        SidebarChild(
+          title: 'Reminders',
+          icon: Icons.alarm_outlined,
+          route: '/calendar/reminders',
+        ),
+        SidebarChild(
+          title: 'Integrations',
+          icon: Icons.sync_outlined,
+          route: '/calendar/integrations',
+        ),
+        SidebarChild(
+          title: 'Availability',
+          icon: Icons.av_timer_outlined,
+          route: '/calendar/availability',
+        ),
+        SidebarChild(
+          title: 'Event Notifications',
+          icon: Icons.notifications_active_outlined,
+          route: '/calendar/notifications',
+        ),
+        SidebarChild(
+          title: 'Shared Calendars',
+          icon: Icons.share_outlined,
+          route: '/calendar/shared',
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // INTEGRATION
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'Integration',
+      icon: Icons.integration_instructions_outlined,
+      route: '/integration',
+      children: [
+        SidebarChild(
+          title: 'Integration Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/integration',
+        ),
+        SidebarChild(
+          title: 'API Management',
+          icon: Icons.api_outlined,
+          route: '/integration/api',
+        ),
+        SidebarChild(
+          title: 'Third-Party Integrations',
+          icon: Icons.extension_outlined,
+          route: '/integration/third-party',
+        ),
+        SidebarChild(
+          title: 'Webhooks',
+          icon: Icons.webhook_outlined,
+          route: '/integration/webhooks',
+        ),
+        SidebarChild(
+          title: 'Event Streaming',
+          icon: Icons.stream_outlined,
+          route: '/integration/events',
+        ),
+        SidebarChild(
+          title: 'Data Transformation',
+          icon: Icons.transform_outlined,
+          route: '/integration/transformation',
+        ),
+        SidebarChild(
+          title: 'ETL / Data Sync',
+          icon: Icons.sync_alt_outlined,
+          route: '/integration/data-sync',
+        ),
+        SidebarChild(
+          title: 'Connectors',
+          icon: Icons.link_outlined,
+          route: '/integration/connectors',
+        ),
+        SidebarChild(
+          title: 'Integration Logs',
+          icon: Icons.receipt_long_outlined,
+          route: '/integration/logs',
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // SEARCH
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'Search',
+      icon: Icons.search_outlined,
+      route: '/search',
+      children: [
+        SidebarChild(
+          title: 'Search Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/search',
+        ),
+        SidebarChild(
+          title: 'Global Search',
+          icon: Icons.search_outlined,
+          route: '/search/global',
+        ),
+        SidebarChild(
+          title: 'Index Management',
+          icon: Icons.storage_outlined,
+          route: '/search/index',
+        ),
+        SidebarChild(
+          title: 'Search Analytics',
+          icon: Icons.analytics_outlined,
+          route: '/search/analytics',
+        ),
+        SidebarChild(
+          title: 'Autocomplete',
+          icon: Icons.auto_fix_high_outlined,
+          route: '/search/autocomplete',
+        ),
+        SidebarChild(
+          title: 'Relevance Ranking',
+          icon: Icons.format_list_numbered_outlined,
+          route: '/search/relevance',
+        ),
+        SidebarChild(
+          title: 'Saved Searches',
+          icon: Icons.bookmark_outline,
+          route: '/search/saved',
+        ),
+        SidebarChild(
+          title: 'Multi-Tenant Index',
+          icon: Icons.layers_outlined,
+          route: '/search/multi-tenant',
+        ),
+        SidebarChild(
+          title: 'Synonyms',
+          icon: Icons.compare_arrows_outlined,
+          route: '/search/synonyms',
+        ),
+        SidebarChild(
+          title: 'Suggestion Engine',
+          icon: Icons.lightbulb_outline,
+          route: '/search/suggestions',
+        ),
+      ],
+    ),
+
+    // ------------------------------------------------------------
+    // SECURITY & COMPLIANCE
+    // ------------------------------------------------------------
+    SidebarSection(
+      title: 'Security & Compliance',
+      icon: Icons.security_outlined,
+      route: '/security',
+      children: [
+        SidebarChild(
+          title: 'Security Dashboard',
+          icon: Icons.dashboard_outlined,
+          route: '/security',
+        ),
+        SidebarChild(
+          title: 'Audit Logs',
+          icon: Icons.fact_check_outlined,
+          route: '/security/audit-logs',
+        ),
+        SidebarChild(
+          title: 'Activity Tracking',
+          icon: Icons.track_changes_outlined,
+          route: '/security/activity',
+        ),
+        SidebarChild(
+          title: 'Compliance Reports',
+          icon: Icons.assignment_turned_in_outlined,
+          route: '/security/compliance',
+        ),
+        SidebarChild(
+          title: 'Data Retention',
+          icon: Icons.delete_sweep_outlined,
+          route: '/security/data-retention',
+        ),
+        SidebarChild(
+          title: 'Policy Management',
+          icon: Icons.policy_outlined,
+          route: '/security/policies',
+        ),
+        SidebarChild(
+          title: 'Threat Detection',
+          icon: Icons.gpp_maybe_outlined,
+          route: '/security/threats',
+        ),
+        SidebarChild(
+          title: 'Vulnerability Management',
+          icon: Icons.bug_report_outlined,
+          route: '/security/vulnerabilities',
+        ),
+        SidebarChild(
+          title: 'Encryption & Key Management',
+          icon: Icons.enhanced_encryption_outlined,
+          route: '/security/encryption',
+        ),
+        SidebarChild(
+          title: 'Security Alerts',
+          icon: Icons.warning_amber_outlined,
+          route: '/security/alerts',
+        ),
+      ],
+    ),
+  ];
+
+  // ==============================================================
+  // INITIALIZE EXPANSION STATES
+  // ==============================================================
+
+  @override
+  void initState() {
+    super.initState();
+
+    for (final section in _sections) {
+      _expandedSections[section.title] = false;
+    }
+
+    // ERP open by default because it is our current working module.
+    _expandedSections['ERP'] = true;
+  }
+
+  // ==============================================================
+  // NAVIGATION
+  // ==============================================================
 
   void _navigate(BuildContext context, String route) {
     final currentRoute = GoRouterState.of(context).uri.path;
@@ -356,6 +1347,38 @@ class _AppSidebarState extends State<AppSidebar> {
     context.push(route);
   }
 
+  // ==============================================================
+  // CHECK WHETHER SECTION IS ACTIVE
+  // ==============================================================
+
+  bool _isSectionActive(SidebarSection section, String currentRoute) {
+    if (currentRoute == section.route) {
+      return true;
+    }
+
+    for (final child in section.children) {
+      if (currentRoute == child.route) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // ==============================================================
+  // TOGGLE SECTION
+  // ==============================================================
+
+  void _toggleSection(String title) {
+    setState(() {
+      _expandedSections[title] = !(_expandedSections[title] ?? false);
+    });
+  }
+
+  // ==============================================================
+  // BUILD
+  // ==============================================================
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context);
@@ -363,7 +1386,7 @@ class _AppSidebarState extends State<AppSidebar> {
     final currentRoute = GoRouterState.of(context).uri.path;
 
     return Container(
-      width: 255,
+      width: 275,
       height: double.infinity,
       decoration: BoxDecoration(
         color: AppTheme.darkNavy,
@@ -378,9 +1401,9 @@ class _AppSidebarState extends State<AppSidebar> {
       child: SafeArea(
         child: Column(
           children: [
-            // ------------------------------------------------------
+            // ========================================================
             // BRAND
-            // ------------------------------------------------------
+            // ========================================================
 
             Container(
               width: double.infinity,
@@ -438,107 +1461,51 @@ class _AppSidebarState extends State<AppSidebar> {
               ),
             ),
 
-            // ------------------------------------------------------
+            // ========================================================
             // NAVIGATION
-            // ------------------------------------------------------
+            // ========================================================
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(12, 18, 12, 12),
                 children: [
-                  _sectionHeader(
-                    title: 'MAIN',
-                    expanded: mainExpanded,
-                    onTap: () {
-                      setState(() {
-                        mainExpanded = !mainExpanded;
-                      });
-                    },
-                  ),
+                  // ====================================================
+                  // MAIN
+                  // ====================================================
+
+                  _sectionHeader(title: 'MAIN'),
 
                   const SizedBox(height: 6),
 
-                  if (mainExpanded) ...[
-                    _sidebarItem(
-                      context,
-                      currentRoute,
-                      Icons.dashboard_outlined,
-                      'Dashboard',
-                      AppRoutes.dashboard,
-                    ),
-                    _sidebarItem(
-                      context,
-                      currentRoute,
-                      Icons.inventory_2_outlined,
-                      'Inventory',
-                      AppRoutes.inventory,
-                    ),
-                    _sidebarItem(
-                      context,
-                      currentRoute,
-                      Icons.warehouse_outlined,
-                      'Warehouses',
-                      AppRoutes.warehouses,
-                    ),
-                    _sidebarItem(
-                      context,
-                      currentRoute,
-                      Icons.swap_horiz,
-                      'Stock Movements',
-                      AppRoutes.stockMovements,
-                    ),
-                  ],
-
-                  const SizedBox(height: 20),
-
-                  _sectionHeader(
-                    title: 'OPERATIONS',
-                    expanded: operationsExpanded,
-                    onTap: () {
-                      setState(() {
-                        operationsExpanded = !operationsExpanded;
-                      });
-                    },
+                  _sidebarItem(
+                    context,
+                    currentRoute,
+                    Icons.dashboard_outlined,
+                    'Dashboard',
+                    AppRoutes.dashboard,
                   ),
+
+                  const SizedBox(height: 14),
+
+                  // ====================================================
+                  // ENTERPRISE SERVICES
+                  // ====================================================
+                  _sectionHeader(title: 'ENTERPRISE SERVICES'),
 
                   const SizedBox(height: 6),
 
-                  if (operationsExpanded) ...[
-                    _sidebarItem(
-                      context,
-                      currentRoute,
-                      Icons.shopping_cart_outlined,
-                      'Procurement',
-                      AppRoutes.procurement,
-                    ),
-                    _sidebarItem(
-                      context,
-                      currentRoute,
-                      Icons.people_outline,
-                      'Vendors',
-                      AppRoutes.vendors,
-                    ),
-                    _sidebarItem(
-                      context,
-                      currentRoute,
-                      Icons.receipt_long_outlined,
-                      'Sales Orders',
-                      AppRoutes.salesOrders,
-                    ),
-                    _sidebarItem(
-                      context,
-                      currentRoute,
-                      Icons.local_shipping_outlined,
-                      'Dispatch',
-                      AppRoutes.dispatch,
-                    ),
-                  ],
+                  ..._sections.map(
+                    (section) =>
+                        _buildServiceSection(context, section, currentRoute),
+                  ),
+
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
 
-            // ------------------------------------------------------
+            // ========================================================
             // USER AREA
-            // ------------------------------------------------------
+            // ========================================================
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),
@@ -550,6 +1517,10 @@ class _AppSidebarState extends State<AppSidebar> {
               ),
               child: Column(
                 children: [
+                  // --------------------------------------------------
+                  // PROFILE
+                  // --------------------------------------------------
+
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -623,6 +1594,9 @@ class _AppSidebarState extends State<AppSidebar> {
 
                   const SizedBox(height: 8),
 
+                  // --------------------------------------------------
+                  // LOGOUT
+                  // --------------------------------------------------
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -673,49 +1647,162 @@ class _AppSidebarState extends State<AppSidebar> {
   }
 
   // ==============================================================
-  // SECTION HEADER
+  // SERVICE SECTION
   // ==============================================================
 
-  Widget _sectionHeader({
-    required String title,
-    required bool expanded,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.48),
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.3,
+  Widget _buildServiceSection(
+    BuildContext context,
+    SidebarSection section,
+    String currentRoute,
+  ) {
+    final expanded = _expandedSections[section.title] ?? false;
+
+    final active = _isSectionActive(section, currentRoute);
+
+    return Column(
+      children: [
+        // ------------------------------------------------------------
+        // PARENT ITEM
+        // ------------------------------------------------------------
+
+        Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Material(
+            color: active
+                ? Colors.white.withValues(alpha: 0.10)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(9),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(9),
+              hoverColor: Colors.white.withValues(alpha: 0.07),
+              onTap: () {
+                _toggleSection(section.title);
+              },
+              child: Container(
+                height: 46,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(9),
+                  border: active
+                      ? Border.all(color: Colors.white.withValues(alpha: 0.07))
+                      : null,
+                ),
+                child: Row(
+                  children: [
+                    // Active indicator
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      width: 4,
+                      height: active ? 25 : 0,
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryBlue,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    Icon(
+                      section.icon,
+                      size: 20,
+                      color: active
+                          ? Colors.white
+                          : Colors.white.withValues(alpha: 0.68),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: Text(
+                        section.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: active
+                              ? Colors.white
+                              : Colors.white.withValues(alpha: 0.78),
+                          fontSize: 13,
+                          fontWeight: active
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                        ),
+                      ),
+                    ),
+
+                    // Expand / collapse icon
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: AnimatedRotation(
+                        turns: expanded ? 0.5 : 0.0,
+                        duration: const Duration(milliseconds: 180),
+                        child: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Colors.white.withValues(alpha: 0.55),
+                          size: 19,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            AnimatedRotation(
-              turns: expanded ? 0.0 : 0.5,
-              duration: const Duration(milliseconds: 200),
-              child: Icon(
-                Icons.keyboard_arrow_down,
-                color: Colors.white.withValues(alpha: 0.65),
-                size: 19,
+          ),
+        ),
+
+        // ------------------------------------------------------------
+        // CHILDREN
+        // ------------------------------------------------------------
+        AnimatedCrossFade(
+          firstChild: const SizedBox.shrink(),
+          secondChild: Padding(
+            padding: const EdgeInsets.only(left: 16, bottom: 4),
+            child: Column(
+              children: section.children.map((child) {
+                return _childSidebarItem(
+                  context,
+                  currentRoute,
+                  child.icon,
+                  child.title,
+                  child.route,
+                );
+              }).toList(),
+            ),
+          ),
+          crossFadeState: expanded
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          duration: const Duration(milliseconds: 180),
+        ),
+      ],
+    );
+  }
+
+  // ==============================================================
+  // MAIN SECTION HEADER
+  // ==============================================================
+
+  Widget _sectionHeader({required String title}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.48),
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.3,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   // ==============================================================
-  // SIDEBAR ITEM
+  // MAIN SIDEBAR ITEM
   // ==============================================================
 
   Widget _sidebarItem(
@@ -788,10 +1875,8 @@ class _AppSidebarState extends State<AppSidebar> {
                   ),
                 ),
 
-                AnimatedOpacity(
-                  duration: const Duration(milliseconds: 180),
-                  opacity: selected ? 1 : 0,
-                  child: Padding(
+                if (selected)
+                  Padding(
                     padding: const EdgeInsets.only(right: 10),
                     child: Icon(
                       Icons.chevron_right,
@@ -799,7 +1884,92 @@ class _AppSidebarState extends State<AppSidebar> {
                       size: 18,
                     ),
                   ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ==============================================================
+  // CHILD SIDEBAR ITEM
+  // ==============================================================
+
+  Widget _childSidebarItem(
+    BuildContext context,
+    String currentRoute,
+    IconData icon,
+    String title,
+    String route,
+  ) {
+    final selected = currentRoute == route;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2),
+      child: Material(
+        color: selected
+            ? Colors.white.withValues(alpha: 0.10)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          hoverColor: Colors.white.withValues(alpha: 0.06),
+          onTap: () {
+            _navigate(context, route);
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 160),
+            height: 40,
+            padding: const EdgeInsets.only(left: 10, right: 8),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+            child: Row(
+              children: [
+                // Small connecting indicator
+                Container(
+                  width: 3,
+                  height: selected ? 20 : 14,
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? AppTheme.primaryBlue
+                        : Colors.white.withValues(alpha: 0.20),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
                 ),
+
+                const SizedBox(width: 10),
+
+                Icon(
+                  icon,
+                  size: 17,
+                  color: selected
+                      ? Colors.white
+                      : Colors.white.withValues(alpha: 0.52),
+                ),
+
+                const SizedBox(width: 10),
+
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: selected
+                          ? Colors.white
+                          : Colors.white.withValues(alpha: 0.64),
+                      fontSize: 12,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                  ),
+                ),
+
+                if (selected)
+                  Icon(
+                    Icons.chevron_right,
+                    color: Colors.white.withValues(alpha: 0.55),
+                    size: 16,
+                  ),
               ],
             ),
           ),
@@ -892,6 +2062,7 @@ class _AppLayoutState extends State<AppLayout> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+
     final isMobile = screenWidth < 850;
 
     return Scaffold(
@@ -907,7 +2078,7 @@ class _AppLayoutState extends State<AppLayout> {
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               curve: Curves.easeInOut,
-              width: sidebarOpen ? 255 : 0,
+              width: sidebarOpen ? 275 : 0,
               child: ClipRect(
                 child: sidebarOpen
                     ? const AppSidebar()
@@ -952,7 +2123,7 @@ class _AppLayoutState extends State<AppLayout> {
                             child: GestureDetector(
                               onTap: _toggleSidebar,
                               child: Container(
-                                color: Colors.black.withOpacity(0.35),
+                                color: Colors.black.withValues(alpha: 0.35),
                               ),
                             ),
                           ),
