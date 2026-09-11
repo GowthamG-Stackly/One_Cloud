@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../routes/routes.dart';
 import '../../widgets/enterprise_module_dashboard.dart';
 
 class RevenueDashboardPage extends StatelessWidget {
@@ -8,60 +9,72 @@ class RevenueDashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const EnterpriseModuleDashboard(
-      title: 'Revenue',
-      subtitle: 'Monitor revenue, forecasting and revenue operations.',
+      title: 'Revenue Management',
+      subtitle:
+          'Track revenue, usage, forecasting, invoicing and revenue analytics.',
       icon: Icons.trending_up_outlined,
       kpis: [
         ModuleKpi(
-          title: 'Current Revenue',
-          value: '\$482K',
-          icon: Icons.attach_money_outlined,
+          title: 'Total Revenue',
+          value: '₹24.8 Cr',
+          icon: Icons.currency_rupee_outlined,
         ),
         ModuleKpi(
-          title: 'Monthly Growth',
-          value: '12.8%',
-          icon: Icons.trending_up_outlined,
+          title: 'Monthly Revenue',
+          value: '₹2.46 Cr',
+          icon: Icons.calendar_month_outlined,
         ),
         ModuleKpi(
-          title: 'Forecast',
-          value: '\$560K',
-          icon: Icons.insights_outlined,
+          title: 'Outstanding',
+          value: '₹38.6 L',
+          icon: Icons.pending_outlined,
         ),
         ModuleKpi(
-          title: 'Invoices',
-          value: '326',
-          icon: Icons.receipt_long_outlined,
+          title: 'Revenue Growth',
+          value: '18.4%',
+          icon: Icons.show_chart_outlined,
         ),
       ],
       quickActions: [
         ModuleQuickAction(
           title: 'Revenue Tracking',
           icon: Icons.trending_up_outlined,
+          route: AppRoutes.revenueTracking,
         ),
         ModuleQuickAction(
           title: 'Usage Analytics',
           icon: Icons.analytics_outlined,
+          route: AppRoutes.revenueUsageAnalytics,
         ),
-        ModuleQuickAction(title: 'Forecasting', icon: Icons.insights_outlined),
         ModuleQuickAction(
-          title: 'Revenue Reports',
-          icon: Icons.bar_chart_outlined,
+          title: 'Forecasting',
+          icon: Icons.insights_outlined,
+          route: AppRoutes.revenueForecasting,
         ),
         ModuleQuickAction(
           title: 'Revenue Recognition',
           icon: Icons.fact_check_outlined,
+          route: AppRoutes.revenueRecognition,
         ),
         ModuleQuickAction(
           title: 'Commission Management',
-          icon: Icons.groups_outlined,
+          icon: Icons.percent_outlined,
+          route: AppRoutes.revenueCommissionManagement,
         ),
         ModuleQuickAction(
           title: 'Financial Analytics',
-          icon: Icons.pie_chart_outline,
+          icon: Icons.bar_chart_outlined,
+          route: AppRoutes.revenueFinancialAnalytics,
         ),
         ModuleQuickAction(
           title: 'Invoicing',
           icon: Icons.receipt_long_outlined,
+          route: AppRoutes.revenueInvoicing,
+        ),
+        ModuleQuickAction(
+          title: 'Integration',
+          icon: Icons.integration_instructions_outlined,
+          route: AppRoutes.revenueIntegration,
         ),
       ],
     );

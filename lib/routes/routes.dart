@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../pages/login_page.dart';
-import '../pages/profile_page.dart';
-import '../pages/register_page.dart';
-import '../pages/about_page.dart';
-import '../pages/forgot_password_page.dart';
-import '../pages/dashboard_page.dart';
-import '../pages/features_page.dart';
-import '../pages/contact_page.dart';
+import '../pages/auth/login_page.dart';
+import '../pages/common/profile_page.dart';
+import '../pages/auth/register_page.dart';
+import '../pages/common/about_page.dart';
+import '../pages/auth/forgot_password_page.dart';
+import '../pages/common/dashboard_page.dart';
+import '../pages/common/features_page.dart';
+import '../pages/common/contact_page.dart';
 
 import '../pages/admin/admin_dashboard_page.dart';
 import '../pages/hrms/hrms_dashboard_page.dart';
@@ -20,13 +20,13 @@ import '../pages/workflow/workflow_dashboard_page.dart';
 import '../pages/documents/document_dashboard_page.dart';
 import '../pages/subscription/subscription_dashboard_page.dart';
 import '../pages/revenue/revenue_dashboard_page.dart';
-import '../pages/reporting/reporting_dashboard_page.dart';
-import '../pages/ai/ai_dashboard_page.dart';
+import '../pages/reporting_bi/reporting_bi_dashboard_page.dart';
+import '../pages/enterprise_ai/enterprise_ai_dashboard_page.dart';
 import '../pages/notification/notification_dashboard_page.dart';
 import '../pages/calendar/calendar_dashboard_page.dart';
 import '../pages/integration/integration_dashboard_page.dart';
 import '../pages/search/search_dashboard_page.dart';
-import '../pages/security/security_dashboard_page.dart';
+import '../pages/security_compliance/security_compliance_dashboard_page.dart';
 
 import '../pages/admin/global_settings_page.dart';
 import '../pages/admin/platform_config_page.dart';
@@ -36,7 +36,6 @@ import '../pages/admin/resource_management_page.dart';
 import '../pages/admin/system_health_page.dart';
 import '../pages/admin/tenant_templates_page.dart';
 
-import '../pages/hrms/hrms_dashboard_page.dart';
 import '../pages/hrms/employee_management_page.dart';
 import '../pages/hrms/attendance_page.dart';
 import '../pages/hrms/leave_page.dart';
@@ -47,7 +46,6 @@ import '../pages/hrms/learning_page.dart';
 import '../pages/hrms/ess_mss_page.dart';
 import '../pages/hrms/asset_management_page.dart';
 
-import '../pages/crm/crm_dashboard_page.dart';
 import '../pages/crm/leads_page.dart';
 import '../pages/crm/opportunities_page.dart';
 import '../pages/crm/accounts_page.dart';
@@ -89,6 +87,102 @@ import '../pages/workflow/triggers_page.dart';
 import '../pages/workflow/slas_escalations_page.dart';
 import '../pages/workflow/process_monitoring_page.dart';
 import '../pages/workflow/workflow_templates_page.dart';
+
+import '../pages/documents/document_repository_page.dart';
+import '../pages/documents/document_versioning_page.dart';
+import '../pages/documents/document_upload_download_page.dart';
+import '../pages/documents/document_access_control_page.dart';
+import '../pages/documents/document_templates_page.dart';
+import '../pages/documents/document_tagging_search_page.dart';
+import '../pages/documents/document_retention_policies_page.dart';
+import '../pages/documents/document_audit_trails_page.dart';
+import '../pages/documents/document_ocr_integration_page.dart';
+
+import '../pages/subscription/subscription_plans_features_page.dart';
+import '../pages/subscription/tenant_subscriptions_page.dart';
+import '../pages/subscription/subscription_usage_quotas_page.dart';
+import '../pages/subscription/subscription_payment_tracking_page.dart';
+import '../pages/subscription/subscription_license_allocation_page.dart';
+import '../pages/subscription/subscription_renewals_page.dart';
+import '../pages/subscription/subscription_trial_management_page.dart';
+import '../pages/subscription/subscription_billing_integration_page.dart';
+
+import '../pages/revenue/revenue_tracking_page.dart';
+import '../pages/revenue/revenue_usage_analytics_page.dart';
+import '../pages/revenue/revenue_forecasting_page.dart';
+import '../pages/revenue/revenue_recognition_page.dart';
+import '../pages/revenue/revenue_commission_management_page.dart';
+import '../pages/revenue/revenue_financial_analytics_page.dart';
+import '../pages/revenue/revenue_invoicing_page.dart';
+import '../pages/revenue/revenue_integration_page.dart';
+
+import '../pages/reporting_bi/reporting_standard_reports_page.dart';
+import '../pages/reporting_bi/reporting_ad_hoc_reports_page.dart';
+import '../pages/reporting_bi/reporting_data_exploration_page.dart';
+import '../pages/reporting_bi/reporting_data_export_page.dart';
+import '../pages/reporting_bi/reporting_scheduled_reports_page.dart';
+import '../pages/reporting_bi/reporting_data_visualization_page.dart';
+import '../pages/reporting_bi/reporting_self_service_analytics_page.dart';
+import '../pages/reporting_bi/reporting_bi_management_page.dart';
+
+import '../pages/enterprise_ai/enterprise_ai_models_page.dart';
+import '../pages/enterprise_ai/enterprise_ai_chat_copilot_page.dart';
+import '../pages/enterprise_ai/enterprise_ai_document_ai_ocr_page.dart';
+import '../pages/enterprise_ai/enterprise_ai_predictive_analytics_page.dart';
+import '../pages/enterprise_ai/enterprise_ai_recommendations_page.dart';
+import '../pages/enterprise_ai/enterprise_ai_workflows_page.dart';
+import '../pages/enterprise_ai/enterprise_ai_model_management_page.dart';
+import '../pages/enterprise_ai/enterprise_ai_prompt_engineering_page.dart';
+import '../pages/enterprise_ai/enterprise_ai_usage_logs_page.dart';
+
+import '../pages/notification/notification_in_app_page.dart';
+import '../pages/notification/notification_email_page.dart';
+import '../pages/notification/notification_sms_page.dart';
+import '../pages/notification/notification_push_page.dart';
+import '../pages/notification/notification_templates_page.dart';
+import '../pages/notification/notification_preferences_page.dart';
+import '../pages/notification/notification_schedules_page.dart';
+import '../pages/notification/notification_delivery_tracking_page.dart';
+import '../pages/notification/notification_multi_channel_page.dart';
+
+import '../pages/calendar/calendar_user_calendars_page.dart';
+import '../pages/calendar/calendar_team_calendars_page.dart';
+import '../pages/calendar/calendar_meeting_scheduler_page.dart';
+import '../pages/calendar/calendar_recurring_booking_page.dart';
+import '../pages/calendar/calendar_reminders_page.dart';
+import '../pages/calendar/calendar_integrations_page.dart';
+import '../pages/calendar/calendar_availability_page.dart';
+import '../pages/calendar/calendar_event_notifications_page.dart';
+import '../pages/calendar/calendar_shared_calendars_page.dart';
+
+import '../pages/integration/integration_api_management_page.dart';
+import '../pages/integration/integration_third_party_integrations_page.dart';
+import '../pages/integration/integration_webhooks_page.dart';
+import '../pages/integration/integration_event_streaming_page.dart';
+import '../pages/integration/integration_data_transformation_page.dart';
+import '../pages/integration/integration_etl_data_sync_page.dart';
+import '../pages/integration/integration_connectors_page.dart';
+import '../pages/integration/integration_logs_page.dart';
+
+import '../pages/search/search_global_search_page.dart';
+import '../pages/search/search_index_management_page.dart';
+import '../pages/search/search_analytics_page.dart';
+import '../pages/search/search_autocomplete_page.dart';
+import '../pages/search/search_relevance_ranking_page.dart';
+import '../pages/search/search_saved_searches_page.dart';
+import '../pages/search/search_multi_tenant_index_page.dart';
+import '../pages/search/search_synonyms_page.dart';
+import '../pages/search/search_suggestion_engine_page.dart';
+
+import '../pages/security_compliance/security_audit_logs_page.dart';
+import '../pages/security_compliance/security_activity_tracking_page.dart';
+import '../pages/security_compliance/security_compliance_reports_page.dart';
+import '../pages/security_compliance/security_data_retention_page.dart';
+import '../pages/security_compliance/security_policy_management_page.dart';
+import '../pages/security_compliance/security_threat_detection_page.dart';
+import '../pages/security_compliance/security_vulnerability_management_page.dart';
+import '../pages/security_compliance/security_encryption_key_management_page.dart';
+import '../pages/security_compliance/security_alerts_page.dart';
 
 import '../providers/user_provider.dart';
 import '../widgets/app_layout.dart';
@@ -200,6 +294,133 @@ class AppRoutes {
   static const String workflowSlas = '/workflow/slas';
   static const String workflowMonitoring = '/workflow/monitoring';
   static const String workflowTemplates = '/workflow/templates';
+
+  // DOCUMENTS MODULES
+  static const String documentRepository = '/documents/repository';
+  static const String documentVersioning = '/documents/versioning';
+  static const String documentUploadDownload = '/documents/upload-download';
+  static const String documentAccessControl = '/documents/access-control';
+  static const String documentTemplates = '/documents/templates';
+  static const String documentTaggingSearch = '/documents/tagging-search';
+  static const String documentRetentionPolicies =
+      '/documents/retention-policies';
+  static const String documentAuditTrails = '/documents/audit-trails';
+  static const String documentOcrIntegration = '/documents/ocr-integration';
+
+  // SUBSCRIPTION MODULES
+  static const String subscriptionPlansFeatures =
+      '/subscription/plans-features';
+  static const String tenantSubscriptions =
+      '/subscription/tenant-subscriptions';
+  static const String subscriptionUsageQuotas = '/subscription/usage-quotas';
+  static const String subscriptionPaymentTracking =
+      '/subscription/payment-tracking';
+  static const String subscriptionLicenseAllocation =
+      '/subscription/license-allocation';
+  static const String subscriptionRenewals = '/subscription/renewals';
+  static const String subscriptionTrialManagement =
+      '/subscription/trial-management';
+  static const String subscriptionBillingIntegration =
+      '/subscription/billing-integration';
+
+  // REVENUE MODULES
+  static const String revenueTracking = '/revenue/tracking';
+  static const String revenueUsageAnalytics = '/revenue/usage-analytics';
+  static const String revenueForecasting = '/revenue/forecasting';
+  static const String revenueRecognition = '/revenue/recognition';
+  static const String revenueCommissionManagement =
+      '/revenue/commission-management';
+  static const String revenueFinancialAnalytics =
+      '/revenue/financial-analytics';
+  static const String revenueInvoicing = '/revenue/invoicing';
+  static const String revenueIntegration = '/revenue/integration';
+
+  // REPORTING BI MODULES
+  static const String reportingStandardReports = '/reporting/standard-reports';
+  static const String reportingAdHocReports = '/reporting/ad-hoc-reports';
+  static const String reportingDataExploration = '/reporting/data-exploration';
+  static const String reportingDataExport = '/reporting/data-export';
+  static const String reportingScheduledReports =
+      '/reporting/scheduled-reports';
+  static const String reportingDataVisualization =
+      '/reporting/data-visualization';
+  static const String reportingSelfServiceAnalytics =
+      '/reporting/self-service-analytics';
+  static const String reportingBiManagement = '/reporting/bi-management';
+
+  // ENTERPRISE AI MODULES
+  static const String enterpriseAiModels = '/ai/models';
+  static const String enterpriseAiChatCopilot = '/ai/chat-copilot';
+  static const String enterpriseAiDocumentAiOcr = '/ai/document-ai-ocr';
+  static const String enterpriseAiPredictiveAnalytics =
+      '/ai/predictive-analytics';
+  static const String enterpriseAiRecommendations = '/ai/recommendations';
+  static const String enterpriseAiWorkflows = '/ai/workflows';
+  static const String enterpriseAiModelManagement = '/ai/model-management';
+  static const String enterpriseAiPromptEngineering = '/ai/prompt-engineering';
+  static const String enterpriseAiUsageLogs = '/ai/usage-logs';
+
+  // NOTIFICATION MODULES
+  static const String notificationInApp = '/notification/in-app';
+  static const String notificationEmail = '/notification/email';
+  static const String notificationSms = '/notification/sms';
+  static const String notificationPush = '/notification/push';
+  static const String notificationTemplates = '/notification/templates';
+  static const String notificationPreferences = '/notification/preferences';
+  static const String notificationSchedules = '/notification/schedules';
+  static const String notificationDeliveryTracking =
+      '/notification/delivery-tracking';
+  static const String notificationMultiChannel = '/notification/multi-channel';
+
+  // CALENDAR MODULES
+  static const String calendarUserCalendars = '/calendar/user-calendars';
+  static const String calendarTeamCalendars = '/calendar/team-calendars';
+  static const String calendarMeetingScheduler = '/calendar/meeting-scheduler';
+  static const String calendarRecurringBooking = '/calendar/recurring-booking';
+  static const String calendarReminders = '/calendar/reminders';
+  static const String calendarIntegrations = '/calendar/integrations';
+  static const String calendarAvailability = '/calendar/availability';
+  static const String calendarEventNotifications =
+      '/calendar/event-notifications';
+  static const String calendarSharedCalendars = '/calendar/shared-calendars';
+
+  // INTEGRATION MODULES
+  static const String integrationApiManagement = '/integration/api-management';
+  static const String integrationThirdPartyIntegrations =
+      '/integration/third-party-integrations';
+  static const String integrationWebhooks = '/integration/webhooks';
+  static const String integrationEventStreaming =
+      '/integration/event-streaming';
+  static const String integrationDataTransformation =
+      '/integration/data-transformation';
+  static const String integrationEtlDataSync = '/integration/etl-data-sync';
+  static const String integrationConnectors = '/integration/connectors';
+  static const String integrationLogs = '/integration/logs';
+
+  // SEARCH MODULES
+  static const String searchGlobalSearch = '/search/global-search';
+  static const String searchIndexManagement = '/search/index-management';
+  static const String searchAnalytics = '/search/analytics';
+  static const String searchAutocomplete = '/search/autocomplete';
+  static const String searchRelevanceRanking = '/search/relevance-ranking';
+  static const String searchSavedSearches = '/search/saved-searches';
+  static const String searchMultiTenantIndex = '/search/multi-tenant-index';
+  static const String searchSynonyms = '/search/synonyms';
+  static const String searchSuggestionEngine = '/search/suggestion-engine';
+
+  // SECURITY COMPLIANCE MODULES
+  static const String securityAuditLogs = '/security/audit-logs';
+  static const String securityActivityTracking = '/security/activity-tracking';
+  static const String securityComplianceReports =
+      '/security/compliance-reports';
+  static const String securityDataRetention = '/security/data-retention';
+  static const String securityPolicyManagement = '/security/policy-management';
+  static const String securityThreatDetection = '/security/threat-detection';
+  static const String securityVulnerabilityManagement =
+      '/security/vulnerability-management';
+  static const String securityEncryptionKeyManagement =
+      '/security/encryption-key-management';
+  static const String securityAlerts = '/security/alerts';
 
   // ==============================================================
   // ROUTER
@@ -690,6 +911,60 @@ class AppRoutes {
               return const DocumentDashboardPage();
             },
           ),
+          GoRoute(
+            path: documentRepository,
+            builder: (context, state) {
+              return const DocumentRepositoryPage();
+            },
+          ),
+          GoRoute(
+            path: documentVersioning,
+            builder: (context, state) {
+              return const DocumentVersioningPage();
+            },
+          ),
+          GoRoute(
+            path: documentUploadDownload,
+            builder: (context, state) {
+              return const DocumentUploadDownloadPage();
+            },
+          ),
+          GoRoute(
+            path: documentAccessControl,
+            builder: (context, state) {
+              return const DocumentAccessControlPage();
+            },
+          ),
+          GoRoute(
+            path: documentTemplates,
+            builder: (context, state) {
+              return const DocumentTemplatesPage();
+            },
+          ),
+          GoRoute(
+            path: documentTaggingSearch,
+            builder: (context, state) {
+              return const DocumentTaggingSearchPage();
+            },
+          ),
+          GoRoute(
+            path: documentRetentionPolicies,
+            builder: (context, state) {
+              return const DocumentRetentionPoliciesPage();
+            },
+          ),
+          GoRoute(
+            path: documentAuditTrails,
+            builder: (context, state) {
+              return const DocumentAuditTrailsPage();
+            },
+          ),
+          GoRoute(
+            path: documentOcrIntegration,
+            builder: (context, state) {
+              return const DocumentOcrIntegrationPage();
+            },
+          ),
 
           // ==========================================================
           // SUBSCRIPTION
@@ -698,6 +973,54 @@ class AppRoutes {
             path: subscription,
             builder: (context, state) {
               return const SubscriptionDashboardPage();
+            },
+          ),
+          GoRoute(
+            path: subscriptionPlansFeatures,
+            builder: (context, state) {
+              return const SubscriptionPlansFeaturesPage();
+            },
+          ),
+          GoRoute(
+            path: tenantSubscriptions,
+            builder: (context, state) {
+              return const TenantSubscriptionsPage();
+            },
+          ),
+          GoRoute(
+            path: subscriptionUsageQuotas,
+            builder: (context, state) {
+              return const SubscriptionUsageQuotasPage();
+            },
+          ),
+          GoRoute(
+            path: subscriptionPaymentTracking,
+            builder: (context, state) {
+              return const SubscriptionPaymentTrackingPage();
+            },
+          ),
+          GoRoute(
+            path: subscriptionLicenseAllocation,
+            builder: (context, state) {
+              return const SubscriptionLicenseAllocationPage();
+            },
+          ),
+          GoRoute(
+            path: subscriptionRenewals,
+            builder: (context, state) {
+              return const SubscriptionRenewalsPage();
+            },
+          ),
+          GoRoute(
+            path: subscriptionTrialManagement,
+            builder: (context, state) {
+              return const SubscriptionTrialManagementPage();
+            },
+          ),
+          GoRoute(
+            path: subscriptionBillingIntegration,
+            builder: (context, state) {
+              return const SubscriptionBillingIntegrationPage();
             },
           ),
 
@@ -710,6 +1033,54 @@ class AppRoutes {
               return const RevenueDashboardPage();
             },
           ),
+          GoRoute(
+            path: revenueTracking,
+            builder: (context, state) {
+              return const RevenueTrackingPage();
+            },
+          ),
+          GoRoute(
+            path: revenueUsageAnalytics,
+            builder: (context, state) {
+              return const RevenueUsageAnalyticsPage();
+            },
+          ),
+          GoRoute(
+            path: revenueForecasting,
+            builder: (context, state) {
+              return const RevenueForecastingPage();
+            },
+          ),
+          GoRoute(
+            path: revenueRecognition,
+            builder: (context, state) {
+              return const RevenueRecognitionPage();
+            },
+          ),
+          GoRoute(
+            path: revenueCommissionManagement,
+            builder: (context, state) {
+              return const RevenueCommissionManagementPage();
+            },
+          ),
+          GoRoute(
+            path: revenueFinancialAnalytics,
+            builder: (context, state) {
+              return const RevenueFinancialAnalyticsPage();
+            },
+          ),
+          GoRoute(
+            path: revenueInvoicing,
+            builder: (context, state) {
+              return const RevenueInvoicingPage();
+            },
+          ),
+          GoRoute(
+            path: revenueIntegration,
+            builder: (context, state) {
+              return const RevenueIntegrationPage();
+            },
+          ),
 
           // ==========================================================
           // REPORTING & BI
@@ -717,7 +1088,55 @@ class AppRoutes {
           GoRoute(
             path: reporting,
             builder: (context, state) {
-              return const ReportingDashboardPage();
+              return const ReportingBiDashboardPage();
+            },
+          ),
+          GoRoute(
+            path: reportingStandardReports,
+            builder: (context, state) {
+              return const ReportingStandardReportsPage();
+            },
+          ),
+          GoRoute(
+            path: reportingAdHocReports,
+            builder: (context, state) {
+              return const ReportingAdHocReportsPage();
+            },
+          ),
+          GoRoute(
+            path: reportingDataExploration,
+            builder: (context, state) {
+              return const ReportingDataExplorationPage();
+            },
+          ),
+          GoRoute(
+            path: reportingDataExport,
+            builder: (context, state) {
+              return const ReportingDataExportPage();
+            },
+          ),
+          GoRoute(
+            path: reportingScheduledReports,
+            builder: (context, state) {
+              return const ReportingScheduledReportsPage();
+            },
+          ),
+          GoRoute(
+            path: reportingDataVisualization,
+            builder: (context, state) {
+              return const ReportingDataVisualizationPage();
+            },
+          ),
+          GoRoute(
+            path: reportingSelfServiceAnalytics,
+            builder: (context, state) {
+              return const ReportingSelfServiceAnalyticsPage();
+            },
+          ),
+          GoRoute(
+            path: reportingBiManagement,
+            builder: (context, state) {
+              return const ReportingBiManagementPage();
             },
           ),
 
@@ -727,7 +1146,61 @@ class AppRoutes {
           GoRoute(
             path: ai,
             builder: (context, state) {
-              return const AiDashboardPage();
+              return const EnterpriseAiDashboardPage();
+            },
+          ),
+          GoRoute(
+            path: enterpriseAiModels,
+            builder: (context, state) {
+              return const EnterpriseAiModelsPage();
+            },
+          ),
+          GoRoute(
+            path: enterpriseAiChatCopilot,
+            builder: (context, state) {
+              return const EnterpriseAiChatCopilotPage();
+            },
+          ),
+          GoRoute(
+            path: enterpriseAiDocumentAiOcr,
+            builder: (context, state) {
+              return const EnterpriseAiDocumentAiOcrPage();
+            },
+          ),
+          GoRoute(
+            path: enterpriseAiPredictiveAnalytics,
+            builder: (context, state) {
+              return const EnterpriseAiPredictiveAnalyticsPage();
+            },
+          ),
+          GoRoute(
+            path: enterpriseAiRecommendations,
+            builder: (context, state) {
+              return const EnterpriseAiRecommendationsPage();
+            },
+          ),
+          GoRoute(
+            path: enterpriseAiWorkflows,
+            builder: (context, state) {
+              return const EnterpriseAiWorkflowsPage();
+            },
+          ),
+          GoRoute(
+            path: enterpriseAiModelManagement,
+            builder: (context, state) {
+              return const EnterpriseAiModelManagementPage();
+            },
+          ),
+          GoRoute(
+            path: enterpriseAiPromptEngineering,
+            builder: (context, state) {
+              return const EnterpriseAiPromptEngineeringPage();
+            },
+          ),
+          GoRoute(
+            path: enterpriseAiUsageLogs,
+            builder: (context, state) {
+              return const EnterpriseAiUsageLogsPage();
             },
           ),
 
@@ -740,6 +1213,60 @@ class AppRoutes {
               return const NotificationDashboardPage();
             },
           ),
+          GoRoute(
+            path: notificationInApp,
+            builder: (context, state) {
+              return const NotificationInAppPage();
+            },
+          ),
+          GoRoute(
+            path: notificationEmail,
+            builder: (context, state) {
+              return const NotificationEmailPage();
+            },
+          ),
+          GoRoute(
+            path: notificationSms,
+            builder: (context, state) {
+              return const NotificationSmsPage();
+            },
+          ),
+          GoRoute(
+            path: notificationPush,
+            builder: (context, state) {
+              return const NotificationPushPage();
+            },
+          ),
+          GoRoute(
+            path: notificationTemplates,
+            builder: (context, state) {
+              return const NotificationTemplatesPage();
+            },
+          ),
+          GoRoute(
+            path: notificationPreferences,
+            builder: (context, state) {
+              return const NotificationPreferencesPage();
+            },
+          ),
+          GoRoute(
+            path: notificationSchedules,
+            builder: (context, state) {
+              return const NotificationSchedulesPage();
+            },
+          ),
+          GoRoute(
+            path: notificationDeliveryTracking,
+            builder: (context, state) {
+              return const NotificationDeliveryTrackingPage();
+            },
+          ),
+          GoRoute(
+            path: notificationMultiChannel,
+            builder: (context, state) {
+              return const NotificationMultiChannelPage();
+            },
+          ),
 
           // ==========================================================
           // CALENDAR
@@ -748,6 +1275,60 @@ class AppRoutes {
             path: calendar,
             builder: (context, state) {
               return const CalendarDashboardPage();
+            },
+          ),
+          GoRoute(
+            path: calendarUserCalendars,
+            builder: (context, state) {
+              return const CalendarUserCalendarsPage();
+            },
+          ),
+          GoRoute(
+            path: calendarTeamCalendars,
+            builder: (context, state) {
+              return const CalendarTeamCalendarsPage();
+            },
+          ),
+          GoRoute(
+            path: calendarMeetingScheduler,
+            builder: (context, state) {
+              return const CalendarMeetingSchedulerPage();
+            },
+          ),
+          GoRoute(
+            path: calendarRecurringBooking,
+            builder: (context, state) {
+              return const CalendarRecurringBookingPage();
+            },
+          ),
+          GoRoute(
+            path: calendarReminders,
+            builder: (context, state) {
+              return const CalendarRemindersPage();
+            },
+          ),
+          GoRoute(
+            path: calendarIntegrations,
+            builder: (context, state) {
+              return const CalendarIntegrationsPage();
+            },
+          ),
+          GoRoute(
+            path: calendarAvailability,
+            builder: (context, state) {
+              return const CalendarAvailabilityPage();
+            },
+          ),
+          GoRoute(
+            path: calendarEventNotifications,
+            builder: (context, state) {
+              return const CalendarEventNotificationsPage();
+            },
+          ),
+          GoRoute(
+            path: calendarSharedCalendars,
+            builder: (context, state) {
+              return const CalendarSharedCalendarsPage();
             },
           ),
 
@@ -760,6 +1341,54 @@ class AppRoutes {
               return const IntegrationDashboardPage();
             },
           ),
+          GoRoute(
+            path: integrationApiManagement,
+            builder: (context, state) {
+              return const IntegrationApiManagementPage();
+            },
+          ),
+          GoRoute(
+            path: integrationThirdPartyIntegrations,
+            builder: (context, state) {
+              return const IntegrationThirdPartyIntegrationsPage();
+            },
+          ),
+          GoRoute(
+            path: integrationWebhooks,
+            builder: (context, state) {
+              return const IntegrationWebhooksPage();
+            },
+          ),
+          GoRoute(
+            path: integrationEventStreaming,
+            builder: (context, state) {
+              return const IntegrationEventStreamingPage();
+            },
+          ),
+          GoRoute(
+            path: integrationDataTransformation,
+            builder: (context, state) {
+              return const IntegrationDataTransformationPage();
+            },
+          ),
+          GoRoute(
+            path: integrationEtlDataSync,
+            builder: (context, state) {
+              return const IntegrationEtlDataSyncPage();
+            },
+          ),
+          GoRoute(
+            path: integrationConnectors,
+            builder: (context, state) {
+              return const IntegrationConnectorsPage();
+            },
+          ),
+          GoRoute(
+            path: integrationLogs,
+            builder: (context, state) {
+              return const IntegrationLogsPage();
+            },
+          ),
 
           // ==========================================================
           // SEARCH
@@ -770,6 +1399,60 @@ class AppRoutes {
               return const SearchDashboardPage();
             },
           ),
+          GoRoute(
+            path: searchGlobalSearch,
+            builder: (context, state) {
+              return const SearchGlobalSearchPage();
+            },
+          ),
+          GoRoute(
+            path: searchIndexManagement,
+            builder: (context, state) {
+              return const SearchIndexManagementPage();
+            },
+          ),
+          GoRoute(
+            path: searchAnalytics,
+            builder: (context, state) {
+              return const SearchAnalyticsPage();
+            },
+          ),
+          GoRoute(
+            path: searchAutocomplete,
+            builder: (context, state) {
+              return const SearchAutocompletePage();
+            },
+          ),
+          GoRoute(
+            path: searchRelevanceRanking,
+            builder: (context, state) {
+              return const SearchRelevanceRankingPage();
+            },
+          ),
+          GoRoute(
+            path: searchSavedSearches,
+            builder: (context, state) {
+              return const SearchSavedSearchesPage();
+            },
+          ),
+          GoRoute(
+            path: searchMultiTenantIndex,
+            builder: (context, state) {
+              return const SearchMultiTenantIndexPage();
+            },
+          ),
+          GoRoute(
+            path: searchSynonyms,
+            builder: (context, state) {
+              return const SearchSynonymsPage();
+            },
+          ),
+          GoRoute(
+            path: searchSuggestionEngine,
+            builder: (context, state) {
+              return const SearchSuggestionEnginePage();
+            },
+          ),
 
           // ==========================================================
           // SECURITY & COMPLIANCE
@@ -777,7 +1460,61 @@ class AppRoutes {
           GoRoute(
             path: security,
             builder: (context, state) {
-              return const SecurityDashboardPage();
+              return const SecurityComplianceDashboardPage();
+            },
+          ),
+          GoRoute(
+            path: securityAuditLogs,
+            builder: (context, state) {
+              return const SecurityAuditLogsPage();
+            },
+          ),
+          GoRoute(
+            path: securityActivityTracking,
+            builder: (context, state) {
+              return const SecurityActivityTrackingPage();
+            },
+          ),
+          GoRoute(
+            path: securityComplianceReports,
+            builder: (context, state) {
+              return const SecurityComplianceReportsPage();
+            },
+          ),
+          GoRoute(
+            path: securityDataRetention,
+            builder: (context, state) {
+              return const SecurityDataRetentionPage();
+            },
+          ),
+          GoRoute(
+            path: securityPolicyManagement,
+            builder: (context, state) {
+              return const SecurityPolicyManagementPage();
+            },
+          ),
+          GoRoute(
+            path: securityThreatDetection,
+            builder: (context, state) {
+              return const SecurityThreatDetectionPage();
+            },
+          ),
+          GoRoute(
+            path: securityVulnerabilityManagement,
+            builder: (context, state) {
+              return const SecurityVulnerabilityManagementPage();
+            },
+          ),
+          GoRoute(
+            path: securityEncryptionKeyManagement,
+            builder: (context, state) {
+              return const SecurityEncryptionKeyManagementPage();
+            },
+          ),
+          GoRoute(
+            path: securityAlerts,
+            builder: (context, state) {
+              return const SecurityAlertsPage();
             },
           ),
 
@@ -809,58 +1546,6 @@ class AppRoutes {
             path: profile,
             builder: (context, state) {
               return const ProfilePage();
-            },
-          ),
-
-          // ==========================================================
-          // ERP MODULES
-          // ==========================================================
-          GoRoute(
-            path: inventory,
-            builder: (context, state) {
-              return const InventoryPage();
-            },
-          ),
-
-          GoRoute(
-            path: warehouses,
-            builder: (context, state) {
-              return const WarehousesPage();
-            },
-          ),
-
-          GoRoute(
-            path: stockMovements,
-            builder: (context, state) {
-              return const StockMovementsPage();
-            },
-          ),
-
-          GoRoute(
-            path: procurement,
-            builder: (context, state) {
-              return const ProcurementPage();
-            },
-          ),
-
-          GoRoute(
-            path: vendors,
-            builder: (context, state) {
-              return const VendorsPage();
-            },
-          ),
-
-          GoRoute(
-            path: salesOrders,
-            builder: (context, state) {
-              return const SalesOrdersPage();
-            },
-          ),
-
-          GoRoute(
-            path: dispatch,
-            builder: (context, state) {
-              return const DispatchPage();
             },
           ),
         ],

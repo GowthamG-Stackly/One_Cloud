@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../routes/routes.dart';
 import '../../widgets/enterprise_module_dashboard.dart';
 
 class DocumentDashboardPage extends StatelessWidget {
@@ -37,28 +38,42 @@ class DocumentDashboardPage extends StatelessWidget {
         ModuleQuickAction(
           title: 'Document Repository',
           icon: Icons.folder_outlined,
+          route: AppRoutes.documentRepository,
         ),
-        ModuleQuickAction(title: 'Versioning', icon: Icons.history_outlined),
+        ModuleQuickAction(
+          title: 'Versioning',
+          icon: Icons.history_outlined,
+          route: AppRoutes.documentVersioning,
+        ),
         ModuleQuickAction(
           title: 'Upload / Download',
           icon: Icons.cloud_upload_outlined,
+          route: AppRoutes.documentUploadDownload,
         ),
-        ModuleQuickAction(title: 'Access Control', icon: Icons.lock_outline),
+        ModuleQuickAction(
+          title: 'Access Control',
+          icon: Icons.lock_outline,
+          route: AppRoutes.documentAccessControl,
+        ),
         ModuleQuickAction(
           title: 'Document Templates',
           icon: Icons.description_outlined,
+          route: AppRoutes.documentTemplates,
         ),
         ModuleQuickAction(
           title: 'Tagging & Search',
           icon: Icons.local_offer_outlined,
+          route: AppRoutes.documentTaggingSearch,
         ),
         ModuleQuickAction(
           title: 'Retention Policies',
           icon: Icons.policy_outlined,
+          route: AppRoutes.documentRetentionPolicies,
         ),
         ModuleQuickAction(
           title: 'OCR Integration',
           icon: Icons.document_scanner_outlined,
+          route: AppRoutes.documentOcrIntegration,
         ),
       ],
     );
