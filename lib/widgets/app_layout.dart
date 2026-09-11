@@ -350,7 +350,9 @@ class SidebarSection {
 // ================================================================
 
 class AppSidebar extends StatefulWidget {
-  const AppSidebar({super.key});
+  final bool collapsed;
+
+  const AppSidebar({super.key, this.collapsed = false});
 
   @override
   State<AppSidebar> createState() => _AppSidebarState();
@@ -544,62 +546,63 @@ class _AppSidebarState extends State<AppSidebar> {
     SidebarSection(
       title: 'ERP',
       icon: Icons.inventory_2_outlined,
-      route: '/erp',
+      route: AppRoutes.erp,
       children: [
         SidebarChild(
           title: 'ERP Dashboard',
           icon: Icons.dashboard_outlined,
-          route: '/erp',
+          route: AppRoutes.erp,
         ),
+
         SidebarChild(
           title: 'Inventory',
           icon: Icons.inventory_2_outlined,
-          route: '/inventory',
+          route: AppRoutes.inventory,
         ),
         SidebarChild(
           title: 'Warehouses',
           icon: Icons.warehouse_outlined,
-          route: '/warehouses',
+          route: AppRoutes.warehouses,
         ),
         SidebarChild(
           title: 'Stock Movements',
           icon: Icons.swap_horiz_outlined,
-          route: '/stock-movements',
+          route: AppRoutes.stockMovements,
         ),
         SidebarChild(
           title: 'Procurement',
           icon: Icons.shopping_cart_outlined,
-          route: '/procurement',
+          route: AppRoutes.procurement,
         ),
         SidebarChild(
           title: 'Vendors',
           icon: Icons.people_outline,
-          route: '/vendors',
+          route: AppRoutes.vendors,
         ),
         SidebarChild(
           title: 'Sales Orders',
           icon: Icons.receipt_long_outlined,
-          route: '/sales-orders',
+          route: AppRoutes.salesOrders,
         ),
         SidebarChild(
           title: 'Dispatch',
           icon: Icons.local_shipping_outlined,
-          route: '/dispatch',
+          route: AppRoutes.dispatch,
         ),
         SidebarChild(
           title: 'Production',
           icon: Icons.precision_manufacturing_outlined,
-          route: '/erp/production',
+          route: AppRoutes.production,
         ),
         SidebarChild(
           title: 'Asset Management',
           icon: Icons.business_center_outlined,
-          route: '/erp/assets',
+          route: AppRoutes.assetManagement,
         ),
         SidebarChild(
           title: 'Maintenance',
           icon: Icons.build_outlined,
-          route: '/erp/maintenance',
+          route: AppRoutes.maintenance,
         ),
       ],
     ),
@@ -610,57 +613,66 @@ class _AppSidebarState extends State<AppSidebar> {
     SidebarSection(
       title: 'Finance & Accounting',
       icon: Icons.account_balance_wallet_outlined,
-      route: '/finance',
+      route: AppRoutes.finance,
       children: [
         SidebarChild(
           title: 'Finance Dashboard',
           icon: Icons.dashboard_outlined,
-          route: '/finance',
+          route: AppRoutes.finance,
         ),
+
         SidebarChild(
           title: 'General Ledger',
           icon: Icons.menu_book_outlined,
-          route: '/finance/general-ledger',
+          route: AppRoutes.financeGeneralLedger,
         ),
+
         SidebarChild(
           title: 'Accounts Payable',
           icon: Icons.arrow_circle_down_outlined,
-          route: '/finance/accounts-payable',
+          route: AppRoutes.financeAccountsPayable,
         ),
+
         SidebarChild(
           title: 'Accounts Receivable',
           icon: Icons.arrow_circle_up_outlined,
-          route: '/finance/accounts-receivable',
+          route: AppRoutes.financeAccountsReceivable,
         ),
+
         SidebarChild(
-          title: 'Tax Management',
-          icon: Icons.receipt_outlined,
-          route: '/finance/tax',
+          title: 'Asset Management',
+          icon: Icons.business_center_outlined,
+          route: AppRoutes.financeAssetManagement,
         ),
+
         SidebarChild(
           title: 'Budgeting',
           icon: Icons.account_balance_outlined,
-          route: '/finance/budgeting',
+          route: AppRoutes.financeBudgeting,
         ),
+
         SidebarChild(
           title: 'Costing',
           icon: Icons.calculate_outlined,
-          route: '/finance/costing',
+          route: AppRoutes.financeCosting,
         ),
+
         SidebarChild(
           title: 'Financial Reports',
           icon: Icons.bar_chart_outlined,
-          route: '/finance/reports',
+          route: AppRoutes.financeFinancialReports,
         ),
+
         SidebarChild(
           title: 'Reconciliation',
           icon: Icons.sync_alt_outlined,
-          route: '/finance/reconciliation',
+          route: AppRoutes.financeReconciliation,
         ),
+
         SidebarChild(
           title: 'Multi-Currency',
           icon: Icons.currency_exchange_outlined,
-          route: '/finance/multi-currency',
+          route: AppRoutes.financeMultiCurrency,
         ),
       ],
     ),
@@ -1330,7 +1342,7 @@ class _AppSidebarState extends State<AppSidebar> {
     }
 
     // ERP open by default because it is our current working module.
-    _expandedSections['ERP'] = true;
+    // _expandedSections['ERP'] = true;
   }
 
   // ==============================================================
@@ -1386,7 +1398,7 @@ class _AppSidebarState extends State<AppSidebar> {
     final currentRoute = GoRouterState.of(context).uri.path;
 
     return Container(
-      width: 275,
+      width: widget.collapsed ? 72 : 275,
       height: double.infinity,
       decoration: BoxDecoration(
         color: AppTheme.darkNavy,
@@ -1405,22 +1417,76 @@ class _AppSidebarState extends State<AppSidebar> {
             // BRAND
             // ========================================================
 
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.04),
-                border: Border(
-                  bottom: BorderSide(
-                    color: Colors.white.withValues(alpha: 0.08),
+            if (!widget.collapsed)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.04),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
                   ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Image.asset(
+                        'assets/images/onecloud_logo.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'OneCloud',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            'Enterprise Platform',
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.55),
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.04),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
+                  ),
+                ),
+                child: Center(
+                  child: Container(
+                    width: 42,
+                    height: 42,
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -1431,216 +1497,307 @@ class _AppSidebarState extends State<AppSidebar> {
                       fit: BoxFit.contain,
                     ),
                   ),
-
-                  const SizedBox(width: 12),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'OneCloud',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          'Enterprise Platform',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.55),
-                            fontSize: 10,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
 
             // ========================================================
             // NAVIGATION
             // ========================================================
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(12, 18, 12, 12),
-                children: [
-                  // ====================================================
-                  // MAIN
-                  // ====================================================
-
-                  _sectionHeader(title: 'MAIN'),
-
-                  const SizedBox(height: 6),
-
-                  _sidebarItem(
-                    context,
-                    currentRoute,
-                    Icons.dashboard_outlined,
-                    'Dashboard',
-                    AppRoutes.dashboard,
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  // ====================================================
-                  // ENTERPRISE SERVICES
-                  // ====================================================
-                  _sectionHeader(title: 'ENTERPRISE SERVICES'),
-
-                  const SizedBox(height: 6),
-
-                  ..._sections.map(
-                    (section) =>
-                        _buildServiceSection(context, section, currentRoute),
-                  ),
-
-                  const SizedBox(height: 10),
-                ],
-              ),
+              child: widget.collapsed
+                  ? ListView(
+                      padding: const EdgeInsets.fromLTRB(8, 18, 8, 12),
+                      children: [
+                        ..._sections.map(
+                          (section) => _buildCollapsedSection(
+                            context,
+                            section,
+                            currentRoute,
+                          ),
+                        ),
+                      ],
+                    )
+                  : ListView(
+                      padding: const EdgeInsets.fromLTRB(12, 18, 12, 12),
+                      children: [
+                        _sectionHeader(title: 'ENTERPRISE SERVICES'),
+                        const SizedBox(height: 6),
+                        ..._sections.map(
+                          (section) => _buildServiceSection(
+                            context,
+                            section,
+                            currentRoute,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
             ),
 
             // ========================================================
             // USER AREA
             // ========================================================
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.04),
-                border: Border(
-                  top: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+            if (widget.collapsed)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.04),
+                  border: Border(
+                    top: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
+                  ),
                 ),
-              ),
-              child: Column(
-                children: [
-                  // --------------------------------------------------
-                  // PROFILE
-                  // --------------------------------------------------
-
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        context.go(AppRoutes.profile);
-                      },
-                      borderRadius: BorderRadius.circular(10),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.06),
-                          borderRadius: BorderRadius.circular(10),
+                child: Column(
+                  children: [
+                    Tooltip(
+                      message: user.name.isEmpty ? 'Guest User' : user.name,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(9),
+                          onTap: () {
+                            context.go(AppRoutes.profile);
+                          },
+                          child: Container(
+                            width: 46,
+                            height: 46,
+                            decoration: BoxDecoration(
+                              color: AppTheme.primaryBlue,
+                              borderRadius: BorderRadius.circular(9),
+                            ),
+                            child: const Icon(
+                              Icons.person_outline,
+                              color: Colors.white,
+                              size: 21,
+                            ),
+                          ),
                         ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 38,
-                              height: 38,
-                              decoration: BoxDecoration(
-                                color: AppTheme.primaryBlue,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.person_outline,
-                                color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Tooltip(
+                      message: 'Logout',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(9),
+                          onTap: () {
+                            user.logout();
+                            context.go(AppRoutes.login);
+                          },
+                          child: SizedBox(
+                            width: 46,
+                            height: 42,
+                            child: Center(
+                              child: Icon(
+                                Icons.logout,
+                                color: Colors.white.withValues(alpha: 0.72),
                                 size: 20,
                               ),
                             ),
-
-                            const SizedBox(width: 10),
-
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    user.name.isEmpty
-                                        ? 'Guest User'
-                                        : user.name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    user.email.isEmpty
-                                        ? 'guest@onecloud.com'
-                                        : user.email,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.55,
-                                      ),
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.04),
+                  border: Border(
+                    top: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.08),
                     ),
                   ),
-
-                  const SizedBox(height: 8),
-
-                  // --------------------------------------------------
-                  // LOGOUT
-                  // --------------------------------------------------
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: () {
-                        user.logout();
-                        context.go(AppRoutes.login);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.logout,
-                              color: Colors.white.withValues(alpha: 0.70),
-                              size: 19,
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Logout',
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.80),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
+                ),
+                child: Column(
+                  children: [
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          context.go(AppRoutes.profile);
+                        },
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.06),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 38,
+                                height: 38,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryBlue,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.person_outline,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
                               ),
-                            ),
-                            const Spacer(),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: Colors.white.withValues(alpha: 0.35),
-                              size: 13,
-                            ),
-                          ],
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      user.name.isEmpty
+                                          ? 'Guest User'
+                                          : user.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      user.email.isEmpty
+                                          ? 'guest@onecloud.com'
+                                          : user.email,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.55,
+                                        ),
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
+                    const SizedBox(height: 8),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () {
+                          user.logout();
+                          context.go(AppRoutes.login);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 10,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.logout,
+                                color: Colors.white.withValues(alpha: 0.70),
+                                size: 19,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Logout',
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.80),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const Spacer(),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.white.withValues(alpha: 0.35),
+                                size: 13,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ==============================================================
+  // COLLAPSED SERVICE SECTION
+  // ==============================================================
+
+  Widget _buildCollapsedSection(
+    BuildContext context,
+    SidebarSection section,
+    String currentRoute,
+  ) {
+    final active = _isSectionActive(section, currentRoute);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Tooltip(
+        message: section.title,
+        preferBelow: false,
+        child: Material(
+          color: active
+              ? Colors.white.withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(9),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(9),
+            hoverColor: Colors.white.withValues(alpha: 0.08),
+            onTap: () {
+              // If the section has a dashboard route, open it.
+              // Otherwise open the first available child.
+              if (section.route.isNotEmpty) {
+                _navigate(context, section.route);
+              } else if (section.children.isNotEmpty) {
+                _navigate(context, section.children.first.route);
+              }
+            },
+            child: SizedBox(
+              width: 56,
+              height: 46,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (active)
+                    Positioned(
+                      left: 0,
+                      child: Container(
+                        width: 3,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryBlue,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+                  Icon(
+                    section.icon,
+                    size: 21,
+                    color: active
+                        ? Colors.white
+                        : Colors.white.withValues(alpha: 0.68),
                   ),
                 ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -2034,56 +2191,67 @@ class AppLayout extends StatefulWidget {
 }
 
 class _AppLayoutState extends State<AppLayout> {
-  bool sidebarOpen = true;
+  late final ValueNotifier<bool> _sidebarOpen;
 
   @override
   void initState() {
     super.initState();
 
-    // Desktop / tablet = open
-    // Mobile = closed
+    _sidebarOpen = ValueNotifier<bool>(true);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
       final width = MediaQuery.of(context).size.width;
-
-      setState(() {
-        sidebarOpen = width >= 850;
-      });
+      _sidebarOpen.value = width >= 850;
     });
   }
 
+  @override
+  void dispose() {
+    _sidebarOpen.dispose();
+    super.dispose();
+  }
+
   void _toggleSidebar() {
-    setState(() {
-      sidebarOpen = !sidebarOpen;
-    });
+    _sidebarOpen.value = !_sidebarOpen.value;
   }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-
     final isMobile = screenWidth < 850;
 
     return Scaffold(
       backgroundColor: Colors.white,
-
       body: Row(
         children: [
           // ==========================================================
           // DESKTOP / TABLET SIDEBAR
+          //
+          // Only this subtree listens to the sidebar state.
+          // The main page is therefore NOT rebuilt when the sidebar
+          // is opened or closed.
           // ==========================================================
-
           if (!isMobile)
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
-              width: sidebarOpen ? 275 : 0,
-              child: ClipRect(
-                child: sidebarOpen
-                    ? const AppSidebar()
-                    : const SizedBox.shrink(),
-              ),
+            ValueListenableBuilder<bool>(
+              valueListenable: _sidebarOpen,
+              builder: (context, open, child) {
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutCubic,
+                  width: open ? 275.0 : 72.0,
+                  height: double.infinity,
+                  child: ClipRect(
+                    child: OverflowBox(
+                      alignment: Alignment.centerLeft,
+                      minWidth: 0,
+                      maxWidth: 275,
+                      child: AppSidebar(collapsed: !open),
+                    ),
+                  ),
+                );
+              },
             ),
 
           // ==========================================================
@@ -2095,10 +2263,19 @@ class _AppLayoutState extends State<AppLayout> {
 
               // ------------------------------------------------------
               // HEADER
+              // Only the header listens to the sidebar state.
               // ------------------------------------------------------
-              appBar: AppHeader(
-                sidebarOpen: sidebarOpen,
-                onMenuPressed: _toggleSidebar,
+              appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(68),
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _sidebarOpen,
+                  builder: (context, open, _) {
+                    return AppHeader(
+                      sidebarOpen: open,
+                      onMenuPressed: _toggleSidebar,
+                    );
+                  },
+                ),
               ),
 
               // ------------------------------------------------------
@@ -2106,29 +2283,37 @@ class _AppLayoutState extends State<AppLayout> {
               // ------------------------------------------------------
               body: Stack(
                 children: [
-                  // Current page
+                  // Current page is kept outside the sidebar listener.
                   widget.child,
 
                   // ==================================================
                   // MOBILE SIDEBAR
                   // ==================================================
-                  if (isMobile && sidebarOpen)
-                    Positioned.fill(
-                      child: Row(
-                        children: [
-                          const AppSidebar(),
+                  if (isMobile)
+                    ValueListenableBuilder<bool>(
+                      valueListenable: _sidebarOpen,
+                      builder: (context, open, _) {
+                        if (!open) {
+                          return const SizedBox.shrink();
+                        }
 
-                          // Dark overlay
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: _toggleSidebar,
-                              child: Container(
-                                color: Colors.black.withValues(alpha: 0.35),
+                        return Positioned.fill(
+                          child: Row(
+                            children: [
+                              const AppSidebar(),
+
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: _toggleSidebar,
+                                  child: Container(
+                                    color: Colors.black.withValues(alpha: 0.35),
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                 ],
               ),

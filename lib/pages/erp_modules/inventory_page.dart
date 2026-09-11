@@ -139,26 +139,57 @@ class _InventoryPageState extends State<InventoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
-
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isMobile = constraints.maxWidth < 750;
 
-          return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: isMobile ? 16 : 28,
-              vertical: isMobile ? 20 : 28,
-            ),
+          final horizontalPadding = isMobile ? 16.0 : 28.0;
+
+          return SafeArea(
+            bottom: false,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildPageHeader(isMobile),
-                const SizedBox(height: 24),
-                _buildSummaryCards(isMobile),
-                const SizedBox(height: 24),
-                _buildInventoryHealth(isMobile),
-                const SizedBox(height: 24),
-                _buildInventoryTable(isMobile),
+                // ==================================================
+                // FIXED INVENTORY HEADER
+                // ==================================================
+
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    isMobile ? 20 : 28,
+                    horizontalPadding,
+                    0,
+                  ),
+                  child: _buildPageHeader(isMobile),
+                ),
+
+                // ==================================================
+                // SCROLLABLE CONTENT
+                // ==================================================
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.fromLTRB(
+                      horizontalPadding,
+                      24,
+                      horizontalPadding,
+                      28,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSummaryCards(isMobile),
+
+                        const SizedBox(height: 24),
+
+                        _buildInventoryHealth(isMobile),
+
+                        const SizedBox(height: 24),
+
+                        _buildInventoryTable(isMobile),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           );

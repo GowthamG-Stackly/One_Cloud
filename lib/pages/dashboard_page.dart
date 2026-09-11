@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
 import '../providers/user_provider.dart';
-import '../widgets/app_layout.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -24,10 +23,6 @@ class DashboardPage extends StatelessWidget {
     );
   }
 }
-
-// ============================================================
-// DASHBOARD CONTENT
-// ============================================================
 
 class _DashboardContent extends StatelessWidget {
   final double width;
@@ -54,54 +49,72 @@ class _DashboardContent extends StatelessWidget {
 
     return SafeArea(
       bottom: false,
-      child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(
-          horizontalPadding,
-          18,
-          horizontalPadding,
-          28,
-        ),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1500),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _DashboardHeader(
+      child: Column(
+        children: [
+          // Fixed heading bar. This stays visible while the dashboard
+          // content below it scrolls.
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              18,
+              horizontalPadding,
+              0,
+            ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1500),
+                child: _DashboardHeader(
                   userName: userName,
                   compact: smallMobile || mobile,
                 ),
-
-                const SizedBox(height: 20),
-
-                _SectionTitle(
-                  title: 'Overview',
-                  subtitle: 'Inventory and operations summary',
-                ),
-
-                const SizedBox(height: 12),
-
-                _KpiSection(width: width),
-
-                const SizedBox(height: 22),
-
-                _ChartsSection(width: width, desktop: desktop, tablet: tablet),
-
-                const SizedBox(height: 22),
-
-                _OperationalSection(width: width, desktop: desktop),
-
-                const SizedBox(height: 22),
-
-                _ActivitySection(width: width, desktop: desktop),
-
-                const SizedBox(height: 22),
-
-                _QuickActionsSection(width: width),
-              ],
+              ),
             ),
           ),
-        ),
+          const SizedBox(height: 20),
+
+          // Only the dashboard content scrolls.
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                0,
+                horizontalPadding,
+                28,
+              ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1500),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _SectionTitle(
+                        title: 'Enterprise Overview',
+                        subtitle: 'OneCloud platform health, adoption, subscriptions and business activity',
+                      ),
+                      const SizedBox(height: 12),
+                      _KpiSection(width: width),
+                      const SizedBox(height: 22),
+                      _PlatformChartsSection(
+                        width: width,
+                        desktop: desktop,
+                        tablet: tablet,
+                      ),
+                      const SizedBox(height: 22),
+                      _EnterpriseOperationsSection(
+                        width: width,
+                        desktop: desktop,
+                      ),
+                      const SizedBox(height: 22),
+                      _ActivitySection(width: width, desktop: desktop),
+                      const SizedBox(height: 22),
+                      const _QuickActionsSection(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -156,38 +169,29 @@ class _DashboardHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Good day,',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF737D8C),
-              ),
-            ),
-
-            const SizedBox(height: 2),
-
-            Text(
-              name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.w800,
-                color: AppTheme.darkNavy,
-              ),
-            ),
-
-            const SizedBox(height: 6),
-
-            const Text(
-              'Here is your inventory and operations overview.',
-              style: TextStyle(fontSize: 13, color: Color(0xFF737D8C)),
-            ),
-          ],
+        const Text(
+          'Good day,',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF737D8C),
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w800,
+            color: AppTheme.darkNavy,
+          ),
+        ),
+        const SizedBox(height: 6),
+        const Text(
+          'Here is your OneCloud enterprise platform overview.',
+          style: TextStyle(fontSize: 13, color: Color(0xFF737D8C)),
         ),
       ],
     );
@@ -199,24 +203,41 @@ class _DateBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final months = const [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
       decoration: BoxDecoration(
         color: const Color(0xFFF3F7FC),
         borderRadius: BorderRadius.circular(11),
       ),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          const Icon(
             Icons.calendar_today_outlined,
             size: 16,
             color: AppTheme.primaryBlue,
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text(
-            '09 September 2026',
-            style: TextStyle(
+            '${now.day.toString().padLeft(2, '0')} '
+            '${months[now.month - 1]} ${now.year}',
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: AppTheme.darkNavy,
@@ -268,7 +289,7 @@ class _SectionTitle extends StatelessWidget {
 }
 
 // ============================================================
-// KPI SECTION
+// ENTERPRISE KPIs
 // ============================================================
 
 class _KpiSection extends StatelessWidget {
@@ -278,70 +299,69 @@ class _KpiSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<_KpiData> items = [
-      const _KpiData(
-        title: 'Total Products',
-        value: '1,248',
-        subtitle: 'Active products',
-        icon: Icons.inventory_2_outlined,
+    const items = [
+      _KpiData(
+        title: 'Total Tenants',
+        value: '128',
+        subtitle: 'Registered organizations',
+        icon: Icons.apartment_outlined,
         color: Color(0xFF2563EB),
       ),
-      const _KpiData(
-        title: 'Total Stock',
-        value: '18,420',
-        subtitle: 'Units in inventory',
-        icon: Icons.warehouse_outlined,
+      _KpiData(
+        title: 'Active Users',
+        value: '4,862',
+        subtitle: 'Users active this month',
+        icon: Icons.people_alt_outlined,
         color: Color(0xFF0891B2),
       ),
-      const _KpiData(
-        title: 'Low Stock',
-        value: '24',
-        subtitle: 'Need attention',
-        icon: Icons.warning_amber_rounded,
-        color: Color(0xFFD97706),
-      ),
-      const _KpiData(
-        title: 'Out of Stock',
-        value: '7',
-        subtitle: 'Items unavailable',
-        icon: Icons.remove_shopping_cart_outlined,
-        color: Color(0xFFDC2626),
-      ),
-      const _KpiData(
-        title: 'Purchase Orders',
-        value: '6',
-        subtitle: '2 pending',
-        icon: Icons.shopping_cart_outlined,
-        color: Color(0xFF7C3AED),
-      ),
-      const _KpiData(
-        title: 'Sales Orders',
-        value: '8',
-        subtitle: '3 processing',
-        icon: Icons.receipt_long_outlined,
+      _KpiData(
+        title: 'Active Subscriptions',
+        value: '116',
+        subtitle: '90.6% of tenants',
+        icon: Icons.card_membership_outlined,
         color: Color(0xFF059669),
       ),
-      const _KpiData(
-        title: 'Ready to Dispatch',
-        value: '1',
-        subtitle: 'Awaiting dispatch',
-        icon: Icons.local_shipping_outlined,
+      _KpiData(
+        title: 'Monthly Revenue',
+        value: '₹28.6L',
+        subtitle: '+12.4% this month',
+        icon: Icons.trending_up_outlined,
+        color: Color(0xFF7C3AED),
+      ),
+      _KpiData(
+        title: 'Enabled Modules',
+        value: '14',
+        subtitle: 'Enterprise services',
+        icon: Icons.apps_outlined,
         color: Color(0xFFEA580C),
       ),
-      const _KpiData(
-        title: 'In Transit',
-        value: '2',
-        subtitle: 'Active shipments',
-        icon: Icons.route_outlined,
+      _KpiData(
+        title: 'API Requests',
+        value: '2.4M',
+        subtitle: 'Last 30 days',
+        icon: Icons.api_outlined,
         color: Color(0xFF4F46E5),
+      ),
+      _KpiData(
+        title: 'System Uptime',
+        value: '99.98%',
+        subtitle: 'Platform availability',
+        icon: Icons.cloud_done_outlined,
+        color: Color(0xFF10B981),
+      ),
+      _KpiData(
+        title: 'Open Alerts',
+        value: '7',
+        subtitle: '3 require attention',
+        icon: Icons.notifications_active_outlined,
+        color: Color(0xFFDC2626),
       ),
     ];
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double availableWidth = constraints.maxWidth;
-
-        int columns;
+        final availableWidth = constraints.maxWidth;
+        final int columns;
 
         if (availableWidth < 500) {
           columns = 1;
@@ -357,7 +377,7 @@ class _KpiSection extends StatelessWidget {
           spacing: 14,
           runSpacing: 14,
           children: items.map((item) {
-            final double cardWidth = columns == 1
+            final cardWidth = columns == 1
                 ? availableWidth
                 : (availableWidth - (14 * (columns - 1))) / columns;
 
@@ -405,9 +425,7 @@ class _KpiCard extends StatelessWidget {
             ),
             child: Icon(data.icon, color: data.color, size: 22),
           ),
-
           const SizedBox(width: 13),
-
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -423,9 +441,7 @@ class _KpiCard extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-
                 const SizedBox(height: 3),
-
                 Text(
                   data.value,
                   maxLines: 1,
@@ -436,9 +452,7 @@ class _KpiCard extends StatelessWidget {
                     color: AppTheme.darkNavy,
                   ),
                 ),
-
                 const SizedBox(height: 2),
-
                 Text(
                   data.subtitle,
                   maxLines: 1,
@@ -459,15 +473,15 @@ class _KpiCard extends StatelessWidget {
 }
 
 // ============================================================
-// MAIN CHARTS
+// PLATFORM CHARTS
 // ============================================================
 
-class _ChartsSection extends StatelessWidget {
+class _PlatformChartsSection extends StatelessWidget {
   final double width;
   final bool desktop;
   final bool tablet;
 
-  const _ChartsSection({
+  const _PlatformChartsSection({
     required this.width,
     required this.desktop,
     required this.tablet,
@@ -479,58 +493,52 @@ class _ChartsSection extends StatelessWidget {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(flex: 7, child: _StockMovementCard()),
+          const Expanded(flex: 7, child: _TenantGrowthCard()),
           const SizedBox(width: 18),
-          Expanded(flex: 4, child: _InventoryHealthCard()),
+          const Expanded(flex: 4, child: _SubscriptionHealthCard()),
         ],
       );
     }
 
-    return Column(
+    return const Column(
       children: [
-        _StockMovementCard(),
-        const SizedBox(height: 18),
-        _InventoryHealthCard(),
+        _TenantGrowthCard(),
+        SizedBox(height: 18),
+        _SubscriptionHealthCard(),
       ],
     );
   }
 }
 
-// ============================================================
-// STOCK MOVEMENT
-// ============================================================
+class _TenantGrowthCard extends StatelessWidget {
+  const _TenantGrowthCard();
 
-class _StockMovementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _Panel(
-      title: 'Stock Movement',
-      subtitle: 'Inventory movement across the last 7 days',
-      trailing: const _SmallBadge(text: 'Last 7 Days'),
+      title: 'Tenant & Platform Growth',
+      subtitle: 'New organizations onboarded over the last 7 months',
+      trailing: const _SmallBadge(text: 'Last 7 Months'),
       child: Column(
         children: [
           const SizedBox(height: 14),
-
           SizedBox(
             height: 270,
             width: double.infinity,
             child: CustomPaint(
               painter: _BarChartPainter(
-                values: const [320, 460, 280, 540, 390, 610, 480],
-                labels: const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                values: const [72, 81, 88, 96, 104, 116, 128],
+                labels: const ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
               ),
             ),
           ),
-
           const SizedBox(height: 12),
-
-          Wrap(
+          const Wrap(
             spacing: 18,
             runSpacing: 8,
-            children: const [
-              _LegendItem(text: 'Stock In', color: Color(0xFF2563EB)),
-              _LegendItem(text: 'Stock Out', color: Color(0xFF10B981)),
-              _LegendItem(text: 'Transfer', color: Color(0xFFF59E0B)),
+            children: [
+              _LegendItem(text: 'Total Tenants', color: Color(0xFF2563EB)),
+              _LegendItem(text: 'Active', color: Color(0xFF10B981)),
             ],
           ),
         ],
@@ -539,61 +547,52 @@ class _StockMovementCard extends StatelessWidget {
   }
 }
 
-// ============================================================
-// INVENTORY HEALTH
-// ============================================================
+class _SubscriptionHealthCard extends StatelessWidget {
+  const _SubscriptionHealthCard();
 
-class _InventoryHealthCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _Panel(
-      title: 'Inventory Health',
-      subtitle: 'Current availability of products',
+      title: 'Subscription Health',
+      subtitle: 'Current OneCloud subscription distribution',
       child: Column(
         children: [
           const SizedBox(height: 10),
-
           SizedBox(
             height: 230,
             width: double.infinity,
             child: CustomPaint(
               painter: _PieChartPainter(
-                values: const [1217, 24, 7],
+                values: const [116, 8, 4],
                 colors: const [
                   Color(0xFF10B981),
                   Color(0xFFF59E0B),
                   Color(0xFFEF4444),
                 ],
-                centerValue: '1,248',
-                centerLabel: 'Products',
+                centerValue: '128',
+                centerLabel: 'Tenants',
               ),
             ),
           ),
-
           const SizedBox(height: 8),
-
           const _HealthRow(
-            title: 'Healthy Stock',
-            value: '1,217',
-            percentage: '97.5%',
+            title: 'Active Subscriptions',
+            value: '116',
+            percentage: '90.6%',
             color: Color(0xFF10B981),
           ),
-
           const SizedBox(height: 10),
-
           const _HealthRow(
-            title: 'Low Stock',
-            value: '24',
-            percentage: '1.9%',
+            title: 'Trial / Evaluation',
+            value: '8',
+            percentage: '6.3%',
             color: Color(0xFFF59E0B),
           ),
-
           const SizedBox(height: 10),
-
           const _HealthRow(
-            title: 'Out of Stock',
-            value: '7',
-            percentage: '0.6%',
+            title: 'Expired / Suspended',
+            value: '4',
+            percentage: '3.1%',
             color: Color(0xFFEF4444),
           ),
         ],
@@ -624,9 +623,7 @@ class _HealthRow extends StatelessWidget {
           height: 9,
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
-
         const SizedBox(width: 9),
-
         Expanded(
           child: Text(
             title,
@@ -637,7 +634,6 @@ class _HealthRow extends StatelessWidget {
             ),
           ),
         ),
-
         Text(
           value,
           style: const TextStyle(
@@ -646,9 +642,7 @@ class _HealthRow extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
-
         const SizedBox(width: 8),
-
         SizedBox(
           width: 45,
           child: Text(
@@ -667,110 +661,85 @@ class _HealthRow extends StatelessWidget {
 }
 
 // ============================================================
-// OPERATIONAL SECTION
+// ENTERPRISE OPERATIONS
 // ============================================================
 
-class _OperationalSection extends StatelessWidget {
+class _EnterpriseOperationsSection extends StatelessWidget {
   final double width;
   final bool desktop;
 
-  const _OperationalSection({required this.width, required this.desktop});
+  const _EnterpriseOperationsSection({
+    required this.width,
+    required this.desktop,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (desktop) {
-      return Row(
+      return const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: _ProcurementCard()),
-          const SizedBox(width: 18),
-          Expanded(child: _SalesOrderCard()),
+          Expanded(child: _ModuleAdoptionCard()),
+          SizedBox(width: 18),
+          Expanded(child: _PlatformHealthCard()),
         ],
       );
     }
 
-    return Column(
+    return const Column(
       children: [
-        _ProcurementCard(),
-        const SizedBox(height: 18),
-        _SalesOrderCard(),
+        _ModuleAdoptionCard(),
+        SizedBox(height: 18),
+        _PlatformHealthCard(),
       ],
     );
   }
 }
 
-// ============================================================
-// PROCUREMENT
-// ============================================================
+class _ModuleAdoptionCard extends StatelessWidget {
+  const _ModuleAdoptionCard();
 
-class _ProcurementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _Panel(
-      title: 'Procurement Pipeline',
-      subtitle: 'Current purchase order status',
+      title: 'Module Adoption',
+      subtitle: 'Most-used OneCloud enterprise services',
       child: Column(
         children: [
           const SizedBox(height: 12),
-
           _ProgressRow(
-            title: 'Pending',
-            value: 2,
-            total: 6,
-            color: const Color(0xFFF59E0B),
-          ),
-
-          const SizedBox(height: 20),
-
-          _ProgressRow(
-            title: 'Approved',
-            value: 2,
-            total: 6,
+            title: 'ERP',
+            value: 96,
+            total: 128,
             color: const Color(0xFF2563EB),
           ),
-
-          const SizedBox(height: 20),
-
+          const SizedBox(height: 17),
           _ProgressRow(
-            title: 'Received',
-            value: 2,
-            total: 6,
-            color: const Color(0xFF10B981),
+            title: 'HRMS',
+            value: 84,
+            total: 128,
+            color: const Color(0xFF0891B2),
           ),
-
-          const SizedBox(height: 18),
-
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Row(
-              children: [
-                Icon(
-                  Icons.payments_outlined,
-                  size: 18,
-                  color: AppTheme.primaryBlue,
-                ),
-                SizedBox(width: 9),
-                Expanded(
-                  child: Text(
-                    'Total PO Value',
-                    style: TextStyle(fontSize: 12, color: Color(0xFF697586)),
-                  ),
-                ),
-                Text(
-                  '₹6,32,050',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: AppTheme.darkNavy,
-                  ),
-                ),
-              ],
-            ),
+          const SizedBox(height: 17),
+          _ProgressRow(
+            title: 'CRM',
+            value: 78,
+            total: 128,
+            color: const Color(0xFF7C3AED),
+          ),
+          const SizedBox(height: 17),
+          _ProgressRow(
+            title: 'Finance & Accounting',
+            value: 71,
+            total: 128,
+            color: const Color(0xFF059669),
+          ),
+          const SizedBox(height: 17),
+          _ProgressRow(
+            title: 'Workflow & Automation',
+            value: 63,
+            total: 128,
+            color: const Color(0xFFEA580C),
           ),
         ],
       ),
@@ -793,7 +762,7 @@ class _ProgressRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double progress = total == 0 ? 0 : value / total;
+    final progress = total == 0 ? 0.0 : value / total;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -811,7 +780,7 @@ class _ProgressRow extends StatelessWidget {
               ),
             ),
             Text(
-              '$value Orders',
+              '$value Tenants',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
@@ -820,9 +789,7 @@ class _ProgressRow extends StatelessWidget {
             ),
           ],
         ),
-
         const SizedBox(height: 8),
-
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: LinearProgressIndicator(
@@ -837,142 +804,147 @@ class _ProgressRow extends StatelessWidget {
   }
 }
 
-// ============================================================
-// SALES ORDERS
-// ============================================================
+class _PlatformHealthCard extends StatelessWidget {
+  const _PlatformHealthCard();
 
-class _SalesOrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _Panel(
-      title: 'Sales Order Pipeline',
-      subtitle: 'Current sales order distribution',
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final bool narrow = constraints.maxWidth < 500;
-
-          if (narrow) {
-            return Column(
-              children: [
-                const SizedBox(height: 8),
-
-                SizedBox(
-                  height: 220,
-                  width: double.infinity,
-                  child: CustomPaint(
-                    painter: _PieChartPainter(
-                      values: const [2, 3, 3],
-                      colors: const [
-                        Color(0xFFF59E0B),
-                        Color(0xFF2563EB),
-                        Color(0xFF10B981),
-                      ],
-                      centerValue: '8',
-                      centerLabel: 'Orders',
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                const _OrderLegendList(),
-              ],
-            );
-          }
-
-          return Row(
-            children: [
-              Expanded(
-                flex: 5,
-                child: SizedBox(
-                  height: 220,
-                  child: CustomPaint(
-                    painter: _PieChartPainter(
-                      values: const [2, 3, 3],
-                      colors: const [
-                        Color(0xFFF59E0B),
-                        Color(0xFF2563EB),
-                        Color(0xFF10B981),
-                      ],
-                      centerValue: '8',
-                      centerLabel: 'Orders',
-                    ),
-                  ),
-                ),
-              ),
-
-              Expanded(flex: 4, child: const _OrderLegendList()),
-            ],
-          );
-        },
+      title: 'Platform Health',
+      subtitle: 'Current OneCloud infrastructure and service status',
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          const _HealthStatusRow(
+            icon: Icons.cloud_done_outlined,
+            title: 'Core Platform',
+            description: 'All core services operational',
+            status: 'Operational',
+            color: Color(0xFF10B981),
+          ),
+          const SizedBox(height: 10),
+          const _HealthStatusRow(
+            icon: Icons.api_outlined,
+            title: 'API Gateway',
+            description: 'Normal request processing',
+            status: 'Operational',
+            color: Color(0xFF10B981),
+          ),
+          const SizedBox(height: 10),
+          const _HealthStatusRow(
+            icon: Icons.storage_outlined,
+            title: 'Data Services',
+            description: 'Storage and database healthy',
+            status: 'Operational',
+            color: Color(0xFF10B981),
+          ),
+          const SizedBox(height: 10),
+          const _HealthStatusRow(
+            icon: Icons.account_tree_outlined,
+            title: 'Workflow Engine',
+            description: '1 delayed workflow',
+            status: 'Warning',
+            color: Color(0xFFF59E0B),
+          ),
+          const SizedBox(height: 10),
+          const _HealthStatusRow(
+            icon: Icons.notifications_active_outlined,
+            title: 'Notifications',
+            description: 'Email, SMS and push services',
+            status: 'Operational',
+            color: Color(0xFF10B981),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _OrderLegendList extends StatelessWidget {
-  const _OrderLegendList();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        _OrderLegend(title: 'Pending', value: '2', color: Color(0xFFF59E0B)),
-        SizedBox(height: 18),
-        _OrderLegend(title: 'Processing', value: '3', color: Color(0xFF2563EB)),
-        SizedBox(height: 18),
-        _OrderLegend(title: 'Completed', value: '3', color: Color(0xFF10B981)),
-      ],
-    );
-  }
-}
-
-class _OrderLegend extends StatelessWidget {
+class _HealthStatusRow extends StatelessWidget {
+  final IconData icon;
   final String title;
-  final String value;
+  final String description;
+  final String status;
   final Color color;
 
-  const _OrderLegend({
+  const _HealthStatusRow({
+    required this.icon,
     required this.title,
-    required this.value,
+    required this.description,
+    required this.status,
     required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-
-        const SizedBox(width: 8),
-
-        Expanded(
-          child: Text(
-            title,
-            style: const TextStyle(fontSize: 12, color: Color(0xFF667085)),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(color: const Color(0xFFECEFF3)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 18),
           ),
-        ),
-
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w800,
-            color: AppTheme.darkNavy,
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.darkNavy,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  description,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 9, color: Color(0xFF8992A3)),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(7),
+            ),
+            child: Text(
+              status,
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
 // ============================================================
-// ACTIVITY SECTION
+// ACTIVITY
 // ============================================================
 
 class _ActivitySection extends StatelessWidget {
@@ -984,36 +956,30 @@ class _ActivitySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (desktop) {
-      return Row(
+      return const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(flex: 7, child: _RecentActivityCard()),
-          const SizedBox(width: 18),
+          SizedBox(width: 18),
           Expanded(flex: 4, child: _AttentionCard()),
         ],
       );
     }
 
-    return Column(
-      children: [
-        _RecentActivityCard(),
-        const SizedBox(height: 18),
-        _AttentionCard(),
-      ],
+    return const Column(
+      children: [_RecentActivityCard(), SizedBox(height: 18), _AttentionCard()],
     );
   }
 }
 
-// ============================================================
-// RECENT ACTIVITY
-// ============================================================
-
 class _RecentActivityCard extends StatelessWidget {
+  const _RecentActivityCard();
+
   @override
   Widget build(BuildContext context) {
     return _Panel(
-      title: 'Recent Activity',
-      subtitle: 'Latest inventory and order updates',
+      title: 'Recent Platform Activity',
+      subtitle: 'Latest OneCloud enterprise events',
       trailing: TextButton(
         onPressed: () {},
         child: const Text(
@@ -1028,50 +994,42 @@ class _RecentActivityCard extends StatelessWidget {
       child: Column(
         children: [
           const _ActivityItem(
-            icon: Icons.inventory_2_outlined,
+            icon: Icons.apartment_outlined,
             color: Color(0xFF2563EB),
-            title: 'Product Added',
-            description: 'Wireless Keyboard added to inventory',
+            title: 'New Tenant Onboarded',
+            description: 'Acme Technologies joined the OneCloud platform',
             time: '10 min ago',
           ),
-
           const Divider(height: 1, color: Color(0xFFEDF0F4)),
-
           const _ActivityItem(
-            icon: Icons.download_outlined,
+            icon: Icons.card_membership_outlined,
             color: Color(0xFF10B981),
-            title: 'Stock Received',
-            description: '120 pcs Wireless Keyboard received',
-            time: '35 min ago',
+            title: 'Subscription Activated',
+            description: 'Enterprise plan activated for Global Retail Ltd.',
+            time: '32 min ago',
           ),
-
           const Divider(height: 1, color: Color(0xFFEDF0F4)),
-
           const _ActivityItem(
-            icon: Icons.upload_outlined,
-            color: Color(0xFFEA580C),
-            title: 'Stock Dispatched',
-            description: '45 pcs USB-C Cable dispatched',
+            icon: Icons.extension_outlined,
+            color: Color(0xFF7C3AED),
+            title: 'Module Enabled',
+            description: 'CRM enabled for NorthStar Solutions',
             time: '1 hour ago',
           ),
-
           const Divider(height: 1, color: Color(0xFFEDF0F4)),
-
           const _ActivityItem(
-            icon: Icons.warning_amber_rounded,
-            color: Color(0xFFF59E0B),
-            title: 'Low Stock Alert',
-            description: 'Wireless Mouse has reached low stock',
+            icon: Icons.person_add_alt_1_outlined,
+            color: Color(0xFF0891B2),
+            title: 'User Provisioned',
+            description: '24 new users added across 3 tenants',
             time: '2 hours ago',
           ),
-
           const Divider(height: 1, color: Color(0xFFEDF0F4)),
-
           const _ActivityItem(
-            icon: Icons.shopping_cart_outlined,
-            color: Color(0xFF7C3AED),
-            title: 'Purchase Order Received',
-            description: 'PO-2026-00418 completed',
+            icon: Icons.settings_outlined,
+            color: Color(0xFFEA580C),
+            title: 'Platform Configuration Updated',
+            description: 'Global notification settings were updated',
             time: '3 hours ago',
           ),
         ],
@@ -1111,9 +1069,7 @@ class _ActivityItem extends StatelessWidget {
             ),
             child: Icon(icon, color: color, size: 19),
           ),
-
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1128,9 +1084,7 @@ class _ActivityItem extends StatelessWidget {
                     color: AppTheme.darkNavy,
                   ),
                 ),
-
                 const SizedBox(height: 3),
-
                 Text(
                   description,
                   maxLines: 2,
@@ -1143,9 +1097,7 @@ class _ActivityItem extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(width: 8),
-
           Text(
             time,
             style: const TextStyle(fontSize: 9, color: Color(0xFF98A2B3)),
@@ -1156,54 +1108,46 @@ class _ActivityItem extends StatelessWidget {
   }
 }
 
-// ============================================================
-// ATTENTION
-// ============================================================
-
 class _AttentionCard extends StatelessWidget {
+  const _AttentionCard();
+
   @override
   Widget build(BuildContext context) {
     return _Panel(
       title: 'Attention Required',
-      subtitle: 'Items that need immediate action',
+      subtitle: 'OneCloud platform items that need action',
       child: Column(
         children: [
           const _AttentionItem(
-            icon: Icons.warning_amber_rounded,
-            color: Color(0xFFF59E0B),
-            title: 'Low Stock Items',
-            value: '24',
-            description: 'Products below reorder level',
-          ),
-
-          const SizedBox(height: 11),
-
-          const _AttentionItem(
-            icon: Icons.remove_shopping_cart_outlined,
-            color: Color(0xFFEF4444),
-            title: 'Out of Stock',
+            icon: Icons.notifications_active_outlined,
+            color: Color(0xFFDC2626),
+            title: 'Open Platform Alerts',
             value: '7',
-            description: 'Products currently unavailable',
+            description: '3 alerts require immediate attention',
           ),
-
           const SizedBox(height: 11),
-
           const _AttentionItem(
-            icon: Icons.pending_actions_outlined,
+            icon: Icons.card_membership_outlined,
+            color: Color(0xFFF59E0B),
+            title: 'Expiring Subscriptions',
+            value: '6',
+            description: 'Subscriptions expire within 30 days',
+          ),
+          const SizedBox(height: 11),
+          const _AttentionItem(
+            icon: Icons.person_off_outlined,
             color: Color(0xFF7C3AED),
-            title: 'Pending Purchase Orders',
-            value: '2',
-            description: 'Orders awaiting approval',
+            title: 'Inactive Tenants',
+            value: '8',
+            description: 'No activity recorded in the last 30 days',
           ),
-
           const SizedBox(height: 11),
-
           const _AttentionItem(
-            icon: Icons.local_shipping_outlined,
+            icon: Icons.account_tree_outlined,
             color: Color(0xFFEA580C),
-            title: 'Delayed Dispatch',
+            title: 'Delayed Workflows',
             value: '1',
-            description: 'Shipment requires attention',
+            description: 'Workflow execution requires attention',
           ),
         ],
       ),
@@ -1247,9 +1191,7 @@ class _AttentionItem extends StatelessWidget {
             ),
             child: Icon(icon, color: color, size: 18),
           ),
-
           const SizedBox(width: 10),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1264,21 +1206,17 @@ class _AttentionItem extends StatelessWidget {
                     color: AppTheme.darkNavy,
                   ),
                 ),
-
                 const SizedBox(height: 3),
-
                 Text(
                   description,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 9, color: Color(0xFF8992A3)),
                 ),
               ],
             ),
           ),
-
           const SizedBox(width: 8),
-
           Text(
             value,
             style: TextStyle(
@@ -1298,59 +1236,56 @@ class _AttentionItem extends StatelessWidget {
 // ============================================================
 
 class _QuickActionsSection extends StatelessWidget {
-  final double width;
-
-  const _QuickActionsSection({required this.width});
+  const _QuickActionsSection();
 
   @override
   Widget build(BuildContext context) {
     const actions = [
       _QuickAction(
-        title: 'Inventory',
-        subtitle: 'Manage stock',
-        icon: Icons.inventory_2_outlined,
+        title: 'Platform Admin',
+        subtitle: 'Manage platform',
+        icon: Icons.admin_panel_settings_outlined,
         color: Color(0xFF2563EB),
       ),
       _QuickAction(
-        title: 'Receive Stock',
-        subtitle: 'Stock inward',
-        icon: Icons.download_outlined,
-        color: Color(0xFF10B981),
-      ),
-      _QuickAction(
-        title: 'Purchase Order',
-        subtitle: 'Create PO',
-        icon: Icons.shopping_cart_outlined,
-        color: Color(0xFF7C3AED),
-      ),
-      _QuickAction(
-        title: 'Sales Order',
-        subtitle: 'Create order',
-        icon: Icons.receipt_long_outlined,
+        title: 'Tenants',
+        subtitle: 'Manage organizations',
+        icon: Icons.apartment_outlined,
         color: Color(0xFF0891B2),
       ),
       _QuickAction(
-        title: 'Dispatch',
-        subtitle: 'Ship order',
-        icon: Icons.local_shipping_outlined,
+        title: 'Subscriptions',
+        subtitle: 'Manage plans',
+        icon: Icons.card_membership_outlined,
+        color: Color(0xFF7C3AED),
+      ),
+      _QuickAction(
+        title: 'User Management',
+        subtitle: 'Manage users',
+        icon: Icons.people_alt_outlined,
+        color: Color(0xFF059669),
+      ),
+      _QuickAction(
+        title: 'Reports & BI',
+        subtitle: 'View analytics',
+        icon: Icons.analytics_outlined,
         color: Color(0xFFEA580C),
       ),
       _QuickAction(
-        title: 'Vendors',
-        subtitle: 'Manage vendors',
-        icon: Icons.business_outlined,
+        title: 'System Health',
+        subtitle: 'Check platform',
+        icon: Icons.monitor_heart_outlined,
         color: Color(0xFF4F46E5),
       ),
     ];
 
     return _Panel(
       title: 'Quick Actions',
-      subtitle: 'Frequently used operations',
+      subtitle: 'Frequently used OneCloud platform operations',
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final double available = constraints.maxWidth;
-
-          int columns;
+          final available = constraints.maxWidth;
+          final int columns;
 
           if (available < 450) {
             columns = 1;
@@ -1366,7 +1301,7 @@ class _QuickActionsSection extends StatelessWidget {
             spacing: 12,
             runSpacing: 12,
             children: actions.map((action) {
-              final double cardWidth = columns == 1
+              final cardWidth = columns == 1
                   ? available
                   : (available - (12 * (columns - 1))) / columns;
 
@@ -1413,9 +1348,7 @@ class _QuickActionCard extends StatelessWidget {
                 ),
                 child: Icon(action.icon, color: action.color, size: 20),
               ),
-
               const SizedBox(width: 10),
-
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -1431,9 +1364,7 @@ class _QuickActionCard extends StatelessWidget {
                         color: AppTheme.darkNavy,
                       ),
                     ),
-
                     const SizedBox(height: 3),
-
                     Text(
                       action.subtitle,
                       maxLines: 1,
@@ -1508,9 +1439,7 @@ class _Panel extends StatelessWidget {
                         color: AppTheme.darkNavy,
                       ),
                     ),
-
                     const SizedBox(height: 4),
-
                     Text(
                       subtitle,
                       maxLines: 2,
@@ -1523,13 +1452,10 @@ class _Panel extends StatelessWidget {
                   ],
                 ),
               ),
-
               if (trailing != null) ...[const SizedBox(width: 8), trailing!],
             ],
           ),
-
           const SizedBox(height: 4),
-
           child,
         ],
       ),
@@ -1554,9 +1480,9 @@ class _SmallBadge extends StatelessWidget {
         color: const Color(0xFFEFF6FF),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Text(
-        'Last 7 Days',
-        style: TextStyle(
+      child: Text(
+        text,
+        style: const TextStyle(
           fontSize: 9,
           fontWeight: FontWeight.w700,
           color: Color(0xFF2563EB),
@@ -1615,38 +1541,29 @@ class _BarChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (values.isEmpty) {
-      return;
-    }
+    if (values.isEmpty) return;
 
-    const double left = 35;
-    const double right = 12;
-    const double top = 20;
-    const double bottom = 35;
+    const left = 35.0;
+    const right = 12.0;
+    const top = 20.0;
+    const bottom = 35.0;
 
-    final double chartWidth = size.width - left - right;
-
-    final double chartHeight = size.height - top - bottom;
+    final chartWidth = size.width - left - right;
+    final chartHeight = size.height - top - bottom;
 
     double maxValue = 0;
-
     for (final value in values) {
-      if (value > maxValue) {
-        maxValue = value;
-      }
+      if (value > maxValue) maxValue = value;
     }
 
-    if (maxValue <= 0) {
-      maxValue = 1;
-    }
+    if (maxValue <= 0) maxValue = 1;
 
-    final Paint gridPaint = Paint()
+    final gridPaint = Paint()
       ..color = const Color(0xFFE8EDF3)
       ..strokeWidth = 1;
 
     for (int i = 0; i <= 4; i++) {
-      final double y = top + chartHeight - (chartHeight * i / 4);
-
+      final y = top + chartHeight - (chartHeight * i / 4);
       canvas.drawLine(
         Offset(left, y),
         Offset(size.width - right, y),
@@ -1654,28 +1571,24 @@ class _BarChartPainter extends CustomPainter {
       );
     }
 
-    final double slotWidth = chartWidth / values.length;
-
-    final double barWidth = math.min(34, slotWidth * 0.50);
-
-    final Paint barPaint = Paint()..color = const Color(0xFF2563EB);
+    final slotWidth = chartWidth / values.length;
+    final double barWidth = math.min(34.0, slotWidth * 0.50);
+    final barPaint = Paint()..color = const Color(0xFF2563EB);
 
     for (int i = 0; i < values.length; i++) {
       final double barHeight = values[i] / maxValue * chartHeight;
-
       final double x = left + slotWidth * i + (slotWidth - barWidth) / 2;
-
       final double y = top + chartHeight - barHeight;
 
-      final Rect rect = Rect.fromLTWH(x, y, barWidth, barHeight);
-
       canvas.drawRRect(
-        RRect.fromRectAndRadius(rect, const Radius.circular(5)),
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(x, y, barWidth, barHeight),
+          const Radius.circular(5),
+        ),
         barPaint,
       );
 
-      // Value
-      final TextPainter valuePainter = TextPainter(
+      final valuePainter = TextPainter(
         text: TextSpan(
           text: values[i].round().toString(),
           style: const TextStyle(
@@ -1688,7 +1601,6 @@ class _BarChartPainter extends CustomPainter {
       );
 
       valuePainter.layout();
-
       valuePainter.paint(
         canvas,
         Offset(
@@ -1697,10 +1609,8 @@ class _BarChartPainter extends CustomPainter {
         ),
       );
 
-      // Label
-      final String label = i < labels.length ? labels[i] : '';
-
-      final TextPainter labelPainter = TextPainter(
+      final label = i < labels.length ? labels[i] : '';
+      final labelPainter = TextPainter(
         text: TextSpan(
           text: label,
           style: const TextStyle(fontSize: 9, color: Color(0xFF8992A3)),
@@ -1709,7 +1619,6 @@ class _BarChartPainter extends CustomPainter {
       );
 
       labelPainter.layout();
-
       labelPainter.paint(
         canvas,
         Offset(x + barWidth / 2 - labelPainter.width / 2, size.height - 22),
@@ -1725,7 +1634,6 @@ class _BarChartPainter extends CustomPainter {
 
 // ============================================================
 // PIE / DONUT CHART
-// NO drawArc
 // ============================================================
 
 class _PieChartPainter extends CustomPainter {
@@ -1743,65 +1651,51 @@ class _PieChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (values.isEmpty || colors.isEmpty) {
-      return;
-    }
+    if (values.isEmpty || colors.isEmpty) return;
 
     double total = 0;
-
     for (final value in values) {
       total += value;
     }
 
-    if (total <= 0) {
-      return;
-    }
+    if (total <= 0) return;
 
-    final Offset center = Offset(size.width / 2, size.height / 2);
-
-    final double radius = math.min(size.width, size.height) / 2 - 12;
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = math.min(size.width, size.height) / 2 - 12;
 
     double startAngle = -math.pi / 2;
 
     for (int i = 0; i < values.length; i++) {
-      final double sweep = values[i] / total * math.pi * 2;
-
-      final Path path = Path();
-
+      final sweep = values[i] / total * math.pi * 2;
+      final path = Path();
       path.moveTo(center.dx, center.dy);
 
-      const int segments = 50;
+      const segments = 50;
 
       for (int step = 0; step <= segments; step++) {
-        final double angle = startAngle + sweep * step / segments;
-
-        final double x = center.dx + math.cos(angle) * radius;
-
-        final double y = center.dy + math.sin(angle) * radius;
-
+        final angle = startAngle + sweep * step / segments;
+        final x = center.dx + math.cos(angle) * radius;
+        final y = center.dy + math.sin(angle) * radius;
         path.lineTo(x, y);
       }
 
       path.close();
 
-      final Paint paint = Paint()
+      final paint = Paint()
         ..color = colors[i % colors.length]
         ..style = PaintingStyle.fill;
 
       canvas.drawPath(path, paint);
-
       startAngle += sweep;
     }
 
-    // Donut center
-    final Paint centerPaint = Paint()
+    final centerPaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, radius * 0.55, centerPaint);
 
-    // Center value
-    final TextPainter valuePainter = TextPainter(
+    final valuePainter = TextPainter(
       text: TextSpan(
         text: centerValue,
         style: const TextStyle(
@@ -1814,14 +1708,12 @@ class _PieChartPainter extends CustomPainter {
     );
 
     valuePainter.layout();
-
     valuePainter.paint(
       canvas,
       Offset(center.dx - valuePainter.width / 2, center.dy - 13),
     );
 
-    // Center label
-    final TextPainter labelPainter = TextPainter(
+    final labelPainter = TextPainter(
       text: TextSpan(
         text: centerLabel,
         style: const TextStyle(
@@ -1834,7 +1726,6 @@ class _PieChartPainter extends CustomPainter {
     );
 
     labelPainter.layout();
-
     labelPainter.paint(
       canvas,
       Offset(center.dx - labelPainter.width / 2, center.dy + 13),

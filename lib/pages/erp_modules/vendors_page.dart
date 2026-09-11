@@ -83,31 +83,57 @@ class _VendorsPageState extends State<VendorsPage> {
   ];
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: const Color(0xFFF5F7FA),
+    body: LayoutBuilder(
+      builder: (context, constraints) {
+        final bool mobile = constraints.maxWidth < 850;
 
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final mobile = constraints.maxWidth < 850;
+        final double horizontalPadding = mobile ? 16 : 28;
+        final double topPadding = mobile ? 16 : 28;
 
-          return SingleChildScrollView(
-            padding: EdgeInsets.all(mobile ? 16 : 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _pageHeader(mobile),
-                const SizedBox(height: 24),
-                _summaryCards(mobile),
-                const SizedBox(height: 24),
-                _vendorDirectory(mobile),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
+        return SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              // FIXED HEADER
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  topPadding,
+                  horizontalPadding,
+                  0,
+                ),
+                child: _pageHeader(mobile),
+              ),
+
+              // SCROLLABLE CONTENT
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    24,
+                    horizontalPadding,
+                    28,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _summaryCards(mobile),
+                      const SizedBox(height: 24),
+                      _vendorDirectory(mobile),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    ),
+  );
+}
 
   // ------------------------------------------------------------
   // HEADER

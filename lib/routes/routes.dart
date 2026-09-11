@@ -65,6 +65,30 @@ import '../pages/erp_modules/procurement_page.dart';
 import '../pages/erp_modules/vendors_page.dart';
 import '../pages/erp_modules/sales_orders_page.dart';
 import '../pages/erp_modules/dispatch_page.dart';
+import '../pages/erp_modules/production_page.dart';
+import '../pages/erp_modules/asset_management_page.dart';
+import '../pages/erp_modules/maintenance_page.dart';
+
+import '../pages/finance/general_ledger_page.dart';
+import '../pages/finance/accounts_payable_page.dart';
+import '../pages/finance/accounts_receivable_page.dart';
+import '../pages/finance/asset_management_page.dart'
+    as finance_asset_management;
+import '../pages/finance/budgeting_page.dart';
+import '../pages/finance/costing_page.dart';
+import '../pages/finance/financial_reports_page.dart';
+import '../pages/finance/reconciliation_page.dart';
+import '../pages/finance/multi_currency_page.dart';
+
+import '../pages/workflow/workflow_builder_page.dart';
+import '../pages/workflow/approvals_page.dart';
+import '../pages/workflow/business_rules_page.dart';
+import '../pages/workflow/process_automation_page.dart';
+import '../pages/workflow/task_management_page.dart';
+import '../pages/workflow/triggers_page.dart';
+import '../pages/workflow/slas_escalations_page.dart';
+import '../pages/workflow/process_monitoring_page.dart';
+import '../pages/workflow/workflow_templates_page.dart';
 
 import '../providers/user_provider.dart';
 import '../widgets/app_layout.dart';
@@ -150,6 +174,32 @@ class AppRoutes {
   static const String vendors = '/vendors';
   static const String salesOrders = '/sales-orders';
   static const String dispatch = '/dispatch';
+  static const String production = '/production';
+  static const String assetManagement = '/asset-management';
+  static const String maintenance = '/maintenance';
+
+  // FINANCE & ACCOUNTING MODULES
+  static const String financeGeneralLedger = '/finance/general-ledger';
+  static const String financeAccountsPayable = '/finance/accounts-payable';
+  static const String financeAccountsReceivable =
+      '/finance/accounts-receivable';
+  static const String financeAssetManagement = '/finance/asset-management';
+  static const String financeBudgeting = '/finance/budgeting';
+  static const String financeCosting = '/finance/costing';
+  static const String financeFinancialReports = '/finance/financial-reports';
+  static const String financeReconciliation = '/finance/reconciliation';
+  static const String financeMultiCurrency = '/finance/multi-currency';
+
+  // WORKFLOW  & AUTOMATION
+  static const String workflowBuilder = '/workflow/builder';
+  static const String workflowApprovals = '/workflow/approvals';
+  static const String workflowBusinessRules = '/workflow/business-rules';
+  static const String workflowProcessAutomation = '/workflow/automation';
+  static const String workflowTasks = '/workflow/tasks';
+  static const String workflowTriggers = '/workflow/triggers';
+  static const String workflowSlas = '/workflow/slas';
+  static const String workflowMonitoring = '/workflow/monitoring';
+  static const String workflowTemplates = '/workflow/templates';
 
   // ==============================================================
   // ROUTER
@@ -417,12 +467,81 @@ class AppRoutes {
           ),
 
           // ==========================================================
-          // ERP
+          // ERP MODULES
           // ==========================================================
           GoRoute(
-            path: erp,
+            path: AppRoutes.erp,
             builder: (context, state) {
               return const ErpDashboardPage();
+            },
+          ),
+          GoRoute(
+            path: inventory,
+            builder: (context, state) {
+              return const InventoryPage();
+            },
+          ),
+
+          GoRoute(
+            path: warehouses,
+            builder: (context, state) {
+              return const WarehousesPage();
+            },
+          ),
+
+          GoRoute(
+            path: stockMovements,
+            builder: (context, state) {
+              return const StockMovementsPage();
+            },
+          ),
+
+          GoRoute(
+            path: procurement,
+            builder: (context, state) {
+              return const ProcurementPage();
+            },
+          ),
+
+          GoRoute(
+            path: vendors,
+            builder: (context, state) {
+              return const VendorsPage();
+            },
+          ),
+
+          GoRoute(
+            path: salesOrders,
+            builder: (context, state) {
+              return const SalesOrdersPage();
+            },
+          ),
+
+          GoRoute(
+            path: dispatch,
+            builder: (context, state) {
+              return const DispatchPage();
+            },
+          ),
+
+          GoRoute(
+            path: production,
+            builder: (context, state) {
+              return const ProductionPage();
+            },
+          ),
+
+          GoRoute(
+            path: assetManagement,
+            builder: (context, state) {
+              return const AssetManagementPage();
+            },
+          ),
+
+          GoRoute(
+            path: maintenance,
+            builder: (context, state) {
+              return const MaintenancePage();
             },
           ),
 
@@ -436,6 +555,68 @@ class AppRoutes {
             },
           ),
 
+          GoRoute(
+            path: financeGeneralLedger,
+            builder: (context, state) {
+              return const GeneralLedgerPage();
+            },
+          ),
+
+          GoRoute(
+            path: financeAccountsPayable,
+            builder: (context, state) {
+              return const AccountsPayablePage();
+            },
+          ),
+
+          GoRoute(
+            path: financeAccountsReceivable,
+            builder: (context, state) {
+              return const AccountsReceivablePage();
+            },
+          ),
+
+          GoRoute(
+            path: financeAssetManagement,
+            builder: (context, state) =>
+                const finance_asset_management.AssetManagementPage(),
+          ),
+
+          GoRoute(
+            path: financeBudgeting,
+            builder: (context, state) {
+              return const BudgetingPage();
+            },
+          ),
+
+          GoRoute(
+            path: financeCosting,
+            builder: (context, state) {
+              return const CostingPage();
+            },
+          ),
+
+          GoRoute(
+            path: financeFinancialReports,
+            builder: (context, state) {
+              return const FinancialReportsPage();
+            },
+          ),
+
+          GoRoute(
+            path: financeReconciliation,
+            builder: (context, state) {
+              return const ReconciliationPage();
+            },
+          ),
+
+          GoRoute(
+            path: financeMultiCurrency,
+            builder: (context, state) {
+              return const MultiCurrencyPage();
+            },
+          ),
+
           // ==========================================================
           // WORKFLOW & AUTOMATION
           // ==========================================================
@@ -443,6 +624,60 @@ class AppRoutes {
             path: workflow,
             builder: (context, state) {
               return const WorkflowDashboardPage();
+            },
+          ),
+          GoRoute(
+            path: workflowBuilder,
+            builder: (context, state) {
+              return const WorkflowBuilderPage();
+            },
+          ),
+          GoRoute(
+            path: workflowApprovals,
+            builder: (context, state) {
+              return const ApprovalsPage();
+            },
+          ),
+          GoRoute(
+            path: workflowBusinessRules,
+            builder: (context, state) {
+              return const BusinessRulesPage();
+            },
+          ),
+          GoRoute(
+            path: workflowProcessAutomation,
+            builder: (context, state) {
+              return const ProcessAutomationPage();
+            },
+          ),
+          GoRoute(
+            path: workflowTasks,
+            builder: (context, state) {
+              return const TaskManagementPage();
+            },
+          ),
+          GoRoute(
+            path: workflowTriggers,
+            builder: (context, state) {
+              return const TriggersPage();
+            },
+          ),
+          GoRoute(
+            path: workflowSlas,
+            builder: (context, state) {
+              return const SlasEscalationsPage();
+            },
+          ),
+          GoRoute(
+            path: workflowMonitoring,
+            builder: (context, state) {
+              return const ProcessMonitoringPage();
+            },
+          ),
+          GoRoute(
+            path: workflowTemplates,
+            builder: (context, state) {
+              return const WorkflowTemplatesPage();
             },
           ),
 

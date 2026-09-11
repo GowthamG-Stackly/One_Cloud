@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../routes/routes.dart';
 import '../../widgets/enterprise_module_dashboard.dart';
 
 class FinanceDashboardPage extends StatelessWidget {
@@ -11,6 +12,10 @@ class FinanceDashboardPage extends StatelessWidget {
       title: 'Finance & Accounting',
       subtitle: 'Manage financial operations, accounting and reporting.',
       icon: Icons.account_balance_wallet_outlined,
+
+      // ============================================================
+      // KPIs
+      // ============================================================
       kpis: [
         ModuleKpi(
           title: 'Total Revenue',
@@ -33,32 +38,55 @@ class FinanceDashboardPage extends StatelessWidget {
           icon: Icons.pending_actions_outlined,
         ),
       ],
+
+      // ============================================================
+      // QUICK ACTIONS
+      // ============================================================
       quickActions: [
         ModuleQuickAction(
           title: 'General Ledger',
           icon: Icons.menu_book_outlined,
+          route: AppRoutes.financeGeneralLedger,
         ),
         ModuleQuickAction(
           title: 'Accounts Payable',
           icon: Icons.arrow_downward_outlined,
+          route: AppRoutes.financeAccountsPayable,
         ),
         ModuleQuickAction(
           title: 'Accounts Receivable',
           icon: Icons.arrow_upward_outlined,
+          route: AppRoutes.financeAccountsReceivable,
         ),
         ModuleQuickAction(
-          title: 'Tax Management',
-          icon: Icons.account_balance_outlined,
+          title: 'Asset Management',
+          icon: Icons.business_center_outlined,
+          route: AppRoutes.financeAssetManagement,
         ),
-        ModuleQuickAction(title: 'Budgeting', icon: Icons.pie_chart_outline),
-        ModuleQuickAction(title: 'Costing', icon: Icons.calculate_outlined),
+        ModuleQuickAction(
+          title: 'Budgeting',
+          icon: Icons.account_balance_outlined,
+          route: AppRoutes.financeBudgeting,
+        ),
+        ModuleQuickAction(
+          title: 'Costing',
+          icon: Icons.calculate_outlined,
+          route: AppRoutes.financeCosting,
+        ),
         ModuleQuickAction(
           title: 'Financial Reports',
           icon: Icons.bar_chart_outlined,
+          route: AppRoutes.financeFinancialReports,
         ),
         ModuleQuickAction(
           title: 'Reconciliation',
           icon: Icons.sync_alt_outlined,
+          route: AppRoutes.financeReconciliation,
+        ),
+        ModuleQuickAction(
+          title: 'Multi-Currency',
+          icon: Icons.currency_exchange_outlined,
+          route: AppRoutes.financeMultiCurrency,
         ),
       ],
     );

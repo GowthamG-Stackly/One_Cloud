@@ -319,9 +319,9 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 15),
 
               const Text(
-                'Smart inventory management made simple. '
-                'Track your stock and manage your business '
-                'operations from one place.',
+                'A unified enterprise platform built to connect '
+                'people, processes, data and business operations '
+                'from one secure place.',
                 style: TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
@@ -331,10 +331,10 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 30),
 
-              _feature('Inventory Tracking'),
-              _feature('Stock Movement Management'),
-              _feature('Reports & Analytics'),
-              _feature('Stock Alerts & Updates'),
+              _feature('Enterprise Module Management'),
+              _feature('Users, Tenants & Access Control'),
+              _feature('Reports & Business Intelligence'),
+              _feature('Workflow & Platform Automation'),
             ],
           ),
         ],
@@ -359,7 +359,7 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 12),
 
           const Text(
-            'GT-InStock',
+            'ONE CLOUD',
             style: TextStyle(
               color: Colors.white,
               fontSize: 26,
@@ -370,7 +370,7 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 4),
 
           const Text(
-            'Global Tracking InStock',
+            'Enterprise Platform',
             style: TextStyle(color: Colors.white70, fontSize: 11),
           ),
         ],
@@ -446,13 +446,13 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
+              Text(
                 'USER LOGIN',
-                style: TextStyle(
+                style: GoogleFonts.roboto(
                   color: AppTheme.darkNavy,
                   fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
                 ),
               ),
 
@@ -515,11 +515,12 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         context.push(AppRoutes.forgotPassword);
                       },
-                      child: const Text(
+                      child: Text(
                         'Forgot Password?',
-                        style: TextStyle(
+                        style: GoogleFonts.roboto(
                           color: AppTheme.primaryBlue,
                           fontSize: 11,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
@@ -541,9 +542,13 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(25),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'LOGIN',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: GoogleFonts.roboto(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
                 ),
@@ -593,19 +598,19 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: const Text(
+                          child: Text(
                             'G',
-                            style: TextStyle(
+                            style: GoogleFonts.roboto(
                               fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF4285F4),
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF4285F4),
                             ),
                           ),
                         ),
                         const SizedBox(width: 10),
-                        const Text(
+                        Text(
                           'Continue with Google',
-                          style: TextStyle(
+                          style: GoogleFonts.roboto(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
@@ -621,9 +626,13 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {
                     context.push(AppRoutes.register);
                   },
-                  child: const Text(
+                  child: Text(
                     "Don't have an account? Register",
-                    style: TextStyle(color: AppTheme.primaryBlue, fontSize: 12),
+                    style: GoogleFonts.roboto(
+                      color: AppTheme.primaryBlue,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ] else ...[
@@ -637,23 +646,27 @@ class _LoginPageState extends State<LoginPage> {
 
                 const SizedBox(height: 15),
 
-                const Text(
+                Text(
                   '2-STEP VERIFICATION',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: GoogleFonts.roboto(
                     color: AppTheme.darkNavy,
                     fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.2,
                   ),
                 ),
 
                 const SizedBox(height: 10),
 
-                const Text(
+                Text(
                   'Enter the verification code to continue.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                  style: GoogleFonts.roboto(
+                    color: Colors.grey,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
 
                 const SizedBox(height: 20),
@@ -667,9 +680,9 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text(
                     'Verification Code: $verificationCode',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: GoogleFonts.roboto(
                       color: Colors.green,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                       fontSize: 16,
                     ),
                   ),
@@ -710,9 +723,13 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(25),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'VERIFY',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: GoogleFonts.roboto(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
                 ),
@@ -728,9 +745,13 @@ class _LoginPageState extends State<LoginPage> {
                       errorMessage = '';
                     });
                   },
-                  child: const Text(
+                  child: Text(
                     'Back to Login',
-                    style: TextStyle(color: AppTheme.primaryBlue, fontSize: 12),
+                    style: GoogleFonts.roboto(
+                      color: AppTheme.primaryBlue,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
@@ -746,7 +767,11 @@ class _LoginPageState extends State<LoginPage> {
   InputDecoration _input(String hint, IconData icon, [Widget? suffix]) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
+      hintStyle: GoogleFonts.roboto(
+        color: Colors.grey,
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+      ),
       prefixIcon: Icon(icon, color: AppTheme.primaryBlue, size: 19),
       suffixIcon: suffix,
       filled: true,

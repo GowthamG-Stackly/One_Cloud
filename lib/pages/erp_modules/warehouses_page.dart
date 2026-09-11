@@ -97,35 +97,58 @@ class _WarehousesPageState extends State<WarehousesPage> {
   ];
 
   @override
-  void dispose() {
-    searchController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
-
       body: LayoutBuilder(
         builder: (context, constraints) {
           final bool mobile = constraints.maxWidth < 850;
 
-          return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: mobile ? 16 : 28,
-              vertical: mobile ? 20 : 28,
-            ),
+          final double horizontalPadding = mobile ? 16 : 28;
+          final double topPadding = mobile ? 20 : 28;
+
+          return SafeArea(
+            bottom: false,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(mobile),
-                const SizedBox(height: 22),
-                _buildKpiSection(mobile),
-                const SizedBox(height: 22),
-                _buildCapacitySection(mobile),
-                const SizedBox(height: 22),
-                _buildWarehouseSection(mobile),
+                // ============================================================
+                // FIXED WAREHOUSE HEADER
+                // ============================================================
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    topPadding,
+                    horizontalPadding,
+                    0,
+                  ),
+                  child: _buildHeader(mobile),
+                ),
+
+                // ============================================================
+                // SCROLLABLE CONTENT
+                // ============================================================
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.fromLTRB(
+                      horizontalPadding,
+                      22,
+                      horizontalPadding,
+                      28,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildKpiSection(mobile),
+                        const SizedBox(height: 22),
+
+                        _buildCapacitySection(mobile),
+                        const SizedBox(height: 22),
+
+                        _buildWarehouseSection(mobile),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           );
