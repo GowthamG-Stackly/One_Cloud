@@ -1,4 +1,4 @@
-# gt_instock_flutter
+# One Cloud Enterprise Platform
 
 A new Flutter project.
 
