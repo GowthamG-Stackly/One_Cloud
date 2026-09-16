@@ -3,8 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../app_theme.dart';
 
-import 'package:google_fonts/google_fonts.dart';
-
 class AuthLayout extends StatefulWidget {
   final Widget child;
   final bool reverse;
@@ -73,6 +71,7 @@ class _AuthLayoutState extends State<AuthLayout> {
     return Column(
       children: [
         _buildTabletHeader(),
+
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(28),
@@ -93,17 +92,53 @@ class _AuthLayoutState extends State<AuthLayout> {
   // ============================================================
 
   Widget _buildMobile() {
-    return SingleChildScrollView(
+    return SizedBox(
+      width: double.infinity,
+      height: double.infinity,
       child: Column(
         children: [
-          _buildMobileHeader(),
+          // Only the logo on mobile
+          _buildMobileLogo(),
 
-          Padding(padding: const EdgeInsets.all(16), child: widget.child),
+          // Login / Register form gets the remaining space
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: Center(child: widget.child),
+            ),
+          ),
 
-          const SizedBox(height: 8),
-
+          // Small footer
           _buildFooter(),
         ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // MOBILE LOGO ONLY
+  // ============================================================
+
+  Widget _buildMobileLogo() {
+    return Container(
+      width: double.infinity,
+      height: 48,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppTheme.darkNavy, AppTheme.primaryBlue],
+        ),
+      ),
+      child: Align(
+        alignment: Alignment.center,
+        child: Image.asset(
+          'assets/images/onecloud_logo.png',
+          height: 36,
+          fit: BoxFit.contain,
+        ),
       ),
     );
   }
@@ -124,7 +159,6 @@ class _AuthLayoutState extends State<AuthLayout> {
       ),
       child: Stack(
         children: [
-          // Background decoration
           Positioned(top: -100, right: -80, child: _circle(280)),
 
           Positioned(bottom: -130, left: -110, child: _circle(320)),
@@ -136,22 +170,18 @@ class _AuthLayoutState extends State<AuthLayout> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Brand
                 _buildBrand(),
 
                 const SizedBox(height: 25),
 
-                // Main heading
                 _buildHeroText(),
 
                 const SizedBox(height: 18),
 
-                // Feature cards
                 _buildFeatureHighlights(),
 
                 const SizedBox(height: 18),
 
-                // Dashboard preview
                 Expanded(
                   child: Align(
                     alignment: Alignment.bottomCenter,
@@ -167,12 +197,10 @@ class _AuthLayoutState extends State<AuthLayout> {
 
                 const SizedBox(height: 12),
 
-                // Platform stats
                 _buildPlatformStats(),
 
                 const SizedBox(height: 7),
 
-                // Footer
                 _buildFooter(light: true),
               ],
             ),
@@ -183,65 +211,29 @@ class _AuthLayoutState extends State<AuthLayout> {
   }
 
   // ============================================================
-  // BRAND
+  // DESKTOP BRAND
   // ============================================================
 
   Widget _buildBrand() {
-    return Row(
-      children: [
-        Container(
-          width: 46,
-          height: 46,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(13),
-          ),
-          child: const Icon(
-            Icons.cloud_outlined,
-            color: AppTheme.primaryBlue,
-            size: 28,
-          ),
-        ),
-
-        const SizedBox(width: 12),
-
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'OneCloud',
-              style: GoogleFonts.roboto(
-                color: Colors.white,
-                fontSize: 30,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            Text(
-              'ENTERPRISE PLATFORM',
-              style: GoogleFonts.roboto(
-                color: Colors.white.withValues(alpha: 0.55),
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1,
-              ),
-            ),
-          ],
-        ),
-      ],
+    return SizedBox(
+      height: 55,
+      width: 200,
+      child: Image.asset(
+        'assets/images/onecloud_logo.png',
+        fit: BoxFit.contain,
+        alignment: Alignment.centerLeft,
+      ),
     );
   }
 
   // ============================================================
   // HERO TEXT
   // ============================================================
+
   Widget _buildHeroText() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ==========================================================
-        // ONE PLATFORM.
-        // ==========================================================
-
         RichText(
           text: TextSpan(
             children: [
@@ -269,9 +261,6 @@ class _AuthLayoutState extends State<AuthLayout> {
 
         const SizedBox(height: 2),
 
-        // ==========================================================
-        // ENDLESS POSSIBILITIES.
-        // ==========================================================
         RichText(
           text: TextSpan(
             children: [
@@ -299,9 +288,6 @@ class _AuthLayoutState extends State<AuthLayout> {
 
         const SizedBox(height: 14),
 
-        // ==========================================================
-        // FIRST DESCRIPTION
-        // ==========================================================
         SizedBox(
           width: 600,
           child: RichText(
@@ -386,9 +372,6 @@ class _AuthLayoutState extends State<AuthLayout> {
 
         const SizedBox(height: 7),
 
-        // ==========================================================
-        // SECOND DESCRIPTION
-        // ==========================================================
         SizedBox(
           width: 610,
           child: RichText(
@@ -521,9 +504,7 @@ class _AuthLayoutState extends State<AuthLayout> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, color: Colors.white, size: 15),
-
           const SizedBox(width: 7),
-
           Text(
             title,
             style: GoogleFonts.roboto(
@@ -564,7 +545,6 @@ class _AuthLayoutState extends State<AuthLayout> {
             child: Row(
               children: [
                 _dashboardSidebar(),
-
                 Expanded(child: _dashboardContent()),
               ],
             ),
@@ -675,9 +655,7 @@ class _AuthLayoutState extends State<AuthLayout> {
                 color: Colors.white54,
                 size: 12,
               ),
-
               const SizedBox(width: 5),
-
               Text(
                 'Secure',
                 style: GoogleFonts.roboto(color: Colors.white38, fontSize: 7),
@@ -1054,135 +1032,18 @@ class _AuthLayoutState extends State<AuthLayout> {
   }
 
   // ============================================================
-  // MOBILE HEADER
-  // ============================================================
-
-  Widget _buildMobileHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppTheme.darkNavy, AppTheme.primaryBlue],
-        ),
-      ),
-      child: Column(
-        children: [
-          _buildCompactBrand(),
-
-          const SizedBox(height: 15),
-
-          Text(
-            'ONE PLATFORM.',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.roboto(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-
-          Text(
-            'ENDLESS POSSIBILITIES.',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.roboto(
-              color: Colors.white,
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          Text(
-            'Connect people, customers, resources '
-            'and business operations through one '
-            'connected enterprise platform.',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.roboto(
-              color: Colors.white70,
-              fontSize: 10,
-              height: 1.4,
-            ),
-          ),
-
-          const SizedBox(height: 13),
-
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 7,
-            runSpacing: 7,
-            children: [
-              _mobileFeature(Icons.apps_outlined, 'Unified'),
-              _mobileFeature(Icons.extension_outlined, 'Modular'),
-              _mobileFeature(Icons.security_outlined, 'Secure'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _mobileFeature(IconData icon, String title) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white, size: 13),
-          const SizedBox(width: 5),
-          Text(
-            title,
-            style: GoogleFonts.roboto(
-              color: Colors.white70,
-              fontSize: 8,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
   // COMPACT BRAND
   // ============================================================
 
   Widget _buildCompactBrand() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(11),
-          ),
-          child: const Icon(
-            Icons.cloud_outlined,
-            color: AppTheme.primaryBlue,
-            size: 24,
-          ),
-        ),
-
-        const SizedBox(width: 9),
-
-        Text(
-          'OneCloud',
-          style: GoogleFonts.roboto(
-            color: Colors.white,
-            fontSize: 19,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      ],
+    return SizedBox(
+      height: 45,
+      width: 165,
+      child: Image.asset(
+        'assets/images/onecloud_logo.png',
+        fit: BoxFit.contain,
+        alignment: Alignment.center,
+      ),
     );
   }
 
@@ -1192,7 +1053,7 @@ class _AuthLayoutState extends State<AuthLayout> {
 
   Widget _buildFooter({bool light = false}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Text(
         'OneCloud Enterprise Platform • © 2026',
         textAlign: TextAlign.center,
@@ -1200,7 +1061,7 @@ class _AuthLayoutState extends State<AuthLayout> {
           color: light
               ? Colors.white.withValues(alpha: 0.32)
               : AppTheme.darkNavy.withValues(alpha: 0.50),
-          fontSize: 7.5,
+          fontSize: 7,
         ),
       ),
     );

@@ -19,11 +19,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _nameController = TextEditingController();
-
   final TextEditingController _emailController = TextEditingController();
-
   final TextEditingController _passwordController = TextEditingController();
-
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
@@ -37,7 +34,6 @@ class _RegisterPageState extends State<RegisterPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-
     super.dispose();
   }
 
@@ -46,18 +42,26 @@ class _RegisterPageState extends State<RegisterPage> {
     return AuthLayout(reverse: true, child: _buildRegisterCard());
   }
 
+  // ============================================================
+  // REGISTER CARD
+  // ============================================================
+
   Widget _buildRegisterCard() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final bool isSmallScreen = constraints.maxWidth < 500;
+        final width = constraints.maxWidth;
+        final isMobile = width < 500;
 
         return Container(
           width: double.infinity,
           constraints: const BoxConstraints(maxWidth: 450),
-          padding: EdgeInsets.all(isSmallScreen ? 20 : 30),
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 16 : 30,
+            vertical: isMobile ? 10 : 30,
+          ),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(isSmallScreen ? 14 : 20),
+            borderRadius: BorderRadius.circular(isMobile ? 14 : 20),
             border: Border.all(
               color: AppTheme.darkNavy.withValues(alpha: 0.08),
             ),
@@ -69,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ],
           ),
-          child: _buildRegisterForm(),
+          child: _buildRegisterForm(isMobile),
         );
       },
     );
@@ -79,11 +83,12 @@ class _RegisterPageState extends State<RegisterPage> {
   // REGISTER FORM
   // ============================================================
 
-  Widget _buildRegisterForm() {
+  Widget _buildRegisterForm(bool isMobile) {
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           // ------------------------------------------------------
           // TITLE
@@ -93,36 +98,37 @@ class _RegisterPageState extends State<RegisterPage> {
             'Create Account',
             style: GoogleFonts.roboto(
               color: AppTheme.darkNavy,
-              fontSize: 28,
+              fontSize: isMobile ? 22 : 28,
               fontWeight: FontWeight.w800,
             ),
           ),
 
-          const SizedBox(height: 7),
+          SizedBox(height: isMobile ? 3 : 7),
 
           Text(
             'Create your OneCloud account to get started.',
             style: GoogleFonts.roboto(
               color: AppTheme.darkNavy.withValues(alpha: 0.55),
-              fontSize: 12,
-              height: 1.4,
+              fontSize: isMobile ? 10 : 12,
+              height: 1.25,
             ),
           ),
 
-          const SizedBox(height: 25),
+          SizedBox(height: isMobile ? 10 : 25),
 
           // ------------------------------------------------------
           // FULL NAME
           // ------------------------------------------------------
-          _buildLabel('Full Name'),
+          _buildLabel('Full Name', isMobile),
 
-          const SizedBox(height: 7),
+          SizedBox(height: isMobile ? 4 : 7),
 
           _buildTextField(
             controller: _nameController,
             hintText: 'Enter your full name',
             icon: Icons.person_outline,
             textInputAction: TextInputAction.next,
+            isMobile: isMobile,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return 'Please enter your name';
@@ -136,14 +142,14 @@ class _RegisterPageState extends State<RegisterPage> {
             },
           ),
 
-          const SizedBox(height: 17),
+          SizedBox(height: isMobile ? 8 : 17),
 
           // ------------------------------------------------------
           // EMAIL
           // ------------------------------------------------------
-          _buildLabel('Email Address'),
+          _buildLabel('Email Address', isMobile),
 
-          const SizedBox(height: 7),
+          SizedBox(height: isMobile ? 4 : 7),
 
           _buildTextField(
             controller: _emailController,
@@ -151,6 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
             icon: Icons.email_outlined,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
+            isMobile: isMobile,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return 'Please enter your email';
@@ -166,14 +173,14 @@ class _RegisterPageState extends State<RegisterPage> {
             },
           ),
 
-          const SizedBox(height: 17),
+          SizedBox(height: isMobile ? 8 : 17),
 
           // ------------------------------------------------------
           // PASSWORD
           // ------------------------------------------------------
-          _buildLabel('Password'),
+          _buildLabel('Password', isMobile),
 
-          const SizedBox(height: 7),
+          SizedBox(height: isMobile ? 4 : 7),
 
           _buildTextField(
             controller: _passwordController,
@@ -181,18 +188,21 @@ class _RegisterPageState extends State<RegisterPage> {
             icon: Icons.lock_outline,
             obscureText: _obscurePassword,
             textInputAction: TextInputAction.next,
+            isMobile: isMobile,
             suffixIcon: IconButton(
               onPressed: () {
                 setState(() {
                   _obscurePassword = !_obscurePassword;
                 });
               },
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               icon: Icon(
                 _obscurePassword
                     ? Icons.visibility_outlined
                     : Icons.visibility_off_outlined,
                 color: AppTheme.darkNavy.withValues(alpha: 0.45),
-                size: 19,
+                size: isMobile ? 17 : 19,
               ),
             ),
             validator: (value) {
@@ -208,14 +218,14 @@ class _RegisterPageState extends State<RegisterPage> {
             },
           ),
 
-          const SizedBox(height: 17),
+          SizedBox(height: isMobile ? 8 : 17),
 
           // ------------------------------------------------------
           // CONFIRM PASSWORD
           // ------------------------------------------------------
-          _buildLabel('Confirm Password'),
+          _buildLabel('Confirm Password', isMobile),
 
-          const SizedBox(height: 7),
+          SizedBox(height: isMobile ? 4 : 7),
 
           _buildTextField(
             controller: _confirmPasswordController,
@@ -223,18 +233,21 @@ class _RegisterPageState extends State<RegisterPage> {
             icon: Icons.lock_outline,
             obscureText: _obscureConfirmPassword,
             textInputAction: TextInputAction.done,
+            isMobile: isMobile,
             suffixIcon: IconButton(
               onPressed: () {
                 setState(() {
                   _obscureConfirmPassword = !_obscureConfirmPassword;
                 });
               },
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               icon: Icon(
                 _obscureConfirmPassword
                     ? Icons.visibility_outlined
                     : Icons.visibility_off_outlined,
                 color: AppTheme.darkNavy.withValues(alpha: 0.45),
-                size: 19,
+                size: isMobile ? 17 : 19,
               ),
             ),
             validator: (value) {
@@ -253,7 +266,7 @@ class _RegisterPageState extends State<RegisterPage> {
             },
           ),
 
-          const SizedBox(height: 14),
+          SizedBox(height: isMobile ? 7 : 14),
 
           // ------------------------------------------------------
           // TERMS
@@ -261,13 +274,13 @@ class _RegisterPageState extends State<RegisterPage> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
+              Icon(
                 Icons.check_circle_outline,
                 color: AppTheme.primaryBlue,
-                size: 16,
+                size: isMobile ? 14 : 16,
               ),
 
-              const SizedBox(width: 7),
+              SizedBox(width: isMobile ? 5 : 7),
 
               Expanded(
                 child: Text(
@@ -275,22 +288,22 @@ class _RegisterPageState extends State<RegisterPage> {
                   'OneCloud platform terms and conditions.',
                   style: GoogleFonts.roboto(
                     color: AppTheme.darkNavy.withValues(alpha: 0.55),
-                    fontSize: 9.5,
-                    height: 1.4,
+                    fontSize: isMobile ? 8 : 9.5,
+                    height: isMobile ? 1.2 : 1.4,
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 22),
+          SizedBox(height: isMobile ? 10 : 22),
 
           // ------------------------------------------------------
           // REGISTER BUTTON
           // ------------------------------------------------------
           SizedBox(
             width: double.infinity,
-            height: 50,
+            height: isMobile ? 42 : 50,
             child: ElevatedButton(
               onPressed: _isLoading ? null : _register,
               style: ElevatedButton.styleFrom(
@@ -300,15 +313,16 @@ class _RegisterPageState extends State<RegisterPage> {
                   alpha: 0.50,
                 ),
                 elevation: 0,
+                padding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(isMobile ? 8 : 10),
                 ),
               ),
               child: _isLoading
-                  ? const SizedBox(
-                      width: 21,
-                      height: 21,
-                      child: CircularProgressIndicator(
+                  ? SizedBox(
+                      width: isMobile ? 18 : 21,
+                      height: isMobile ? 18 : 21,
+                      child: const CircularProgressIndicator(
                         strokeWidth: 2,
                         color: Colors.white,
                       ),
@@ -319,18 +333,23 @@ class _RegisterPageState extends State<RegisterPage> {
                         Text(
                           'Create Account',
                           style: GoogleFonts.roboto(
-                            fontSize: 13,
+                            fontSize: isMobile ? 11 : 13,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        const Icon(Icons.arrow_forward_rounded, size: 18),
+
+                        SizedBox(width: isMobile ? 5 : 8),
+
+                        Icon(
+                          Icons.arrow_forward_rounded,
+                          size: isMobile ? 15 : 18,
+                        ),
                       ],
                     ),
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: isMobile ? 8 : 20),
 
           // ------------------------------------------------------
           // LOGIN LINK
@@ -338,24 +357,27 @@ class _RegisterPageState extends State<RegisterPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Already have an account?',
-                style: GoogleFonts.roboto(
-                  color: AppTheme.darkNavy.withValues(alpha: 0.55),
-                  fontSize: 11,
+              Flexible(
+                child: Text(
+                  'Already have an account?',
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.roboto(
+                    color: AppTheme.darkNavy.withValues(alpha: 0.55),
+                    fontSize: isMobile ? 9 : 11,
+                  ),
                 ),
               ),
 
-              const SizedBox(width: 5),
+              SizedBox(width: isMobile ? 3 : 5),
 
               TextButton(
                 onPressed: () {
                   context.go(AppRoutes.login);
                 },
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 2,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isMobile ? 3 : 4,
+                    vertical: 1,
                   ),
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -364,7 +386,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   'Sign In',
                   style: GoogleFonts.roboto(
                     color: AppTheme.primaryBlue,
-                    fontSize: 11,
+                    fontSize: isMobile ? 9 : 11,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -380,12 +402,12 @@ class _RegisterPageState extends State<RegisterPage> {
   // LABEL
   // ============================================================
 
-  Widget _buildLabel(String text) {
+  Widget _buildLabel(String text, bool isMobile) {
     return Text(
       text,
       style: GoogleFonts.roboto(
         color: AppTheme.darkNavy,
-        fontSize: 11,
+        fontSize: isMobile ? 9 : 11,
         fontWeight: FontWeight.w700,
       ),
     );
@@ -399,6 +421,7 @@ class _RegisterPageState extends State<RegisterPage> {
     required TextEditingController controller,
     required String hintText,
     required IconData icon,
+    required bool isMobile,
     bool obscureText = false,
     TextInputType? keyboardType,
     TextInputAction? textInputAction,
@@ -415,57 +438,73 @@ class _RegisterPageState extends State<RegisterPage> {
       onFieldSubmitted: onFieldSubmitted,
       style: GoogleFonts.roboto(
         color: AppTheme.darkNavy,
-        fontSize: 12,
+        fontSize: isMobile ? 10 : 12,
         fontWeight: FontWeight.w500,
       ),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: GoogleFonts.roboto(
           color: AppTheme.darkNavy.withValues(alpha: 0.35),
-          fontSize: 11,
+          fontSize: isMobile ? 9 : 11,
         ),
+
         prefixIcon: Icon(
           icon,
           color: AppTheme.darkNavy.withValues(alpha: 0.45),
-          size: 19,
+          size: isMobile ? 16 : 19,
         ),
+
+        prefixIconConstraints: BoxConstraints(
+          minWidth: isMobile ? 38 : 48,
+          minHeight: isMobile ? 38 : 48,
+        ),
+
         suffixIcon: suffixIcon,
+
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 14,
+
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 10 : 14,
+          vertical: isMobile ? 9 : 14,
         ),
+
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(isMobile ? 8 : 10),
           borderSide: BorderSide(
             color: AppTheme.darkNavy.withValues(alpha: 0.08),
           ),
         ),
+
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(isMobile ? 8 : 10),
           borderSide: BorderSide(
             color: AppTheme.darkNavy.withValues(alpha: 0.08),
           ),
         ),
+
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(isMobile ? 8 : 10),
           borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 1.5),
         ),
+
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(isMobile ? 8 : 10),
           borderSide: BorderSide(color: Colors.red.withValues(alpha: 0.60)),
         ),
+
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(isMobile ? 8 : 10),
           borderSide: BorderSide(
             color: Colors.red.withValues(alpha: 0.70),
             width: 1.5,
           ),
         ),
+
         errorStyle: GoogleFonts.roboto(
-          fontSize: 9,
+          fontSize: isMobile ? 7.5 : 9,
           fontWeight: FontWeight.w500,
+          height: 1.0,
         ),
       ),
     );
@@ -488,7 +527,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-    // Your UserProvider.register() is synchronous.
     userProvider.register(
       _nameController.text.trim(),
       _emailController.text.trim(),
@@ -512,7 +550,6 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
 
-    // Go to Login after registration.
     context.go(AppRoutes.login);
   }
 }
