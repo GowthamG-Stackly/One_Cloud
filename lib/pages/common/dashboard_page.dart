@@ -1,23 +1,26 @@
 // import 'dart:math' as math;
 
 // import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // import '../../app_theme.dart';
 // import '../../providers/user_provider.dart';
 
-// class DashboardPage extends StatelessWidget {
+// class DashboardPage extends ConsumerWidget {
 //   const DashboardPage({super.key});
 
 //   @override
-//   Widget build(BuildContext context) {
-//     final user = Provider.of<UserProvider>(context);
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final user = ref.watch(userProvider);
 
 //     return Scaffold(
 //       backgroundColor: const Color(0xFFF5F7FA),
 //       body: LayoutBuilder(
 //         builder: (context, constraints) {
-//           return _DashboardContent(width: constraints.maxWidth, user: user);
+//           return _DashboardContent(
+//             width: constraints.maxWidth,
+//             userName: user.name,
+//           );
 //         },
 //       ),
 //     );
@@ -26,9 +29,9 @@
 
 // class _DashboardContent extends StatelessWidget {
 //   final double width;
-//   final UserProvider user;
+//   final String userName;
 
-//   const _DashboardContent({required this.width, required this.user});
+//   const _DashboardContent({required this.width, required this.userName});
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -42,10 +45,9 @@
 //         : width < 1100
 //         ? 20
 //         : 28;
-
-//     final String userName = user.name.trim().isEmpty
+//     final String displayUserName = userName.trim().isEmpty
 //         ? 'Administrator'
-//         : user.name.trim();
+//         : userName.trim();
 
 //     return SafeArea(
 //       bottom: false,
@@ -64,7 +66,7 @@
 //               child: ConstrainedBox(
 //                 constraints: const BoxConstraints(maxWidth: 1500),
 //                 child: _DashboardHeader(
-//                   userName: userName,
+//                   userName: displayUserName,
 //                   compact: smallMobile || mobile,
 //                 ),
 //               ),
@@ -1783,6 +1785,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app_theme.dart';
 import '../../providers/user_provider.dart';
 
+// The application shell (sidebar + global header) is provided by AppLayout.
+// This page contains only the OneCloud main/landing dashboard content.
+
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
 
@@ -1790,16 +1795,13 @@ class DashboardPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return _DashboardContent(
-            width: constraints.maxWidth,
-            userName: user.name,
-          );
-        },
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return _DashboardContent(
+          width: constraints.maxWidth,
+          userName: user.name,
+        );
+      },
     );
   }
 }
@@ -1915,12 +1917,12 @@ class _DashboardHeader extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(compact ? 18 : 24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.paper,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE4E9F0)),
+        border: Border.all(color: AppTheme.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.035),
+            color: AppTheme.ink.withValues(alpha: 0.035),
             blurRadius: 14,
             offset: const Offset(0, 4),
           ),
@@ -1964,7 +1966,7 @@ class _DashboardHeader extends StatelessWidget {
           style: const TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.w800,
-            color: AppTheme.darkNavy,
+            color: AppTheme.ink,
           ),
         ),
         const SizedBox(height: 6),
@@ -2001,7 +2003,7 @@ class _DateBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F7FC),
+        color: AppTheme.paperDim,
         borderRadius: BorderRadius.circular(11),
       ),
       child: Row(
@@ -2010,7 +2012,7 @@ class _DateBadge extends StatelessWidget {
           const Icon(
             Icons.calendar_today_outlined,
             size: 16,
-            color: AppTheme.primaryBlue,
+            color: AppTheme.ink3,
           ),
           const SizedBox(width: 8),
           Text(
@@ -2019,7 +2021,7 @@ class _DateBadge extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: AppTheme.darkNavy,
+              color: AppTheme.ink,
             ),
           ),
         ],
@@ -2051,7 +2053,7 @@ class _SectionTitle extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: AppTheme.darkNavy,
+                  color: AppTheme.ink,
                 ),
               ),
               const SizedBox(height: 3),
@@ -2182,12 +2184,12 @@ class _KpiCard extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 112),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.paper,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: const Color(0xFFE5EAF0)),
+        border: Border.all(color: AppTheme.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: AppTheme.ink.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -2199,7 +2201,7 @@ class _KpiCard extends StatelessWidget {
             width: 46,
             height: 46,
             decoration: BoxDecoration(
-              color: data.color.withOpacity(0.10),
+              color: data.color.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(data.icon, color: data.color, size: 22),
@@ -2228,7 +2230,7 @@ class _KpiCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: AppTheme.darkNavy,
+                    color: AppTheme.ink,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -2417,7 +2419,7 @@ class _HealthRow extends StatelessWidget {
           value,
           style: const TextStyle(
             fontSize: 12,
-            color: AppTheme.darkNavy,
+            color: AppTheme.ink,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -2490,35 +2492,35 @@ class _ModuleAdoptionCard extends StatelessWidget {
             title: 'ERP',
             value: 96,
             total: 128,
-            color: const Color(0xFF2563EB),
+            color: AppTheme.ink3,
           ),
           const SizedBox(height: 17),
           _ProgressRow(
             title: 'HRMS',
             value: 84,
             total: 128,
-            color: const Color(0xFF0891B2),
+            color: AppTheme.tealData,
           ),
           const SizedBox(height: 17),
           _ProgressRow(
             title: 'CRM',
             value: 78,
             total: 128,
-            color: const Color(0xFF7C3AED),
+            color: AppTheme.ink3,
           ),
           const SizedBox(height: 17),
           _ProgressRow(
             title: 'Finance & Accounting',
             value: 71,
             total: 128,
-            color: const Color(0xFF059669),
+            color: AppTheme.tealData,
           ),
           const SizedBox(height: 17),
           _ProgressRow(
             title: 'Workflow & Automation',
             value: 63,
             total: 128,
-            color: const Color(0xFFEA580C),
+            color: AppTheme.amberAI,
           ),
         ],
       ),
@@ -2554,7 +2556,7 @@ class _ProgressRow extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: AppTheme.darkNavy,
+                  color: AppTheme.ink,
                 ),
               ),
             ),
@@ -2574,7 +2576,7 @@ class _ProgressRow extends StatelessWidget {
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 9,
-            backgroundColor: const Color(0xFFE9EEF5),
+            backgroundColor: AppTheme.paperDim,
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),
@@ -2660,9 +2662,9 @@ class _HealthStatusRow extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: AppTheme.paper,
         borderRadius: BorderRadius.circular(11),
-        border: Border.all(color: const Color(0xFFECEFF3)),
+        border: Border.all(color: AppTheme.border),
       ),
       child: Row(
         children: [
@@ -2670,7 +2672,7 @@ class _HealthStatusRow extends StatelessWidget {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.10),
+              color: color.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 18),
@@ -2687,7 +2689,7 @@ class _HealthStatusRow extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: AppTheme.darkNavy,
+                    color: AppTheme.ink,
                   ),
                 ),
                 const SizedBox(height: 3),
@@ -2704,7 +2706,7 @@ class _HealthStatusRow extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.10),
+              color: color.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(7),
             ),
             child: Text(
@@ -2766,7 +2768,7 @@ class _RecentActivityCard extends StatelessWidget {
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: AppTheme.primaryBlue,
+            color: AppTheme.ink3,
           ),
         ),
       ),
@@ -2843,7 +2845,7 @@ class _ActivityItem extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.10),
+              color: color.withValues(alpha: 0.10),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 19),
@@ -2860,7 +2862,7 @@ class _ActivityItem extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: AppTheme.darkNavy,
+                    color: AppTheme.ink,
                   ),
                 ),
                 const SizedBox(height: 3),
@@ -2955,9 +2957,9 @@ class _AttentionItem extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: AppTheme.paper,
         borderRadius: BorderRadius.circular(11),
-        border: Border.all(color: const Color(0xFFECEFF3)),
+        border: Border.all(color: AppTheme.border),
       ),
       child: Row(
         children: [
@@ -2965,7 +2967,7 @@ class _AttentionItem extends StatelessWidget {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.10),
+              color: color.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 18),
@@ -2982,7 +2984,7 @@ class _AttentionItem extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: AppTheme.darkNavy,
+                    color: AppTheme.ink,
                   ),
                 ),
                 const SizedBox(height: 3),
@@ -3112,9 +3114,9 @@ class _QuickActionCard extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: 92),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFFF9FAFB),
+            color: AppTheme.paper,
             borderRadius: BorderRadius.circular(13),
-            border: Border.all(color: const Color(0xFFE7EBF0)),
+            border: Border.all(color: AppTheme.border),
           ),
           child: Row(
             children: [
@@ -3122,7 +3124,7 @@ class _QuickActionCard extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: action.color.withOpacity(0.10),
+                  color: action.color.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(action.icon, color: action.color, size: 20),
@@ -3140,7 +3142,7 @@ class _QuickActionCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: AppTheme.darkNavy,
+                        color: AppTheme.ink,
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -3187,12 +3189,12 @@ class _Panel extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.paper,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE5EAF0)),
+        border: Border.all(color: AppTheme.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: AppTheme.ink.withValues(alpha: 0.03),
             blurRadius: 11,
             offset: const Offset(0, 3),
           ),
@@ -3215,7 +3217,7 @@ class _Panel extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
-                        color: AppTheme.darkNavy,
+                        color: AppTheme.ink,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -3256,7 +3258,7 @@ class _SmallBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFEFF6FF),
+        color: AppTheme.paperDim,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -3338,7 +3340,7 @@ class _BarChartPainter extends CustomPainter {
     if (maxValue <= 0) maxValue = 1;
 
     final gridPaint = Paint()
-      ..color = const Color(0xFFE8EDF3)
+      ..color = AppTheme.border
       ..strokeWidth = 1;
 
     for (int i = 0; i <= 4; i++) {
@@ -3352,7 +3354,7 @@ class _BarChartPainter extends CustomPainter {
 
     final slotWidth = chartWidth / values.length;
     final double barWidth = math.min(34.0, slotWidth * 0.50);
-    final barPaint = Paint()..color = const Color(0xFF2563EB);
+    final barPaint = Paint()..color = AppTheme.ink3;
 
     for (int i = 0; i < values.length; i++) {
       final double barHeight = values[i] / maxValue * chartHeight;
@@ -3469,7 +3471,7 @@ class _PieChartPainter extends CustomPainter {
     }
 
     final centerPaint = Paint()
-      ..color = Colors.white
+      ..color = AppTheme.paper
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, radius * 0.55, centerPaint);
@@ -3480,7 +3482,7 @@ class _PieChartPainter extends CustomPainter {
         style: const TextStyle(
           fontSize: 21,
           fontWeight: FontWeight.w800,
-          color: AppTheme.darkNavy,
+          color: AppTheme.ink,
         ),
       ),
       textDirection: TextDirection.ltr,

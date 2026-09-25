@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -14,23 +16,21 @@ class AuthLayout extends StatefulWidget {
 }
 
 class _AuthLayoutState extends State<AuthLayout> {
-  int selectedModule = 0;
+  int? selectedModule;
 
   final List<_AuthModule> modules = const [
-    _AuthModule(title: 'Dashboard', icon: Icons.dashboard_outlined),
     _AuthModule(title: 'HRMS', icon: Icons.people_outline),
     _AuthModule(title: 'CRM', icon: Icons.handshake_outlined),
     _AuthModule(title: 'ERP', icon: Icons.inventory_2_outlined),
-    _AuthModule(
-      title: 'Platform Admin',
-      icon: Icons.admin_panel_settings_outlined,
-    ),
+    _AuthModule(title: 'FINANCE', icon: Icons.account_balance_outlined),
+    _AuthModule(title: 'WORKFLOW', icon: Icons.auto_awesome_outlined),
+    _AuthModule(title: 'ANALYTICS', icon: Icons.auto_awesome_outlined),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightBlue,
+      backgroundColor: AppTheme.paper,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -56,11 +56,11 @@ class _AuthLayoutState extends State<AuthLayout> {
   // ============================================================
 
   Widget _buildDesktop() {
+    final hero = Expanded(flex: 14, child: _buildHeroPanel());
+
     final form = Expanded(flex: 8, child: _buildFormArea());
 
-    final content = Expanded(flex: 12, child: _buildDesktopLeft());
-
-    return Row(children: widget.reverse ? [form, content] : [content, form]);
+    return Row(children: widget.reverse ? [form, hero] : [hero, form]);
   }
 
   // ============================================================
@@ -70,15 +70,18 @@ class _AuthLayoutState extends State<AuthLayout> {
   Widget _buildTablet() {
     return Column(
       children: [
-        _buildTabletHeader(),
+        _buildTabletHero(),
 
         Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(28),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 480),
-                child: widget.child,
+          child: Container(
+            color: AppTheme.paper,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(28),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  child: widget.child,
+                ),
               ),
             ),
           ),
@@ -92,116 +95,81 @@ class _AuthLayoutState extends State<AuthLayout> {
   // ============================================================
 
   Widget _buildMobile() {
-    return SizedBox(
-      width: double.infinity,
-      height: double.infinity,
-      child: Column(
-        children: [
-          // Only the logo on mobile
-          _buildMobileLogo(),
+    return Column(
+      children: [
+        _buildMobileHeader(),
 
-          // Login / Register form gets the remaining space
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: Center(child: widget.child),
+        Expanded(
+          child: Container(
+            width: double.infinity,
+            color: AppTheme.paper,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+              child: widget.child,
             ),
           ),
+        ),
 
-          // Small footer
-          _buildFooter(),
-        ],
-      ),
+        _buildMobileFooter(),
+      ],
     );
   }
 
   // ============================================================
-  // MOBILE LOGO ONLY
+  // DESKTOP HERO PANEL
   // ============================================================
 
-  Widget _buildMobileLogo() {
+  Widget _buildHeroPanel() {
     return Container(
-      width: double.infinity,
-      height: 48,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppTheme.darkNavy, AppTheme.primaryBlue],
-        ),
-      ),
-      child: Align(
-        alignment: Alignment.center,
-        child: Image.asset(
-          'assets/images/onecloud_logo.png',
-          height: 36,
-          fit: BoxFit.contain,
-        ),
-      ),
-    );
-  }
-
-  // ============================================================
-  // DESKTOP LEFT PANEL
-  // ============================================================
-
-  Widget _buildDesktopLeft() {
-    return Container(
-      height: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppTheme.darkNavy, AppTheme.primaryBlue],
-        ),
-      ),
+      color: AppTheme.ink,
       child: Stack(
         children: [
-          Positioned(top: -100, right: -80, child: _circle(280)),
+          // Ambient circles
+          Positioned(
+            top: -180,
+            right: -140,
+            child: _ambientCircle(420, AppTheme.ink3, 0.20),
+          ),
 
-          Positioned(bottom: -130, left: -110, child: _circle(320)),
+          Positioned(
+            bottom: -180,
+            left: -150,
+            child: _ambientCircle(420, AppTheme.ink2, 0.45),
+          ),
 
-          Positioned(top: 260, right: 80, child: _circle(100)),
+          Positioned(
+            top: 340,
+            right: 100,
+            child: _ambientCircle(160, AppTheme.tealData, 0.035),
+          ),
 
+          // Main content
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 42, vertical: 30),
+            padding: const EdgeInsets.symmetric(horizontal: 58, vertical: 42),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildBrand(),
 
-                const SizedBox(height: 25),
+                const Spacer(flex: 2),
 
-                _buildHeroText(),
+                _buildEyebrow(),
 
-                const SizedBox(height: 18),
+                const SizedBox(height: 22),
 
-                _buildFeatureHighlights(),
+                _buildHeroHeading(),
 
-                const SizedBox(height: 18),
+                const SizedBox(height: 22),
 
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: 670,
-                        maxHeight: 235,
-                      ),
-                      child: _buildDashboardPreview(),
-                    ),
-                  ),
-                ),
+                _buildHeroDescription(),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 42),
 
-                _buildPlatformStats(),
+                Expanded(flex: 4, child: _buildEnterpriseNetwork()),
 
-                const SizedBox(height: 7),
+                const SizedBox(height: 26),
 
-                _buildFooter(light: true),
+                _buildTrustBar(),
               ],
             ),
           ),
@@ -211,735 +179,361 @@ class _AuthLayoutState extends State<AuthLayout> {
   }
 
   // ============================================================
-  // DESKTOP BRAND
+  // BRAND
   // ============================================================
 
   Widget _buildBrand() {
-    return SizedBox(
-      height: 55,
-      width: 200,
-      child: Image.asset(
-        'assets/images/onecloud_logo.png',
-        fit: BoxFit.contain,
-        alignment: Alignment.centerLeft,
-      ),
-    );
-  }
-
-  // ============================================================
-  // HERO TEXT
-  // ============================================================
-
-  Widget _buildHeroText() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: 'ONE ',
-                style: GoogleFonts.blackOpsOne(
-                  color: AppTheme.lightBlue,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: 1,
-                ),
-              ),
-              TextSpan(
-                text: 'PLATFORM.',
-                style: GoogleFonts.blackOpsOne(
-                  color: AppTheme.primaryBlue,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: 1,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 2),
-
-        RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: 'ENDLESS ',
-                style: GoogleFonts.blackOpsOne(
-                  color: AppTheme.primaryBlue,
-                  fontSize: 29,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.4,
-                ),
-              ),
-              TextSpan(
-                text: 'POSSIBILITIES.',
-                style: GoogleFonts.blackOpsOne(
-                  color: AppTheme.lightBlue,
-                  fontSize: 29,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.4,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 14),
-
-        SizedBox(
-          width: 600,
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'OneCloud ',
-                  style: GoogleFonts.poppins(
-                    color: AppTheme.lightBlue,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    height: 1.5,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Enterprise ',
-                  style: GoogleFonts.montserrat(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    height: 1.5,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Platform ',
-                  style: GoogleFonts.poppins(
-                    color: AppTheme.primaryBlue,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    height: 1.5,
-                  ),
-                ),
-                TextSpan(
-                  text: 'brings your ',
-                  style: GoogleFonts.roboto(
-                    color: Colors.white.withValues(alpha: 0.72),
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w400,
-                    height: 1.5,
-                  ),
-                ),
-                TextSpan(
-                  text: 'business ',
-                  style: GoogleFonts.montserrat(
-                    color: AppTheme.lightBlue,
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                    height: 1.5,
-                  ),
-                ),
-                TextSpan(
-                  text: 'operations ',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                    height: 1.5,
-                  ),
-                ),
-                TextSpan(
-                  text: 'together ',
-                  style: GoogleFonts.montserrat(
-                    color: AppTheme.primaryBlue,
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                    height: 1.5,
-                  ),
-                ),
-                TextSpan(
-                  text: 'in one connected digital ecosystem.',
-                  style: GoogleFonts.roboto(
-                    color: Colors.white.withValues(alpha: 0.70),
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w400,
-                    height: 1.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 7),
-
-        SizedBox(
-          width: 610,
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Connect ',
-                  style: GoogleFonts.poppins(
-                    color: AppTheme.lightBlue,
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w800,
-                    height: 1.6,
-                  ),
-                ),
-                TextSpan(
-                  text: 'people, ',
-                  style: GoogleFonts.roboto(
-                    color: Colors.white,
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w500,
-                    height: 1.6,
-                  ),
-                ),
-                TextSpan(
-                  text: 'customers, ',
-                  style: GoogleFonts.montserrat(
-                    color: AppTheme.primaryBlue,
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w600,
-                    height: 1.6,
-                  ),
-                ),
-                TextSpan(
-                  text: 'resources ',
-                  style: GoogleFonts.poppins(
-                    color: AppTheme.lightBlue,
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w600,
-                    height: 1.6,
-                  ),
-                ),
-                TextSpan(
-                  text: 'and ',
-                  style: GoogleFonts.roboto(
-                    color: Colors.white.withValues(alpha: 0.65),
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w400,
-                    height: 1.6,
-                  ),
-                ),
-                TextSpan(
-                  text: 'business ',
-                  style: GoogleFonts.montserrat(
-                    color: Colors.white,
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w600,
-                    height: 1.6,
-                  ),
-                ),
-                TextSpan(
-                  text: 'processes ',
-                  style: GoogleFonts.poppins(
-                    color: AppTheme.primaryBlue,
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w700,
-                    height: 1.6,
-                  ),
-                ),
-                TextSpan(
-                  text: 'through a ',
-                  style: GoogleFonts.roboto(
-                    color: Colors.white.withValues(alpha: 0.65),
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w400,
-                    height: 1.6,
-                  ),
-                ),
-                TextSpan(
-                  text: 'unified ',
-                  style: GoogleFonts.montserrat(
-                    color: AppTheme.lightBlue,
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w700,
-                    height: 1.6,
-                  ),
-                ),
-                TextSpan(
-                  text: 'platform.',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w600,
-                    height: 1.6,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ============================================================
-  // FEATURE HIGHLIGHTS
-  // ============================================================
-
-  Widget _buildFeatureHighlights() {
-    return Wrap(
-      spacing: 9,
-      runSpacing: 8,
-      children: [
-        _featureItem(Icons.apps_outlined, 'Unified Platform'),
-        _featureItem(Icons.extension_outlined, 'Modular Applications'),
-        _featureItem(Icons.storage_outlined, 'Centralized Operations'),
-        _featureItem(Icons.security_outlined, 'Secure & Scalable'),
-      ],
-    );
-  }
-
-  Widget _featureItem(IconData icon, String title) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.065),
-        borderRadius: BorderRadius.circular(9),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white, size: 15),
-          const SizedBox(width: 7),
-          Text(
-            title,
-            style: GoogleFonts.roboto(
-              color: Colors.white.withValues(alpha: 0.86),
-              fontSize: 9,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // DASHBOARD PREVIEW
-  // ============================================================
-
-  Widget _buildDashboardPreview() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.24),
-            blurRadius: 25,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          _dashboardHeader(),
-
-          Expanded(
-            child: Row(
-              children: [
-                _dashboardSidebar(),
-                Expanded(child: _dashboardContent()),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // DASHBOARD HEADER
-  // ============================================================
-
-  Widget _dashboardHeader() {
-    return Container(
-      height: 38,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      color: AppTheme.darkNavy,
-      child: Row(
-        children: [
-          Container(
-            width: 23,
-            height: 23,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryBlue,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: const Icon(
-              Icons.cloud_outlined,
-              color: Colors.white,
-              size: 14,
-            ),
-          ),
-
-          const SizedBox(width: 7),
-
-          Text(
-            'OneCloud',
-            style: GoogleFonts.roboto(
-              color: Colors.white,
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-
-          const Spacer(),
-
-          Container(
-            width: 6,
-            height: 6,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-          ),
-
-          const SizedBox(width: 5),
-
-          Text(
-            'Connected',
-            style: GoogleFonts.roboto(
-              color: Colors.white.withValues(alpha: 0.55),
-              fontSize: 7,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // DASHBOARD SIDEBAR
-  // ============================================================
-
-  Widget _dashboardSidebar() {
-    return Container(
-      width: 125,
-      color: AppTheme.darkNavy,
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-              child: Text(
-                'PLATFORM',
-                style: GoogleFonts.roboto(
-                  color: Colors.white.withValues(alpha: 0.30),
-                  fontSize: 6.5,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-          ),
-
-          ...List.generate(modules.length, (index) {
-            return _moduleButton(index, modules[index]);
-          }),
-
-          const Spacer(),
-
-          Row(
-            children: [
-              const Icon(
-                Icons.security_outlined,
-                color: Colors.white54,
-                size: 12,
-              ),
-              const SizedBox(width: 5),
-              Text(
-                'Secure',
-                style: GoogleFonts.roboto(color: Colors.white38, fontSize: 7),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // MODULE BUTTON
-  // ============================================================
-
-  Widget _moduleButton(int index, _AuthModule module) {
-    final selected = selectedModule == index;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(7),
-        onTap: () {
-          setState(() {
-            selectedModule = index;
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
+        Container(
+          height: 58,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: selected ? AppTheme.primaryBlue : Colors.transparent,
-            borderRadius: BorderRadius.circular(7),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
           ),
-          child: Row(
+          child: Image.asset(
+            'assets/images/onecloud_logo.png',
+            height: 42,
+            fit: BoxFit.contain,
+          ),
+        ),
+
+        const SizedBox(width: 16),
+
+        Text(
+          'One Enterprise',
+          style: GoogleFonts.onest(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.3,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ============================================================
+  // EYEBROW
+  // ============================================================
+
+  Widget _buildEyebrow() {
+    return Text(
+      'CLOUD PLATFORM  ·  HRMS  ·  CRM  ·  ERP  ·  FINANCE  ·  AI',
+      style: GoogleFonts.ibmPlexMono(
+        color: AppTheme.tealData,
+        fontSize: 11,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 2.1,
+      ),
+    );
+  }
+
+  // ============================================================
+  // HERO HEADING
+  // ============================================================
+
+  Widget _buildHeroHeading() {
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: 'Every operation.\n',
+            style: GoogleFonts.onest(
+              color: Colors.white,
+              fontSize: 48,
+              height: 1.05,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -1.8,
+            ),
+          ),
+          TextSpan(
+            text: 'One sign-in.',
+            style: GoogleFonts.onest(
+              color: AppTheme.amberAI,
+              fontSize: 48,
+              height: 1.05,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -1.8,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // DESCRIPTION
+  // ============================================================
+
+  Widget _buildHeroDescription() {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 650),
+      child: Text(
+        'HR, sales, procurement, finance and your AI copilot — '
+        'running on one identity, one policy, one audit trail.',
+        style: GoogleFonts.onest(
+          color: Colors.white.withValues(alpha: 0.68),
+          fontSize: 16,
+          height: 1.65,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // ENTERPRISE NETWORK
+  // ============================================================
+
+  Widget _buildEnterpriseNetwork() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return CustomPaint(
+          painter: _EnterpriseNetworkPainter(selectedModule: selectedModule),
+          child: Stack(
             children: [
-              Icon(
-                module.icon,
-                color: selected ? Colors.white : Colors.white54,
-                size: 13,
+              // --------------------------------------------------
+              // LEFT MODULES
+              // Module name -> circle
+              // --------------------------------------------------
+
+              Positioned(
+                left: 0,
+                top: constraints.maxHeight * 0.12,
+                child: _networkLabel(0),
               ),
 
-              const SizedBox(width: 7),
+              Positioned(
+                left: 0,
+                top: constraints.maxHeight * 0.42,
+                child: _networkLabel(1),
+              ),
 
-              Expanded(
+              Positioned(
+                left: 0,
+                top: constraints.maxHeight * 0.72,
+                child: _networkLabel(2),
+              ),
+
+              // --------------------------------------------------
+              // RIGHT MODULES
+              // Circle -> module name
+              // --------------------------------------------------
+              Positioned(
+                right: 0,
+                top: constraints.maxHeight * 0.12,
+                child: _networkLabel(3),
+              ),
+
+              Positioned(
+                right: 0,
+                top: constraints.maxHeight * 0.42,
+                child: _networkLabel(4),
+              ),
+
+              Positioned(
+                right: 0,
+                top: constraints.maxHeight * 0.72,
+                child: _networkLabel(5),
+              ),
+
+              // --------------------------------------------------
+              // AI CENTER
+              // --------------------------------------------------
+              Center(
+                child: Container(
+                  width: 76,
+                  height: 76,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppTheme.ink3,
+                    border: Border.all(
+                      color: AppTheme.amberAI.withValues(alpha: 0.65),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.tealData.withValues(alpha: 0.12),
+                        blurRadius: 30,
+                        spreadRadius: 8,
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'AI',
+                    style: GoogleFonts.ibmPlexMono(
+                      color: Colors.white.withValues(alpha: 0.75),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // NETWORK LABEL
+  // ============================================================
+
+  Widget _networkLabel(int index) {
+    final module = modules[index];
+    final isLeft = index <= 2;
+    final isSelected = selectedModule == index;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        setState(() {
+          selectedModule = isSelected ? null : index;
+        });
+      },
+      child: SizedBox(
+        width: 140,
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: isLeft
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
+          children: [
+            // LEFT:
+            // MODULE NAME -> CIRCLE
+            if (isLeft) ...[
+              Flexible(
                 child: Text(
-                  module.title,
+                  module.title.toUpperCase(),
+                  textAlign: TextAlign.right,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.roboto(
-                    color: selected ? Colors.white : Colors.white60,
-                    fontSize: 7.5,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+                  style: GoogleFonts.onest(
+                    color: isSelected
+                        ? Colors.white
+                        : Colors.white.withValues(alpha: 0.58),
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
-
-              if (selected)
-                const Icon(Icons.chevron_right, color: Colors.white, size: 11),
+              const SizedBox(width: 10),
+              _networkNode(isSelected),
             ],
-          ),
+
+            // RIGHT:
+            // CIRCLE -> MODULE NAME
+            if (!isLeft) ...[
+              _networkNode(isSelected),
+              const SizedBox(width: 10),
+              Flexible(
+                child: Text(
+                  module.title.toUpperCase(),
+                  textAlign: TextAlign.left,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.onest(
+                    color: isSelected
+                        ? Colors.white
+                        : Colors.white.withValues(alpha: 0.58),
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
   }
 
   // ============================================================
-  // DASHBOARD CONTENT
+  // NETWORK NODE
   // ============================================================
 
-  Widget _dashboardContent() {
-    switch (selectedModule) {
-      case 1:
-        return _moduleContent('HRMS', 'People & workforce management', [
-          _stat('Employees', '186', Icons.people_outline),
-          _stat('Attendance', '92%', Icons.calendar_today_outlined),
-          _stat('Leave', '14', Icons.event_available_outlined),
-        ]);
-
-      case 2:
-        return _moduleContent('CRM', 'Customer relationship management', [
-          _stat('Leads', '126', Icons.person_search_outlined),
-          _stat('Deals', '42', Icons.handshake_outlined),
-          _stat('Accounts', '318', Icons.business_outlined),
-        ]);
-
-      case 3:
-        return _moduleContent('ERP', 'Enterprise resource management', [
-          _stat('Inventory', '2.4K', Icons.inventory_2_outlined),
-          _stat('Orders', '186', Icons.shopping_cart_outlined),
-          _stat('Dispatch', '32', Icons.local_shipping_outlined),
-        ]);
-
-      case 4:
-        return _moduleContent(
-          'Platform Admin',
-          'Manage the OneCloud platform',
-          [
-            _stat('Tenants', '24', Icons.business_outlined),
-            _stat('Roles', '18', Icons.admin_panel_settings_outlined),
-            _stat('Health', '99.9%', Icons.monitor_heart_outlined),
-          ],
-        );
-
-      default:
-        return _moduleContent(
-          'Business Overview',
-          'OneCloud platform summary',
-          [
-            _stat('Users', '248', Icons.people_outline),
-            _stat('Modules', '08', Icons.apps_outlined),
-            _stat('Growth', '+18%', Icons.trending_up_outlined),
-          ],
-        );
-    }
-  }
-
-  // ============================================================
-  // MODULE CONTENT
-  // ============================================================
-
-  Widget _moduleContent(String title, String subtitle, List<Widget> stats) {
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.roboto(
-              color: AppTheme.darkNavy,
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-
-          const SizedBox(height: 2),
-
-          Text(
-            subtitle,
-            style: GoogleFonts.roboto(
-              color: AppTheme.darkNavy.withValues(alpha: 0.50),
-              fontSize: 6.5,
-            ),
-          ),
-
-          const SizedBox(height: 9),
-
-          Row(
-            children: stats
-                .map(
-                  (item) => Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 5),
-                      child: item,
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-
-          const SizedBox(height: 8),
-
-          Expanded(child: _chart()),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // STAT CARD
-  // ============================================================
-
-  Widget _stat(String title, String value, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(7),
+  Widget _networkNode(bool isSelected) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
+      width: 17,
+      height: 17,
       decoration: BoxDecoration(
-        color: AppTheme.lightBlue,
-        borderRadius: BorderRadius.circular(7),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: AppTheme.primaryBlue, size: 12),
-
-          const SizedBox(height: 3),
-
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.roboto(
-              color: AppTheme.darkNavy.withValues(alpha: 0.50),
-              fontSize: 5.5,
-            ),
-          ),
-
-          Text(
-            value,
-            style: GoogleFonts.roboto(
-              color: AppTheme.darkNavy,
-              fontSize: 9,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // CHART
-  // ============================================================
-
-  Widget _chart() {
-    const values = [0.30, 0.42, 0.36, 0.55, 0.48, 0.68, 0.60, 0.82, 0.70, 0.90];
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: values
-          .map(
-            (value) => Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: FractionallySizedBox(
-                  heightFactor: value,
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryBlue.withValues(
-                        alpha: 0.25 + value * 0.5,
-                      ),
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                  ),
+        shape: BoxShape.circle,
+        color: isSelected
+            ? AppTheme.amberAI
+            : AppTheme.ink3.withValues(alpha: 0.92),
+        border: Border.all(
+          color: isSelected
+              ? AppTheme.amberAI
+              : AppTheme.tealData.withValues(alpha: 0.42),
+          width: 1.2,
+        ),
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: AppTheme.amberAI.withValues(alpha: 0.35),
+                  blurRadius: 10,
+                  spreadRadius: 2,
                 ),
-              ),
-            ),
-          )
-          .toList(),
+              ]
+            : [],
+      ),
     );
   }
 
   // ============================================================
-  // PLATFORM STATS
+  // TRUST BAR
   // ============================================================
 
-  Widget _buildPlatformStats() {
-    return Row(
+  Widget _buildTrustBar() {
+    return Column(
       children: [
-        _platformStat('01', 'Unified\nPlatform'),
+        Container(
+          height: 1,
+          width: double.infinity,
+          color: Colors.white.withValues(alpha: 0.10),
+        ),
 
-        const SizedBox(width: 25),
+        const SizedBox(height: 18),
 
-        _platformStat('05+', 'Business\nModules'),
+        Row(
+          children: [
+            _trustItem(Icons.shield_outlined, 'SOC 2 Type II'),
 
-        const SizedBox(width: 25),
+            const SizedBox(width: 32),
 
-        _platformStat('24/7', 'Enterprise\nOperations'),
+            _trustItem(Icons.lock_outline, 'ISO 27001'),
+
+            const SizedBox(width: 32),
+
+            _trustItem(Icons.schedule_outlined, '99.95% uptime SLA'),
+          ],
+        ),
       ],
     );
   }
 
-  Widget _platformStat(String value, String label) {
+  Widget _trustItem(IconData icon, String text) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          value,
-          style: GoogleFonts.roboto(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
+        Icon(icon, size: 17, color: Colors.white.withValues(alpha: 0.52)),
 
-        const SizedBox(width: 6),
+        const SizedBox(width: 8),
 
         Text(
-          label,
-          style: GoogleFonts.roboto(
+          text,
+          style: GoogleFonts.ibmPlexMono(
             color: Colors.white.withValues(alpha: 0.52),
-            fontSize: 7,
-            height: 1.25,
+            fontSize: 11,
+            letterSpacing: 0.5,
           ),
         ),
       ],
@@ -952,12 +546,12 @@ class _AuthLayoutState extends State<AuthLayout> {
 
   Widget _buildFormArea() {
     return Container(
-      color: AppTheme.lightBlue,
+      color: AppTheme.paper,
       child: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 40),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 430),
+            constraints: const BoxConstraints(maxWidth: 420),
             child: widget.child,
           ),
         ),
@@ -966,120 +560,267 @@ class _AuthLayoutState extends State<AuthLayout> {
   }
 
   // ============================================================
-  // TABLET HEADER
+  // TABLET HERO
   // ============================================================
 
-  Widget _buildTabletHeader() {
+  Widget _buildTabletHero() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 22),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppTheme.darkNavy, AppTheme.primaryBlue],
-        ),
-      ),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 28),
+      color: AppTheme.ink,
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildCompactBrand(),
+                _buildBrand(),
+
+                const SizedBox(height: 24),
+
+                _buildEyebrow(),
+
+                const SizedBox(height: 14),
+
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Every operation.\n',
+                        style: GoogleFonts.onest(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'One sign-in.',
+                        style: GoogleFonts.onest(
+                          color: AppTheme.amberAI,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
                 const SizedBox(height: 12),
 
                 Text(
-                  'ONE PLATFORM.',
-                  style: GoogleFonts.roboto(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-
-                Text(
-                  'ENDLESS POSSIBILITIES.',
-                  style: GoogleFonts.roboto(
-                    color: Colors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-
-                const SizedBox(height: 7),
-
-                Text(
-                  'Connect your people, processes, '
-                  'customers and operations through '
-                  'OneCloud Enterprise Platform.',
-                  style: GoogleFonts.roboto(
-                    color: Colors.white70,
-                    fontSize: 9,
-                    height: 1.4,
+                  'One identity, one policy, one audit trail.',
+                  style: GoogleFonts.onest(
+                    color: Colors.white.withValues(alpha: 0.65),
+                    fontSize: 13,
                   ),
                 ),
               ],
             ),
           ),
 
-          const SizedBox(width: 20),
+          const SizedBox(width: 30),
 
-          SizedBox(width: 290, height: 150, child: _buildDashboardPreview()),
+          SizedBox(width: 280, height: 150, child: _buildEnterpriseNetwork()),
         ],
       ),
     );
   }
 
   // ============================================================
-  // COMPACT BRAND
+  // MOBILE HEADER
   // ============================================================
 
-  Widget _buildCompactBrand() {
-    return SizedBox(
-      height: 45,
-      width: 165,
-      child: Image.asset(
-        'assets/images/onecloud_logo.png',
-        fit: BoxFit.contain,
-        alignment: Alignment.center,
+  Widget _buildMobileHeader() {
+    return Container(
+      width: double.infinity,
+      color: AppTheme.ink,
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildBrand(),
+
+          const SizedBox(height: 22),
+
+          Text(
+            'Every operation.',
+            style: GoogleFonts.onest(
+              color: Colors.white,
+              fontSize: 27,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+
+          Text(
+            'One sign-in.',
+            style: GoogleFonts.onest(
+              color: AppTheme.amberAI,
+              fontSize: 27,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   // ============================================================
-  // FOOTER
+  // MOBILE FOOTER
   // ============================================================
 
-  Widget _buildFooter({bool light = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+  Widget _buildMobileFooter() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      color: AppTheme.ink,
       child: Text(
-        'OneCloud Enterprise Platform • © 2026',
+        'One Enterprise  •  © 2026',
         textAlign: TextAlign.center,
-        style: GoogleFonts.roboto(
-          color: light
-              ? Colors.white.withValues(alpha: 0.32)
-              : AppTheme.darkNavy.withValues(alpha: 0.50),
-          fontSize: 7,
+        style: GoogleFonts.ibmPlexMono(
+          color: Colors.white.withValues(alpha: 0.45),
+          fontSize: 10,
         ),
       ),
     );
   }
 
   // ============================================================
-  // BACKGROUND CIRCLE
+  // AMBIENT CIRCLE
   // ============================================================
 
-  Widget _circle(double size) {
+  Widget _ambientCircle(double size, Color color, double opacity) {
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: 0.035),
+        color: color.withValues(alpha: opacity),
       ),
     );
+  }
+}
+
+// ================================================================
+// NETWORK PAINTER
+// ================================================================
+
+class _EnterpriseNetworkPainter extends CustomPainter {
+  final int? selectedModule;
+
+  const _EnterpriseNetworkPainter({required this.selectedModule});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+
+    // The circle is positioned inside a 140px-wide module area.
+    // Left: name -> circle
+    // Right: circle -> name
+    const moduleAreaWidth = 140.0;
+    const nodeRadius = 8.5;
+
+    final leftX = moduleAreaWidth - nodeRadius;
+    final rightX = size.width - moduleAreaWidth + nodeRadius;
+
+    final topY = size.height * 0.12 + nodeRadius;
+    final middleY = size.height * 0.42 + nodeRadius;
+    final bottomY = size.height * 0.72 + nodeRadius;
+
+    final points = <Offset>[
+      Offset(leftX, topY),
+      Offset(leftX, middleY),
+      Offset(leftX, bottomY),
+      Offset(rightX, topY),
+      Offset(rightX, middleY),
+      Offset(rightX, bottomY),
+    ];
+
+    // ------------------------------------------------------------
+    // LIGHT INITIAL NETWORK
+    // ------------------------------------------------------------
+
+    final lightPaint = Paint()
+      ..color = AppTheme.tealData.withValues(alpha: 0.13)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0
+      ..strokeCap = StrokeCap.round;
+
+    // ------------------------------------------------------------
+    // ACTIVE NETWORK
+    // ------------------------------------------------------------
+
+    final activePaint = Paint()
+      ..color = AppTheme.amberAI.withValues(alpha: 0.82)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.7
+      ..strokeCap = StrokeCap.round;
+
+    // ------------------------------------------------------------
+    // SOFT ACTIVE GLOW
+    // ------------------------------------------------------------
+
+    final activeGlowPaint = Paint()
+      ..color = AppTheme.amberAI.withValues(alpha: 0.10)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
+
+    for (int i = 0; i < points.length; i++) {
+      final point = points[i];
+
+      final path = Path()..moveTo(point.dx, point.dy);
+
+      final controlX = (point.dx + center.dx) / 2;
+
+      path.cubicTo(
+        controlX,
+        point.dy,
+        controlX,
+        center.dy,
+        center.dx,
+        center.dy,
+      );
+
+      // All networks are visible initially in a very light tone.
+      canvas.drawPath(path, lightPaint);
+
+      // Selected network becomes highlighted.
+      if (selectedModule == i) {
+        canvas.drawPath(path, activeGlowPaint);
+        canvas.drawPath(path, activePaint);
+      }
+    }
+
+    // ------------------------------------------------------------
+    // AI CENTER SUBTLE RING
+    // ------------------------------------------------------------
+
+    final ringPaint = Paint()
+      ..color = AppTheme.amberAI.withValues(alpha: 0.45)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.1;
+
+    canvas.drawCircle(center, 43, ringPaint);
+
+    // ------------------------------------------------------------
+    // AI CENTER SOFT GLOW
+    // ------------------------------------------------------------
+
+    final glowPaint = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          AppTheme.tealData.withValues(alpha: 0.14),
+          AppTheme.tealData.withValues(alpha: 0.0),
+        ],
+      ).createShader(Rect.fromCircle(center: center, radius: 58));
+
+    canvas.drawCircle(center, 58, glowPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _EnterpriseNetworkPainter oldDelegate) {
+    return oldDelegate.selectedModule != selectedModule;
   }
 }
 

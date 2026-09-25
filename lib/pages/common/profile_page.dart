@@ -1,20 +1,18 @@
 // import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // import '../../app_theme.dart';
 // import '../../providers/user_provider.dart';
-// import '../../widgets/app_layout.dart';
 
-// class ProfilePage extends StatelessWidget {
+// class ProfilePage extends ConsumerWidget {
 //   const ProfilePage({super.key});
 
 //   @override
-//   Widget build(BuildContext context) {
-//     final userProvider = Provider.of<UserProvider>(context);
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final user = ref.watch(userProvider);
 
 //     return Scaffold(
 //       backgroundColor: const Color(0xFFF5F7FB),
-
 //       body: Column(
 //         children: [
 //           Expanded(
@@ -36,8 +34,8 @@
 //                             radius: 45,
 //                             backgroundColor: AppTheme.primaryBlue,
 //                             child: Text(
-//                               userProvider.name.isNotEmpty
-//                                   ? userProvider.name[0].toUpperCase()
+//                               user.name.isNotEmpty
+//                                   ? user.name[0].toUpperCase()
 //                                   : 'U',
 //                               style: const TextStyle(
 //                                 color: Colors.white,
@@ -50,9 +48,7 @@
 //                           const SizedBox(height: 18),
 
 //                           Text(
-//                             userProvider.name.isNotEmpty
-//                                 ? userProvider.name
-//                                 : 'User',
+//                             user.name.isNotEmpty ? user.name : 'User',
 //                             style: const TextStyle(
 //                               fontSize: 24,
 //                               fontWeight: FontWeight.bold,
@@ -62,7 +58,7 @@
 //                           const SizedBox(height: 5),
 
 //                           Text(
-//                             userProvider.email,
+//                             user.email,
 //                             style: TextStyle(
 //                               fontSize: 14,
 //                               color: Colors.grey.shade600,
@@ -75,18 +71,14 @@
 
 //                           const SizedBox(height: 20),
 
-//                           _profileRow(
-//                             Icons.person_outline,
-//                             'Name',
-//                             userProvider.name,
-//                           ),
+//                           _profileRow(Icons.person_outline, 'Name', user.name),
 
 //                           const SizedBox(height: 20),
 
 //                           _profileRow(
 //                             Icons.email_outlined,
 //                             'Email',
-//                             userProvider.email,
+//                             user.email,
 //                           ),
 
 //                           const SizedBox(height: 20),
@@ -94,9 +86,7 @@
 //                           _profileRow(
 //                             Icons.verified_user_outlined,
 //                             'Account Status',
-//                             userProvider.isLoggedIn
-//                                 ? 'Logged In'
-//                                 : 'Not Logged In',
+//                             user.isLoggedIn ? 'Logged In' : 'Not Logged In',
 //                           ),
 
 //                           const SizedBox(height: 20),
@@ -165,108 +155,105 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FB),
-      body: Column(
-        children: [
-          Expanded(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 700),
-                  child: Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(30),
-                      child: Column(
-                        children: [
-                          CircleAvatar(
-                            radius: 45,
-                            backgroundColor: AppTheme.primaryBlue,
-                            child: Text(
-                              user.name.isNotEmpty
-                                  ? user.name[0].toUpperCase()
-                                  : 'U',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 18),
-
-                          Text(
-                            user.name.isNotEmpty ? user.name : 'User',
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-
-                          const SizedBox(height: 5),
-
-                          Text(
-                            user.email,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-
-                          const SizedBox(height: 30),
-
-                          const Divider(),
-
-                          const SizedBox(height: 20),
-
-                          _profileRow(Icons.person_outline, 'Name', user.name),
-
-                          const SizedBox(height: 20),
-
-                          _profileRow(
-                            Icons.email_outlined,
-                            'Email',
-                            user.email,
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          _profileRow(
-                            Icons.verified_user_outlined,
-                            'Account Status',
-                            user.isLoggedIn ? 'Logged In' : 'Not Logged In',
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          _profileRow(
-                            Icons.security,
-                            'Authentication',
-                            '2-Step Verification',
-                          ),
-                        ],
-                      ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Container(
+            padding: const EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: AppTheme.paper,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppTheme.border),
+            ),
+            child: Column(
+              children: [
+                // Profile Icon
+                CircleAvatar(
+                  radius: 45,
+                  backgroundColor: AppTheme.ink3,
+                  child: Text(
+                    user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U',
+                    style: const TextStyle(
+                      color: AppTheme.paper,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-              ),
+
+                const SizedBox(height: 18),
+
+                // Name
+                Text(
+                  user.name.isNotEmpty ? user.name : 'User',
+                  style: const TextStyle(
+                    color: AppTheme.text,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+
+                const SizedBox(height: 5),
+
+                // Email
+                Text(
+                  user.email.isNotEmpty ? user.email : 'No email available',
+                  style: const TextStyle(
+                    color: AppTheme.textMuted,
+                    fontSize: 14,
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                const Divider(color: AppTheme.border),
+
+                const SizedBox(height: 20),
+
+                _profileRow(Icons.person_outline, 'Name', user.name),
+
+                const SizedBox(height: 20),
+
+                _profileRow(Icons.email_outlined, 'Email', user.email),
+
+                const SizedBox(height: 20),
+
+                _profileRow(
+                  Icons.verified_user_outlined,
+                  'Account Status',
+                  user.isLoggedIn ? 'Logged In' : 'Not Logged In',
+                ),
+
+                const SizedBox(height: 20),
+
+                _profileRow(
+                  Icons.security_outlined,
+                  'Authentication',
+                  '2-Step Verification',
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 
   Widget _profileRow(IconData icon, String title, String value) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: AppTheme.primaryBlue, size: 24),
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: AppTheme.ink3.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: AppTheme.ink3, size: 21),
+        ),
 
         const SizedBox(width: 15),
 
@@ -276,7 +263,7 @@ class ProfilePage extends ConsumerWidget {
             children: [
               Text(
                 title,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
               ),
 
               const SizedBox(height: 4),
@@ -284,7 +271,8 @@ class ProfilePage extends ConsumerWidget {
               Text(
                 value.isNotEmpty ? value : 'Not available',
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 15,
+                  color: AppTheme.text,
                   fontWeight: FontWeight.w600,
                 ),
               ),
