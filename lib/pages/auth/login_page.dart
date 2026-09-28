@@ -178,320 +178,318 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   // ============================================================
 
   Widget _buildLoginForm() {
-    return SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 520),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ======================================================
-            // STEP
-            // ======================================================
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 520),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ======================================================
+          // STEP
+          // ======================================================
 
-            Text(
-              'STEP 1 OF 2  ·  IDENTITY',
-              style: GoogleFonts.ibmPlexMono(
-                color: AppTheme.textMuted,
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                letterSpacing: 1.2,
-              ),
+          Text(
+            'STEP 1 OF 2  ·  IDENTITY',
+            style: GoogleFonts.ibmPlexMono(
+              color: AppTheme.textMuted,
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              letterSpacing: 1.2,
             ),
+          ),
 
-            const SizedBox(height: 18),
+          const SizedBox(height: 18),
 
-            // ======================================================
-            // TITLE
-            // ======================================================
-            Text(
-              'Sign in',
-              style: GoogleFonts.onest(
-                color: AppTheme.text,
-                fontSize: 38,
-                fontWeight: FontWeight.w600,
-                height: 1.1,
-                letterSpacing: -1.2,
-              ),
+          // ======================================================
+          // TITLE
+          // ======================================================
+          Text(
+            'Sign in',
+            style: GoogleFonts.onest(
+              color: AppTheme.text,
+              fontSize: 38,
+              fontWeight: FontWeight.w600,
+              height: 1.1,
+              letterSpacing: -1.2,
             ),
+          ),
 
-            const SizedBox(height: 10),
+          const SizedBox(height: 10),
 
-            Text(
-              'Enter your work email and password to continue.',
-              style: GoogleFonts.onest(
-                color: AppTheme.textMuted,
-                fontSize: 15,
-                fontWeight: FontWeight.w400,
-                height: 1.5,
-              ),
+          Text(
+            'Enter your work email and password to continue.',
+            style: GoogleFonts.onest(
+              color: AppTheme.textMuted,
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              height: 1.5,
             ),
+          ),
 
-            const SizedBox(height: 38),
+          const SizedBox(height: 38),
 
-            // ======================================================
-            // EMAIL
-            // ======================================================
-            _buildFieldLabel('Work email'),
+          // ======================================================
+          // EMAIL
+          // ======================================================
+          _buildFieldLabel('Work email'),
 
-            const SizedBox(height: 8),
+          const SizedBox(height: 8),
 
-            TextField(
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: _inputDecoration(hint: 'you@company.com'),
-            ),
+          TextField(
+            controller: emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: _inputDecoration(hint: 'you@company.com'),
+          ),
 
-            const SizedBox(height: 22),
+          const SizedBox(height: 22),
 
-            // ======================================================
-            // PASSWORD
-            // ======================================================
-            _buildFieldLabel('Password'),
+          // ======================================================
+          // PASSWORD
+          // ======================================================
+          _buildFieldLabel('Password'),
 
-            const SizedBox(height: 8),
+          const SizedBox(height: 8),
 
-            TextField(
-              controller: passwordController,
-              obscureText: hidePassword,
-              onSubmitted: (_) => login(),
-              decoration: _inputDecoration(
-                hint: 'Enter your password',
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      hidePassword = !hidePassword;
-                    });
-                  },
-                  icon: Icon(
-                    hidePassword
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    color: AppTheme.textMuted,
-                    size: 21,
-                  ),
+          TextField(
+            controller: passwordController,
+            obscureText: hidePassword,
+            onSubmitted: (_) => login(),
+            decoration: _inputDecoration(
+              hint: 'Enter your password',
+              suffixIcon: IconButton(
+                onPressed: () {
+                  setState(() {
+                    hidePassword = !hidePassword;
+                  });
+                },
+                icon: Icon(
+                  hidePassword
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  color: AppTheme.textMuted,
+                  size: 21,
                 ),
               ),
             ),
+          ),
 
-            // ======================================================
-            // ERROR
-            // ======================================================
-            if (errorMessage.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              _buildErrorMessage(),
-            ],
+          // ======================================================
+          // ERROR
+          // ======================================================
+          if (errorMessage.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _buildErrorMessage(),
+          ],
 
-            const SizedBox(height: 16),
+          const SizedBox(height: 16),
 
-            // ======================================================
-            // REMEMBER / FORGOT PASSWORD
-            // ======================================================
-            Row(
-              children: [
-                SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: Checkbox(
-                    value: false,
-                    activeColor: AppTheme.ink,
-                    side: const BorderSide(color: AppTheme.border),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    onChanged: (_) {},
-                  ),
-                ),
-
-                const SizedBox(width: 9),
-
-                Expanded(
-                  child: Text(
-                    'Remember this device for 30 days',
-                    style: GoogleFonts.onest(
-                      color: AppTheme.textMuted,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-
-                TextButton(
-                  onPressed: () {
-                    context.push(AppRoutes.forgotPassword);
-                  },
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: Text(
-                    'Forgot password?',
-                    style: GoogleFonts.onest(
-                      color: AppTheme.ink3,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 22),
-
-            // ======================================================
-            // SIGN IN BUTTON
-            // ======================================================
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: login,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.ink,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
+          // ======================================================
+          // REMEMBER / FORGOT PASSWORD
+          // ======================================================
+          Row(
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: Checkbox(
+                  value: false,
+                  activeColor: AppTheme.ink,
+                  side: const BorderSide(color: AppTheme.border),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(4),
                   ),
+                  onChanged: (_) {},
+                ),
+              ),
+
+              const SizedBox(width: 9),
+
+              Expanded(
+                child: Text(
+                  'Remember this device for 30 days',
+                  style: GoogleFonts.onest(
+                    color: AppTheme.textMuted,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+
+              TextButton(
+                onPressed: () {
+                  context.push(AppRoutes.forgotPassword);
+                },
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
-                  'Sign in',
+                  'Forgot password?',
                   style: GoogleFonts.onest(
-                    fontSize: 15,
+                    color: AppTheme.ink3,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
+            ],
+          ),
+
+          const SizedBox(height: 22),
+
+          // ======================================================
+          // SIGN IN BUTTON
+          // ======================================================
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: login,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.ink,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                'Sign in',
+                style: GoogleFonts.onest(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
+          ),
 
-            const SizedBox(height: 28),
+          const SizedBox(height: 28),
 
-            // ======================================================
-            // DIVIDER
-            // ======================================================
-            Row(
-              children: [
-                const Expanded(child: Divider(color: AppTheme.border)),
+          // ======================================================
+          // DIVIDER
+          // ======================================================
+          Row(
+            children: [
+              const Expanded(child: Divider(color: AppTheme.border)),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Text(
-                    'or continue with',
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: Text(
+                  'or continue with',
+                  style: GoogleFonts.onest(
+                    color: AppTheme.textMuted,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+
+              const Expanded(child: Divider(color: AppTheme.border)),
+            ],
+          ),
+
+          const SizedBox(height: 18),
+
+          // ======================================================
+          // GOOGLE
+          // ======================================================
+          _buildSocialButton(
+            icon: 'G',
+            label: 'Google',
+            onPressed: loginWithGoogle,
+            iconColor: const Color(0xFF4285F4),
+          ),
+
+          const SizedBox(height: 12),
+
+          // ======================================================
+          // MICROSOFT
+          // ======================================================
+          _buildMicrosoftButton(),
+
+          const SizedBox(height: 12),
+
+          // ======================================================
+          // COMPANY SSO
+          // ======================================================
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: OutlinedButton(
+              onPressed: () {
+                // SSO integration can be connected later.
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppTheme.text,
+                backgroundColor: AppTheme.paper,
+                side: const BorderSide(color: AppTheme.border),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.people_outline,
+                    size: 21,
+                    color: AppTheme.text,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Company SSO (SAML)',
                     style: GoogleFonts.onest(
-                      color: AppTheme.textMuted,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-
-                const Expanded(child: Divider(color: AppTheme.border)),
-              ],
-            ),
-
-            const SizedBox(height: 18),
-
-            // ======================================================
-            // GOOGLE
-            // ======================================================
-            _buildSocialButton(
-              icon: 'G',
-              label: 'Google',
-              onPressed: loginWithGoogle,
-              iconColor: const Color(0xFF4285F4),
-            ),
-
-            const SizedBox(height: 12),
-
-            // ======================================================
-            // MICROSOFT
-            // ======================================================
-            _buildMicrosoftButton(),
-
-            const SizedBox(height: 12),
-
-            // ======================================================
-            // COMPANY SSO
-            // ======================================================
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: OutlinedButton(
-                onPressed: () {
-                  // SSO integration can be connected later.
-                },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppTheme.text,
-                  backgroundColor: AppTheme.paper,
-                  side: const BorderSide(color: AppTheme.border),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.people_outline,
-                      size: 21,
                       color: AppTheme.text,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Company SSO (SAML)',
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 30),
+
+          // ======================================================
+          // REGISTER
+          // ======================================================
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(top: 22),
+            decoration: const BoxDecoration(
+              border: Border(top: BorderSide(color: AppTheme.border)),
+            ),
+            child: Center(
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'New to One Enterprise? ',
                       style: GoogleFonts.onest(
-                        color: AppTheme.text,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                        color: AppTheme.textMuted,
+                        fontSize: 13,
+                      ),
+                    ),
+                    WidgetSpan(
+                      child: GestureDetector(
+                        onTap: () {
+                          context.push(AppRoutes.register);
+                        },
+                        child: Text(
+                          'Sign Up',
+                          style: GoogleFonts.onest(
+                            color: AppTheme.ink3,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-
-            const SizedBox(height: 30),
-
-            // ======================================================
-            // REGISTER
-            // ======================================================
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.only(top: 22),
-              decoration: const BoxDecoration(
-                border: Border(top: BorderSide(color: AppTheme.border)),
-              ),
-              child: Center(
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'New to One Enterprise? ',
-                        style: GoogleFonts.onest(
-                          color: AppTheme.textMuted,
-                          fontSize: 13,
-                        ),
-                      ),
-                      WidgetSpan(
-                        child: GestureDetector(
-                          onTap: () {
-                            context.push(AppRoutes.register);
-                          },
-                          child: Text(
-                            'Sign Up',
-                            style: GoogleFonts.onest(
-                              color: AppTheme.ink3,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -501,252 +499,246 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   // ============================================================
 
   Widget _buildTwoStepLogin() {
-    return SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 520),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ======================================================
-            // BACK
-            // ======================================================
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 520),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ======================================================
+          // BACK
+          // ======================================================
 
-            TextButton.icon(
-              onPressed: () {
-                setState(() {
-                  showTwoStep = false;
-                  verificationCode = '';
-                  verificationController.clear();
-                  errorMessage = '';
-                });
-              },
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.zero,
-                foregroundColor: AppTheme.textMuted,
-              ),
-              icon: const Icon(Icons.arrow_back, size: 18),
-              label: Text('Back', style: GoogleFonts.onest(fontSize: 14)),
+          TextButton.icon(
+            onPressed: () {
+              setState(() {
+                showTwoStep = false;
+                verificationCode = '';
+                verificationController.clear();
+                errorMessage = '';
+              });
+            },
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              foregroundColor: AppTheme.textMuted,
             ),
+            icon: const Icon(Icons.arrow_back, size: 18),
+            label: Text('Back', style: GoogleFonts.onest(fontSize: 14)),
+          ),
 
-            const SizedBox(height: 28),
+          const SizedBox(height: 28),
 
-            // ======================================================
-            // STEP
-            // ======================================================
-            Text(
-              'STEP 2 OF 2  ·  VERIFICATION',
-              style: GoogleFonts.ibmPlexMono(
+          // ======================================================
+          // STEP
+          // ======================================================
+          Text(
+            'STEP 2 OF 2  ·  VERIFICATION',
+            style: GoogleFonts.ibmPlexMono(
+              color: AppTheme.textMuted,
+              fontSize: 12,
+              letterSpacing: 1.2,
+            ),
+          ),
+
+          const SizedBox(height: 18),
+
+          // ======================================================
+          // TITLE
+          // ======================================================
+          Text(
+            'Verify your identity',
+            style: GoogleFonts.onest(
+              color: AppTheme.text,
+              fontSize: 34,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -1,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          Text(
+            'Enter the verification code to complete sign in.',
+            style: GoogleFonts.onest(
+              color: AppTheme.textMuted,
+              fontSize: 15,
+              height: 1.5,
+            ),
+          ),
+
+          const SizedBox(height: 30),
+
+          // ======================================================
+          // ACCOUNT
+          // ======================================================
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.paperDim,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppTheme.border),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppTheme.amberAI, AppTheme.tealData],
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.person_outline,
+                    color: Colors.white,
+                    size: 21,
+                  ),
+                ),
+
+                const SizedBox(width: 12),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        emailController.text.trim(),
+                        style: GoogleFonts.onest(
+                          color: AppTheme.text,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'Verification required to continue',
+                        style: GoogleFonts.onest(
+                          color: AppTheme.textMuted,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 26),
+
+          // ======================================================
+          // VERIFICATION CODE
+          // ======================================================
+          _buildFieldLabel('Verification code'),
+
+          const SizedBox(height: 8),
+
+          TextField(
+            controller: verificationController,
+            keyboardType: TextInputType.number,
+            maxLength: 6,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.ibmPlexMono(
+              color: AppTheme.text,
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 5,
+            ),
+            decoration: _inputDecoration(hint: 'Enter 6-digit code')
+                .copyWith(counterText: ''),
+            onSubmitted: (_) => verifyTwoStep(),
+          ),
+
+          // ======================================================
+          // POC CODE
+          // ======================================================
+          const SizedBox(height: 10),
+
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppTheme.paperDim,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppTheme.border),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.info_outline, color: AppTheme.info, size: 18),
+                const SizedBox(width: 9),
+                Expanded(
+                  child: Text(
+                    'POC verification code: $verificationCode',
+                    style: GoogleFonts.ibmPlexMono(
+                      color: AppTheme.textMuted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ======================================================
+          // ERROR
+          // ======================================================
+          if (errorMessage.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _buildErrorMessage(),
+          ],
+
+          const SizedBox(height: 22),
+
+          // ======================================================
+          // VERIFY BUTTON
+          // ======================================================
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: verifyTwoStep,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.ink,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                'Verify and sign in',
+                style: GoogleFonts.onest(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 28),
+
+          // ======================================================
+          // SECURITY NOTE
+          // ======================================================
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(top: 20),
+            decoration: const BoxDecoration(
+              border: Border(top: BorderSide(color: AppTheme.border)),
+            ),
+            child: Text(
+              'Your account is protected by One Enterprise '
+              'identity and access policies.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.onest(
                 color: AppTheme.textMuted,
                 fontSize: 12,
-                letterSpacing: 1.2,
-              ),
-            ),
-
-            const SizedBox(height: 18),
-
-            // ======================================================
-            // TITLE
-            // ======================================================
-            Text(
-              'Verify your identity',
-              style: GoogleFonts.onest(
-                color: AppTheme.text,
-                fontSize: 34,
-                fontWeight: FontWeight.w600,
-                letterSpacing: -1,
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            Text(
-              'Enter the verification code to complete sign in.',
-              style: GoogleFonts.onest(
-                color: AppTheme.textMuted,
-                fontSize: 15,
                 height: 1.5,
               ),
             ),
-
-            const SizedBox(height: 30),
-
-            // ======================================================
-            // ACCOUNT
-            // ======================================================
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppTheme.paperDim,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppTheme.border),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppTheme.amberAI, AppTheme.tealData],
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.person_outline,
-                      color: Colors.white,
-                      size: 21,
-                    ),
-                  ),
-
-                  const SizedBox(width: 12),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          emailController.text.trim(),
-                          style: GoogleFonts.onest(
-                            color: AppTheme.text,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          'Verification required to continue',
-                          style: GoogleFonts.onest(
-                            color: AppTheme.textMuted,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 26),
-
-            // ======================================================
-            // VERIFICATION CODE
-            // ======================================================
-            _buildFieldLabel('Verification code'),
-
-            const SizedBox(height: 8),
-
-            TextField(
-              controller: verificationController,
-              keyboardType: TextInputType.number,
-              maxLength: 6,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.ibmPlexMono(
-                color: AppTheme.text,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 5,
-              ),
-              decoration: _inputDecoration(hint: 'Enter 6-digit code')
-                  .copyWith(counterText: ''),
-              onSubmitted: (_) => verifyTwoStep(),
-            ),
-
-            // ======================================================
-            // POC CODE
-            // ======================================================
-            const SizedBox(height: 10),
-
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppTheme.paperDim,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppTheme.border),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.info_outline,
-                    color: AppTheme.info,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 9),
-                  Expanded(
-                    child: Text(
-                      'POC verification code: $verificationCode',
-                      style: GoogleFonts.ibmPlexMono(
-                        color: AppTheme.textMuted,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // ======================================================
-            // ERROR
-            // ======================================================
-            if (errorMessage.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              _buildErrorMessage(),
-            ],
-
-            const SizedBox(height: 22),
-
-            // ======================================================
-            // VERIFY BUTTON
-            // ======================================================
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: verifyTwoStep,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.ink,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Text(
-                  'Verify and sign in',
-                  style: GoogleFonts.onest(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            // ======================================================
-            // SECURITY NOTE
-            // ======================================================
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.only(top: 20),
-              decoration: const BoxDecoration(
-                border: Border(top: BorderSide(color: AppTheme.border)),
-              ),
-              child: Text(
-                'Your account is protected by One Enterprise '
-                'identity and access policies.',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.onest(
-                  color: AppTheme.textMuted,
-                  fontSize: 12,
-                  height: 1.5,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

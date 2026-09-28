@@ -75,14 +75,22 @@ class _AuthLayoutState extends State<AuthLayout> {
         Expanded(
           child: Container(
             color: AppTheme.paper,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(28),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 480),
-                  child: widget.child,
-                ),
-              ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 28,
+                      vertical: 16,
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: SizedBox(width: 460, child: widget.child),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),
@@ -103,14 +111,28 @@ class _AuthLayoutState extends State<AuthLayout> {
           child: Container(
             width: double.infinity,
             color: AppTheme.paper,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
-              child: widget.child,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: math.min(constraints.maxWidth, 420),
+                        child: widget.child,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),
-
-        _buildMobileFooter(),
       ],
     );
   }
@@ -547,14 +569,19 @@ class _AuthLayoutState extends State<AuthLayout> {
   Widget _buildFormArea() {
     return Container(
       color: AppTheme.paper,
-      child: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 40),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: widget.child,
-          ),
-        ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 42, vertical: 24),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                child: SizedBox(width: 420, child: widget.child),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -634,51 +661,20 @@ class _AuthLayoutState extends State<AuthLayout> {
     return Container(
       width: double.infinity,
       color: AppTheme.ink,
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 22),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildBrand(),
-
-          const SizedBox(height: 22),
-
-          Text(
-            'Every operation.',
-            style: GoogleFonts.onest(
-              color: Colors.white,
-              fontSize: 27,
-              fontWeight: FontWeight.w600,
-            ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Center(
+        child: Container(
+          height: 48,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(9),
           ),
-
-          Text(
-            'One sign-in.',
-            style: GoogleFonts.onest(
-              color: AppTheme.amberAI,
-              fontSize: 27,
-              fontWeight: FontWeight.w600,
-            ),
+          child: Image.asset(
+            'assets/images/onecloud_logo.png',
+            height: 34,
+            fit: BoxFit.contain,
           ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // MOBILE FOOTER
-  // ============================================================
-
-  Widget _buildMobileFooter() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      color: AppTheme.ink,
-      child: Text(
-        'One Enterprise  •  © 2026',
-        textAlign: TextAlign.center,
-        style: GoogleFonts.ibmPlexMono(
-          color: Colors.white.withValues(alpha: 0.45),
-          fontSize: 10,
         ),
       ),
     );

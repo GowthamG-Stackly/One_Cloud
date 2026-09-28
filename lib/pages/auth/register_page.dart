@@ -67,367 +67,361 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   // ============================================================
 
   Widget _buildRegisterContent() {
-    return SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 520),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ==================================================
-              // BACK TO SIGN IN
-              // ==================================================
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 520),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ==================================================
+            // BACK TO SIGN IN
+            // ==================================================
 
-              TextButton.icon(
-                onPressed: () {
-                  context.go(AppRoutes.login);
-                },
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  foregroundColor: AppTheme.textMuted,
+            TextButton.icon(
+              onPressed: () {
+                context.go(AppRoutes.login);
+              },
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                foregroundColor: AppTheme.textMuted,
+              ),
+              icon: const Icon(Icons.arrow_back, size: 17),
+              label: Text(
+                'Back to sign in',
+                style: GoogleFonts.onest(
+                  color: AppTheme.textMuted,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
                 ),
-                icon: const Icon(Icons.arrow_back, size: 17),
-                label: Text(
-                  'Back to sign in',
-                  style: GoogleFonts.onest(
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // ==================================================
+            // SECTION LABEL
+            // ==================================================
+            Text(
+              'ACCOUNT SETUP',
+              style: GoogleFonts.ibmPlexMono(
+                color: AppTheme.textMuted,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                letterSpacing: 1.4,
+              ),
+            ),
+
+            const SizedBox(height: 18),
+
+            // ==================================================
+            // TITLE
+            // ==================================================
+            Text(
+              'Create your account',
+              style: GoogleFonts.onest(
+                color: AppTheme.text,
+                fontSize: 38,
+                fontWeight: FontWeight.w600,
+                height: 1.1,
+                letterSpacing: -1.2,
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // ==================================================
+            // DESCRIPTION
+            // ==================================================
+            Text(
+              'Create your One Enterprise account to get '
+              'started with the platform.',
+              style: GoogleFonts.onest(
+                color: AppTheme.textMuted,
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+              ),
+            ),
+
+            const SizedBox(height: 34),
+
+            // ==================================================
+            // FULL NAME
+            // ==================================================
+            _buildFieldLabel('Full name'),
+
+            const SizedBox(height: 8),
+
+            TextFormField(
+              controller: _nameController,
+              textInputAction: TextInputAction.next,
+              textCapitalization: TextCapitalization.words,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter your full name.';
+                }
+
+                if (value.trim().length < 2) {
+                  return 'Name must contain at least 2 characters.';
+                }
+
+                return null;
+              },
+              decoration: _inputDecoration(hint: 'Enter your full name'),
+            ),
+
+            const SizedBox(height: 20),
+
+            // ==================================================
+            // WORK EMAIL
+            // ==================================================
+            _buildFieldLabel('Work email'),
+
+            const SizedBox(height: 8),
+
+            TextFormField(
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter your work email.';
+                }
+
+                final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
+                if (!emailRegex.hasMatch(value.trim())) {
+                  return 'Please enter a valid email address.';
+                }
+
+                return null;
+              },
+              decoration: _inputDecoration(hint: 'you@company.com'),
+            ),
+
+            const SizedBox(height: 20),
+
+            // ==================================================
+            // PASSWORD
+            // ==================================================
+            _buildFieldLabel('Password'),
+
+            const SizedBox(height: 8),
+
+            TextFormField(
+              controller: _passwordController,
+              obscureText: _obscurePassword,
+              textInputAction: TextInputAction.next,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a password.';
+                }
+
+                if (value.length < 6) {
+                  return 'Password must contain at least 6 characters.';
+                }
+
+                return null;
+              },
+              decoration: _inputDecoration(
+                hint: 'Create a password',
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                  icon: Icon(
+                    _obscurePassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     color: AppTheme.textMuted,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
+                    size: 21,
                   ),
                 ),
               ),
+            ),
 
-              const SizedBox(height: 32),
+            const SizedBox(height: 20),
 
-              // ==================================================
-              // SECTION LABEL
-              // ==================================================
-              Text(
-                'ACCOUNT SETUP',
-                style: GoogleFonts.ibmPlexMono(
-                  color: AppTheme.textMuted,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: 1.4,
+            // ==================================================
+            // CONFIRM PASSWORD
+            // ==================================================
+            _buildFieldLabel('Confirm password'),
+
+            const SizedBox(height: 8),
+
+            TextFormField(
+              controller: _confirmPasswordController,
+              obscureText: _obscureConfirmPassword,
+              textInputAction: TextInputAction.done,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please confirm your password.';
+                }
+
+                if (value != _passwordController.text) {
+                  return 'Passwords do not match.';
+                }
+
+                return null;
+              },
+              onFieldSubmitted: (_) {
+                _register();
+              },
+              decoration: _inputDecoration(
+                hint: 'Confirm your password',
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                    });
+                  },
+                  icon: Icon(
+                    _obscureConfirmPassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    color: AppTheme.textMuted,
+                    size: 21,
+                  ),
                 ),
               ),
+            ),
 
-              const SizedBox(height: 18),
+            const SizedBox(height: 16),
 
-              // ==================================================
-              // TITLE
-              // ==================================================
-              Text(
-                'Create your account',
-                style: GoogleFonts.onest(
-                  color: AppTheme.text,
-                  fontSize: 38,
-                  fontWeight: FontWeight.w600,
-                  height: 1.1,
-                  letterSpacing: -1.2,
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              // ==================================================
-              // DESCRIPTION
-              // ==================================================
-              Text(
-                'Create your One Enterprise account to get '
-                'started with the platform.',
-                style: GoogleFonts.onest(
-                  color: AppTheme.textMuted,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  height: 1.5,
-                ),
-              ),
-
-              const SizedBox(height: 34),
-
-              // ==================================================
-              // FULL NAME
-              // ==================================================
-              _buildFieldLabel('Full name'),
-
-              const SizedBox(height: 8),
-
-              TextFormField(
-                controller: _nameController,
-                textInputAction: TextInputAction.next,
-                textCapitalization: TextCapitalization.words,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter your full name.';
-                  }
-
-                  if (value.trim().length < 2) {
-                    return 'Name must contain at least 2 characters.';
-                  }
-
-                  return null;
-                },
-                decoration: _inputDecoration(hint: 'Enter your full name'),
-              ),
-
-              const SizedBox(height: 20),
-
-              // ==================================================
-              // WORK EMAIL
-              // ==================================================
-              _buildFieldLabel('Work email'),
-
-              const SizedBox(height: 8),
-
-              TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter your work email.';
-                  }
-
-                  final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-
-                  if (!emailRegex.hasMatch(value.trim())) {
-                    return 'Please enter a valid email address.';
-                  }
-
-                  return null;
-                },
-                decoration: _inputDecoration(hint: 'you@company.com'),
-              ),
-
-              const SizedBox(height: 20),
-
-              // ==================================================
-              // PASSWORD
-              // ==================================================
-              _buildFieldLabel('Password'),
-
-              const SizedBox(height: 8),
-
-              TextFormField(
-                controller: _passwordController,
-                obscureText: _obscurePassword,
-                textInputAction: TextInputAction.next,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a password.';
-                  }
-
-                  if (value.length < 6) {
-                    return 'Password must contain at least 6 characters.';
-                  }
-
-                  return null;
-                },
-                decoration: _inputDecoration(
-                  hint: 'Create a password',
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
+            // ==================================================
+            // PASSWORD INFO
+            // ==================================================
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.info_outline, color: AppTheme.info, size: 17),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Use at least 6 characters for your password.',
+                    style: GoogleFonts.onest(
                       color: AppTheme.textMuted,
-                      size: 21,
+                      fontSize: 12,
+                      height: 1.4,
                     ),
                   ),
                 ),
-              ),
+              ],
+            ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              // ==================================================
-              // CONFIRM PASSWORD
-              // ==================================================
-              _buildFieldLabel('Confirm password'),
-
-              const SizedBox(height: 8),
-
-              TextFormField(
-                controller: _confirmPasswordController,
-                obscureText: _obscureConfirmPassword,
-                textInputAction: TextInputAction.done,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password.';
-                  }
-
-                  if (value != _passwordController.text) {
-                    return 'Passwords do not match.';
-                  }
-
-                  return null;
-                },
-                onFieldSubmitted: (_) {
-                  _register();
-                },
-                decoration: _inputDecoration(
-                  hint: 'Confirm your password',
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _obscureConfirmPassword = !_obscureConfirmPassword;
-                      });
-                    },
-                    icon: Icon(
-                      _obscureConfirmPassword
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
+            // ==================================================
+            // TERMS
+            // ==================================================
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.check_circle_outline,
+                  color: AppTheme.success,
+                  size: 17,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'By creating an account, you agree to the '
+                    'One Enterprise platform terms and conditions.',
+                    style: GoogleFonts.onest(
                       color: AppTheme.textMuted,
-                      size: 21,
+                      fontSize: 12,
+                      height: 1.4,
                     ),
                   ),
                 ),
-              ),
+              ],
+            ),
 
-              const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
-              // ==================================================
-              // PASSWORD INFO
-              // ==================================================
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.info_outline,
-                    color: AppTheme.info,
-                    size: 17,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Use at least 6 characters for your password.',
+            // ==================================================
+            // CREATE ACCOUNT BUTTON
+            // ==================================================
+            _buildPrimaryButton(),
+
+            const SizedBox(height: 28),
+
+            // ==================================================
+            // DIVIDER
+            // ==================================================
+            const Divider(color: AppTheme.border, height: 1),
+
+            const SizedBox(height: 24),
+
+            // ==================================================
+            // LOGIN LINK
+            // ==================================================
+            Center(
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Already have an account? ',
                       style: GoogleFonts.onest(
                         color: AppTheme.textMuted,
-                        fontSize: 12,
-                        height: 1.4,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              // ==================================================
-              // TERMS
-              // ==================================================
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.check_circle_outline,
-                    color: AppTheme.success,
-                    size: 17,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'By creating an account, you agree to the '
-                      'One Enterprise platform terms and conditions.',
-                      style: GoogleFonts.onest(
-                        color: AppTheme.textMuted,
-                        fontSize: 12,
-                        height: 1.4,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 24),
-
-              // ==================================================
-              // CREATE ACCOUNT BUTTON
-              // ==================================================
-              _buildPrimaryButton(),
-
-              const SizedBox(height: 28),
-
-              // ==================================================
-              // DIVIDER
-              // ==================================================
-              const Divider(color: AppTheme.border, height: 1),
-
-              const SizedBox(height: 24),
-
-              // ==================================================
-              // LOGIN LINK
-              // ==================================================
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Already have an account? ',
-                        style: GoogleFonts.onest(
-                          color: AppTheme.textMuted,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      WidgetSpan(
-                        alignment: PlaceholderAlignment.middle,
-                        child: GestureDetector(
-                          onTap: () {
-                            context.go(AppRoutes.login);
-                          },
-                          child: Text(
-                            'Sign in',
-                            style: GoogleFonts.onest(
-                              color: AppTheme.ink3,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
+                    WidgetSpan(
+                      alignment: PlaceholderAlignment.middle,
+                      child: GestureDetector(
+                        onTap: () {
+                          context.go(AppRoutes.login);
+                        },
+                        child: Text(
+                          'Sign in',
+                          style: GoogleFonts.onest(
+                            color: AppTheme.ink3,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // ==================================================
-              // SECURITY
-              // ==================================================
-              Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.verified_user_outlined,
-                      color: AppTheme.textMuted,
-                      size: 14,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Protected by One Enterprise security',
-                      style: GoogleFonts.onest(
-                        color: AppTheme.textMuted,
-                        fontSize: 11,
                       ),
                     ),
                   ],
                 ),
               ),
+            ),
 
-              const SizedBox(height: 12),
-            ],
-          ),
+            const SizedBox(height: 20),
+
+            // ==================================================
+            // SECURITY
+            // ==================================================
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.verified_user_outlined,
+                    color: AppTheme.textMuted,
+                    size: 14,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Protected by One Enterprise security',
+                    style: GoogleFonts.onest(
+                      color: AppTheme.textMuted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 12),
+          ],
         ),
       ),
     );
