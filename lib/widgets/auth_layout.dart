@@ -1,395 +1,805 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../app_theme.dart';
 
 class AuthLayout extends StatefulWidget {
   final Widget child;
   final bool reverse;
+  final bool scrollable;
 
-  const AuthLayout({super.key, required this.child, this.reverse = false});
+  const AuthLayout({
+    super.key,
+    required this.child,
+    this.reverse = false,
+    this.scrollable = false,
+  });
 
   @override
   State<AuthLayout> createState() => _AuthLayoutState();
 }
 
 class _AuthLayoutState extends State<AuthLayout> {
-  int? selectedModule;
-
-  final List<_AuthModule> modules = const [
-    _AuthModule(title: 'HRMS', icon: Icons.people_outline),
-    _AuthModule(title: 'CRM', icon: Icons.handshake_outlined),
-    _AuthModule(title: 'ERP', icon: Icons.inventory_2_outlined),
-    _AuthModule(title: 'FINANCE', icon: Icons.account_balance_outlined),
-    _AuthModule(title: 'WORKFLOW', icon: Icons.auto_awesome_outlined),
-    _AuthModule(title: 'ANALYTICS', icon: Icons.auto_awesome_outlined),
-  ];
+  int? selectedCard;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.paper,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final width = constraints.maxWidth;
+      backgroundColor: Colors.white,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // =========================================================
+          // MOBILE
+          // =========================================================
 
-            if (width < 700) {
-              return _buildMobile();
-            }
+          if (constraints.maxWidth < 700) {
+            return _buildMobile();
+          }
 
-            if (width < 1100) {
-              return _buildTablet();
-            }
+          // =========================================================
+          // TABLET
+          // =========================================================
 
-            return _buildDesktop();
-          },
+          if (constraints.maxWidth < 1100) {
+            return _buildTablet();
+          }
+
+          // =========================================================
+          // DESKTOP
+          // =========================================================
+
+          return _buildDesktop();
+        },
+      ),
+    );
+  }
+
+  // ==============================================================
+  // DESKTOP
+  // ==============================================================
+
+  Widget _buildDesktop() {
+    final hero = Expanded(flex: 10, child: _buildHero());
+
+    final auth = Expanded(flex: 8, child: _buildAuth());
+
+    return Row(children: widget.reverse ? [auth, hero] : [hero, auth]);
+  }
+
+  // ==============================================================
+  // DESKTOP HERO
+  // ==============================================================
+
+  Widget _buildHero() {
+    return Container(
+      color: Colors.black,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(42, 38, 42, 32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ------------------------------------------------------
+            // LOGO
+            // ------------------------------------------------------
+
+            Image.asset(
+              'assets/images/stackly_logo.png',
+              width: 158,
+              height: 42,
+              fit: BoxFit.contain,
+              alignment: Alignment.centerLeft,
+            ),
+
+            const SizedBox(height: 27),
+
+            // ------------------------------------------------------
+            // PLATFORM TEXT
+            // ------------------------------------------------------
+            Text(
+              'CLOUD PLATFORM  ·  HRMS  ·  CRM  ·  ERP  ·  FINANCE  ·  AI',
+              style: GoogleFonts.ibmPlexMono(
+                color: Colors.white,
+                fontSize: 9,
+                fontWeight: FontWeight.w400,
+                letterSpacing: 1.8,
+              ),
+            ),
+
+            const SizedBox(height: 18),
+
+            // ------------------------------------------------------
+            // TITLE
+            // ------------------------------------------------------
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'One identity.\n',
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 47,
+                      height: 1.05,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -1.8,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'Infinite ',
+                    style: GoogleFonts.inter(
+                      color: const Color(0xFF2166F3),
+                      fontSize: 47,
+                      height: 1.05,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -1.8,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'Potential.',
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 47,
+                      height: 1.05,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -1.8,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // ------------------------------------------------------
+            // NETWORK
+            // ------------------------------------------------------
+            Expanded(
+              child: Center(
+                child: FittedBox(fit: BoxFit.scaleDown, child: _buildNetwork()),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // ------------------------------------------------------
+            // BOTTOM INFO
+            // ------------------------------------------------------
+            _buildBottomInfo(),
+          ],
         ),
       ),
     );
   }
 
-  // ============================================================
-  // DESKTOP
-  // ============================================================
+  // ==============================================================
+  // NETWORK
+  // ==============================================================
 
-  Widget _buildDesktop() {
-    final hero = Expanded(flex: 14, child: _buildHeroPanel());
+  Widget _buildNetwork() {
+    return SizedBox(
+      width: 600,
+      height: 500,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // ========================================================
+          // ENTERPRISE RING
+          // ========================================================
 
-    final form = Expanded(flex: 8, child: _buildFormArea());
+          Center(
+            child: SizedBox(
+              width: 410,
+              height: 410,
+              child: CustomPaint(painter: _EnterpriseRingPainter()),
+            ),
+          ),
 
-    return Row(children: widget.reverse ? [form, hero] : [hero, form]);
+          // ========================================================
+          // CONNECTION LINES
+          // ========================================================
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _NetworkLinesPainter(selectedCard: selectedCard),
+            ),
+          ),
+
+          // ========================================================
+          // CENTER 1E
+          // ========================================================
+          Center(
+            child: Container(
+              width: 78,
+              height: 78,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(19),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF123E9E),
+                    Color(0xFF1768FF),
+                    Color(0xFF0B2A72),
+                    Color(0xFF06152F),
+                  ],
+                  stops: [0.0, 0.38, 0.72, 1.0],
+                ),
+                border: Border.all(color: const Color(0xFF2878FF), width: 1.2),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x770066FF),
+                    blurRadius: 24,
+                    spreadRadius: 4,
+                  ),
+                  BoxShadow(
+                    color: Color(0x3300BFFF),
+                    blurRadius: 42,
+                    spreadRadius: 6,
+                  ),
+                ],
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                '1E',
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontSize: 43,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -2,
+                ),
+              ),
+            ),
+          ),
+
+          // ========================================================
+          // PEOPLE
+          // ========================================================
+          Positioned(
+            left: 15,
+            top: 65,
+            child: _buildModuleCard(
+              index: 0,
+              icon: Icons.people_alt_outlined,
+              title: 'People',
+              subtitle: 'Manage users & teams',
+            ),
+          ),
+
+          // ========================================================
+          // APPLICATIONS
+          // ========================================================
+          Positioned(
+            right: 15,
+            top: 65,
+            child: _buildModuleCard(
+              index: 1,
+              icon: Icons.inventory_2_outlined,
+              title: 'Applications',
+              subtitle: 'Integrate & manage',
+            ),
+          ),
+
+          // ========================================================
+          // SECURITY
+          // ========================================================
+          Positioned(
+            left: 15,
+            bottom: 65,
+            child: _buildModuleCard(
+              index: 2,
+              icon: Icons.shield_outlined,
+              title: 'Security',
+              subtitle: 'Protect every access',
+            ),
+          ),
+
+          // ========================================================
+          // ANALYTICS
+          // ========================================================
+          Positioned(
+            right: 15,
+            bottom: 65,
+            child: _buildModuleCard(
+              index: 3,
+              icon: Icons.bar_chart_outlined,
+              title: 'Analytics',
+              subtitle: 'Turn data into insights',
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  // ============================================================
+  // ==============================================================
+  // MODULE CARD
+  // ==============================================================
+
+  Widget _buildModuleCard({
+    required int index,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    final isSelected = selectedCard == index;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            selectedCard = isSelected ? null : index;
+          });
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+          width: 154,
+          height: 128,
+          padding: const EdgeInsets.fromLTRB(16, 16, 12, 12),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? const Color(0xFF0A1428)
+                : const Color(0xFF080D16),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xFF1680FF)
+                  : const Color(0xFF164DAD),
+              width: isSelected ? 1.5 : 1,
+            ),
+            boxShadow: isSelected
+                ? const [
+                    BoxShadow(
+                      color: Color(0x990066FF),
+                      blurRadius: 24,
+                      spreadRadius: 3,
+                    ),
+                    BoxShadow(
+                      color: Color(0x5500CFFF),
+                      blurRadius: 45,
+                      spreadRadius: 5,
+                    ),
+                  ]
+                : const [
+                    BoxShadow(
+                      color: Color(0x330066FF),
+                      blurRadius: 18,
+                      spreadRadius: 1,
+                    ),
+                  ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ----------------------------------------------------
+              // ICON
+              // ----------------------------------------------------
+
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? const Color(0xFF083D78)
+                      : const Color(0xFF062544),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: isSelected
+                        ? const Color(0xFF1680FF)
+                        : const Color(0xFF0C65B7),
+                    width: 1,
+                  ),
+                  boxShadow: isSelected
+                      ? const [
+                          BoxShadow(
+                            color: Color(0x990066FF),
+                            blurRadius: 12,
+                            spreadRadius: 2,
+                          ),
+                        ]
+                      : [],
+                ),
+                alignment: Alignment.center,
+                child: Icon(icon, color: const Color(0xFF1678FF), size: 20),
+              ),
+
+              const Spacer(),
+
+              // ----------------------------------------------------
+              // TITLE
+              // ----------------------------------------------------
+              Text(
+                title,
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+
+              const SizedBox(height: 4),
+
+              // ----------------------------------------------------
+              // SUBTITLE
+              // ----------------------------------------------------
+              Text(
+                subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.inter(
+                  color: isSelected
+                      ? const Color(0xFFB2C4DD)
+                      : const Color(0xFF8A95A8),
+                  fontSize: 9.5,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ==============================================================
+  // BOTTOM INFO
+  // ==============================================================
+
+  Widget _buildBottomInfo() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildBottomItem('Secure'),
+
+        const SizedBox(width: 38),
+
+        _buildBottomItem('Scalable'),
+
+        const SizedBox(width: 38),
+
+        _buildBottomItem('Future-Ready'),
+
+        const Spacer(),
+
+        Text(
+          'BUILT FOR\nA BRIGHTER\nTOMORROW',
+          style: GoogleFonts.ibmPlexMono(
+            color: const Color(0xFF68748C),
+            fontSize: 8,
+            height: 1.25,
+            letterSpacing: 1.2,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomItem(String text) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(width: 42, height: 1, color: const Color(0xFF2166F3)),
+        const SizedBox(height: 8),
+        Text(
+          text,
+          style: GoogleFonts.ibmPlexMono(
+            color: const Color(0xFF68748C),
+            fontSize: 8,
+            letterSpacing: 1.2,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ==============================================================
+  // DESKTOP AUTH
+  // ==============================================================
+
+  Widget _buildAuth() {
+    final formWidth = widget.scrollable ? 540.0 : 457.0;
+
+    return Container(
+      color: Colors.white,
+      child: widget.scrollable
+          ? SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 25),
+              child: Center(
+                child: SizedBox(width: formWidth, child: widget.child),
+              ),
+            )
+          : Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 50,
+                  vertical: 25,
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: SizedBox(width: formWidth, child: widget.child),
+                ),
+              ),
+            ),
+    );
+  }
+
+  // ==============================================================
   // TABLET
-  // ============================================================
+  // ==============================================================
 
   Widget _buildTablet() {
     return Column(
       children: [
-        _buildTabletHero(),
-
-        Expanded(
-          child: Container(
-            color: AppTheme.paper,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 28,
-                      vertical: 16,
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.center,
-                      child: SizedBox(width: 460, child: widget.child),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+        SizedBox(
+          width: double.infinity,
+          height: 310,
+          child: _buildTabletHero(),
         ),
+        Expanded(child: _buildAuth()),
       ],
     );
   }
 
-  // ============================================================
-  // MOBILE
-  // ============================================================
-
-  Widget _buildMobile() {
-    return Column(
-      children: [
-        _buildMobileHeader(),
-
-        Expanded(
-          child: Container(
-            width: double.infinity,
-            color: AppTheme.paper,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: math.min(constraints.maxWidth, 420),
-                        child: widget.child,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ============================================================
-  // DESKTOP HERO PANEL
-  // ============================================================
-
-  Widget _buildHeroPanel() {
+  Widget _buildTabletHero() {
     return Container(
-      color: AppTheme.ink,
-      child: Stack(
+      color: Colors.black,
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 24),
+      child: Row(
         children: [
-          // Ambient circles
-          Positioned(
-            top: -180,
-            right: -140,
-            child: _ambientCircle(420, AppTheme.ink3, 0.20),
-          ),
-
-          Positioned(
-            bottom: -180,
-            left: -150,
-            child: _ambientCircle(420, AppTheme.ink2, 0.45),
-          ),
-
-          Positioned(
-            top: 340,
-            right: 100,
-            child: _ambientCircle(160, AppTheme.tealData, 0.035),
-          ),
-
-          // Main content
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 58, vertical: 42),
+          Expanded(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildBrand(),
+                Image.asset(
+                  'assets/images/stackly_logo.png',
+                  width: 145,
+                  height: 38,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.centerLeft,
+                ),
 
-                const Spacer(flex: 2),
+                const SizedBox(height: 20),
 
-                _buildEyebrow(),
-
-                const SizedBox(height: 22),
-
-                _buildHeroHeading(),
-
-                const SizedBox(height: 22),
-
-                _buildHeroDescription(),
-
-                const SizedBox(height: 42),
-
-                Expanded(flex: 4, child: _buildEnterpriseNetwork()),
-
-                const SizedBox(height: 26),
-
-                _buildTrustBar(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // BRAND
-  // ============================================================
-
-  Widget _buildBrand() {
-    return Row(
-      children: [
-        Container(
-          height: 58,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Image.asset(
-            'assets/images/onecloud_logo.png',
-            height: 42,
-            fit: BoxFit.contain,
-          ),
-        ),
-
-        const SizedBox(width: 16),
-
-        Text(
-          'One Enterprise',
-          style: GoogleFonts.onest(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            letterSpacing: -0.3,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ============================================================
-  // EYEBROW
-  // ============================================================
-
-  Widget _buildEyebrow() {
-    return Text(
-      'CLOUD PLATFORM  ·  HRMS  ·  CRM  ·  ERP  ·  FINANCE  ·  AI',
-      style: GoogleFonts.ibmPlexMono(
-        color: AppTheme.tealData,
-        fontSize: 11,
-        fontWeight: FontWeight.w400,
-        letterSpacing: 2.1,
-      ),
-    );
-  }
-
-  // ============================================================
-  // HERO HEADING
-  // ============================================================
-
-  Widget _buildHeroHeading() {
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: 'Every operation.\n',
-            style: GoogleFonts.onest(
-              color: Colors.white,
-              fontSize: 48,
-              height: 1.05,
-              fontWeight: FontWeight.w600,
-              letterSpacing: -1.8,
-            ),
-          ),
-          TextSpan(
-            text: 'One sign-in.',
-            style: GoogleFonts.onest(
-              color: AppTheme.amberAI,
-              fontSize: 48,
-              height: 1.05,
-              fontWeight: FontWeight.w600,
-              letterSpacing: -1.8,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // DESCRIPTION
-  // ============================================================
-
-  Widget _buildHeroDescription() {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 650),
-      child: Text(
-        'HR, sales, procurement, finance and your AI copilot — '
-        'running on one identity, one policy, one audit trail.',
-        style: GoogleFonts.onest(
-          color: Colors.white.withValues(alpha: 0.68),
-          fontSize: 16,
-          height: 1.65,
-          fontWeight: FontWeight.w400,
-        ),
-      ),
-    );
-  }
-
-  // ============================================================
-  // ENTERPRISE NETWORK
-  // ============================================================
-
-  Widget _buildEnterpriseNetwork() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return CustomPaint(
-          painter: _EnterpriseNetworkPainter(selectedModule: selectedModule),
-          child: Stack(
-            children: [
-              // --------------------------------------------------
-              // LEFT MODULES
-              // Module name -> circle
-              // --------------------------------------------------
-
-              Positioned(
-                left: 0,
-                top: constraints.maxHeight * 0.12,
-                child: _networkLabel(0),
-              ),
-
-              Positioned(
-                left: 0,
-                top: constraints.maxHeight * 0.42,
-                child: _networkLabel(1),
-              ),
-
-              Positioned(
-                left: 0,
-                top: constraints.maxHeight * 0.72,
-                child: _networkLabel(2),
-              ),
-
-              // --------------------------------------------------
-              // RIGHT MODULES
-              // Circle -> module name
-              // --------------------------------------------------
-              Positioned(
-                right: 0,
-                top: constraints.maxHeight * 0.12,
-                child: _networkLabel(3),
-              ),
-
-              Positioned(
-                right: 0,
-                top: constraints.maxHeight * 0.42,
-                child: _networkLabel(4),
-              ),
-
-              Positioned(
-                right: 0,
-                top: constraints.maxHeight * 0.72,
-                child: _networkLabel(5),
-              ),
-
-              // --------------------------------------------------
-              // AI CENTER
-              // --------------------------------------------------
-              Center(
-                child: Container(
-                  width: 76,
-                  height: 76,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppTheme.ink3,
-                    border: Border.all(
-                      color: AppTheme.amberAI.withValues(alpha: 0.65),
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.tealData.withValues(alpha: 0.12),
-                        blurRadius: 30,
-                        spreadRadius: 8,
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'One identity.\n',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 32,
+                          height: 1.05,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'Infinite ',
+                        style: GoogleFonts.inter(
+                          color: const Color(0xFF2166F3),
+                          fontSize: 32,
+                          height: 1.05,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'Potential.',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 32,
+                          height: 1.05,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'AI',
-                    style: GoogleFonts.ibmPlexMono(
-                      color: Colors.white.withValues(alpha: 0.75),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 20),
+
+          SizedBox(
+            width: 350,
+            height: 280,
+            child: FittedBox(fit: BoxFit.scaleDown, child: _buildNetwork()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ==============================================================
+  // MOBILE
+  // ==============================================================
+
+  Widget _buildMobile() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final screenHeight = constraints.maxHeight;
+
+        // ----------------------------------------------------------
+        // RESPONSIVE VALUES
+        // ----------------------------------------------------------
+
+        final logoWidth = screenWidth < 380 ? 120.0 : 140.0;
+
+        final titleSize = screenWidth < 380 ? 27.0 : 30.0;
+
+        final heroBottom = screenHeight < 650 ? 155.0 : 175.0;
+
+        return SizedBox(
+          width: screenWidth,
+          height: screenHeight,
+          child: Stack(
+            children: [
+              // ====================================================
+              // BLACK BACKGROUND
+              // ====================================================
+
+              Positioned.fill(child: Container(color: Colors.black)),
+
+              // ====================================================
+              // LOGO
+              // ====================================================
+              Positioned(
+                top: 16,
+                left: 20,
+                child: Image.asset(
+                  'assets/images/stackly_logo.png',
+                  width: logoWidth,
+                  height: 38,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.centerLeft,
+                ),
+              ),
+
+              // ====================================================
+              // TITLE
+              // ====================================================
+              Positioned(
+                top: 68,
+                left: 20,
+                right: 20,
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'One identity.\n',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: titleSize,
+                          height: 1.04,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -1.1,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'Infinite ',
+                        style: GoogleFonts.inter(
+                          color: const Color(0xFF2166F3),
+                          fontSize: titleSize,
+                          height: 1.04,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -1.1,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'Potential.',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: titleSize,
+                          height: 1.04,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -1.1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // ====================================================
+              // PLATFORM TEXT
+              // ====================================================
+              Positioned(
+                top: 142,
+                left: 20,
+                right: 20,
+                child: Text(
+                  'CLOUD PLATFORM  ·  HRMS  ·  CRM  ·  ERP  ·  FINANCE  ·  AI',
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  style: GoogleFonts.ibmPlexMono(
+                    color: const Color(0xFF7D899D),
+                    fontSize: 7.2,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ),
+
+              // ====================================================
+              // NETWORK BACKGROUND
+              // ====================================================
+              //
+              // The network is constrained to the available
+              // mobile area so it cannot overflow.
+              //
+              Positioned(
+                top: 145,
+                left: 0,
+                right: 0,
+                bottom: heroBottom,
+                child: LayoutBuilder(
+                  builder: (context, networkConstraints) {
+                    final availableWidth = networkConstraints.maxWidth;
+
+                    final availableHeight = networkConstraints.maxHeight;
+
+                    final scaleByWidth = availableWidth / 600;
+
+                    final scaleByHeight = availableHeight / 500;
+
+                    final scale = scaleByWidth < scaleByHeight
+                        ? scaleByWidth
+                        : scaleByHeight;
+
+                    // Never force a minimum scale on small screens.
+                    // The previous minimum (0.45) could make the fixed
+                    // 600x500 network larger than the available area.
+                    final safeScale = scale.clamp(0.0, 1.0);
+
+                    return Center(
+                      child: SizedBox(
+                        width: 600 * safeScale,
+                        height: 500 * safeScale,
+                        child: FittedBox(
+                          fit: BoxFit.fill,
+                          child: _buildNetwork(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              // ====================================================
+              // WHITE FORM AREA
+              // ====================================================
+              //
+              // IMPORTANT:
+              // This is intentionally WHITE.
+              //
+              // The form uses full available width.
+              //
+              // Scrolling is allowed.
+              //
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                top: heroBottom,
+                child: Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
+                    ),
+                  ),
+                  child: SafeArea(
+                    top: false,
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 30),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: screenWidth - 40),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: widget.child,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -400,433 +810,191 @@ class _AuthLayoutState extends State<AuthLayout> {
       },
     );
   }
+}
 
-  // ============================================================
-  // NETWORK LABEL
-  // ============================================================
+// ==================================================================
+// ENTERPRISE RING PAINTER
+// ==================================================================
 
-  Widget _networkLabel(int index) {
-    final module = modules[index];
-    final isLeft = index <= 2;
-    final isSelected = selectedModule == index;
+class _EnterpriseRingPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        setState(() {
-          selectedModule = isSelected ? null : index;
-        });
-      },
-      child: SizedBox(
-        width: 140,
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: isLeft
-              ? MainAxisAlignment.end
-              : MainAxisAlignment.start,
-          children: [
-            // LEFT:
-            // MODULE NAME -> CIRCLE
-            if (isLeft) ...[
-              Flexible(
-                child: Text(
-                  module.title.toUpperCase(),
-                  textAlign: TextAlign.right,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.onest(
-                    color: isSelected
-                        ? Colors.white
-                        : Colors.white.withValues(alpha: 0.58),
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              _networkNode(isSelected),
-            ],
+    final radius = size.width / 2 - 8;
 
-            // RIGHT:
-            // CIRCLE -> MODULE NAME
-            if (!isLeft) ...[
-              _networkNode(isSelected),
-              const SizedBox(width: 10),
-              Flexible(
-                child: Text(
-                  module.title.toUpperCase(),
-                  textAlign: TextAlign.left,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.onest(
-                    color: isSelected
-                        ? Colors.white
-                        : Colors.white.withValues(alpha: 0.58),
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
+    // ==============================================================
+    // OUTER GLOW
+    // ==============================================================
 
-  // ============================================================
-  // NETWORK NODE
-  // ============================================================
-
-  Widget _networkNode(bool isSelected) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOut,
-      width: 17,
-      height: 17,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isSelected
-            ? AppTheme.amberAI
-            : AppTheme.ink3.withValues(alpha: 0.92),
-        border: Border.all(
-          color: isSelected
-              ? AppTheme.amberAI
-              : AppTheme.tealData.withValues(alpha: 0.42),
-          width: 1.2,
-        ),
-        boxShadow: isSelected
-            ? [
-                BoxShadow(
-                  color: AppTheme.amberAI.withValues(alpha: 0.35),
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                ),
-              ]
-            : [],
-      ),
-    );
-  }
-
-  // ============================================================
-  // TRUST BAR
-  // ============================================================
-
-  Widget _buildTrustBar() {
-    return Column(
-      children: [
-        Container(
-          height: 1,
-          width: double.infinity,
-          color: Colors.white.withValues(alpha: 0.10),
-        ),
-
-        const SizedBox(height: 18),
-
-        Row(
-          children: [
-            _trustItem(Icons.shield_outlined, 'SOC 2 Type II'),
-
-            const SizedBox(width: 32),
-
-            _trustItem(Icons.lock_outline, 'ISO 27001'),
-
-            const SizedBox(width: 32),
-
-            _trustItem(Icons.schedule_outlined, '99.95% uptime SLA'),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _trustItem(IconData icon, String text) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 17, color: Colors.white.withValues(alpha: 0.52)),
-
-        const SizedBox(width: 8),
-
-        Text(
-          text,
-          style: GoogleFonts.ibmPlexMono(
-            color: Colors.white.withValues(alpha: 0.52),
-            fontSize: 11,
-            letterSpacing: 0.5,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ============================================================
-  // FORM AREA
-  // ============================================================
-
-  Widget _buildFormArea() {
-    return Container(
-      color: AppTheme.paper,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 42, vertical: 24),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.center,
-                child: SizedBox(width: 420, child: widget.child),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  // ============================================================
-  // TABLET HERO
-  // ============================================================
-
-  Widget _buildTabletHero() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 28),
-      color: AppTheme.ink,
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildBrand(),
-
-                const SizedBox(height: 24),
-
-                _buildEyebrow(),
-
-                const SizedBox(height: 14),
-
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Every operation.\n',
-                        style: GoogleFonts.onest(
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'One sign-in.',
-                        style: GoogleFonts.onest(
-                          color: AppTheme.amberAI,
-                          fontSize: 32,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                Text(
-                  'One identity, one policy, one audit trail.',
-                  style: GoogleFonts.onest(
-                    color: Colors.white.withValues(alpha: 0.65),
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(width: 30),
-
-          SizedBox(width: 280, height: 150, child: _buildEnterpriseNetwork()),
+    final glowPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 18
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 16)
+      ..shader = const SweepGradient(
+        colors: [
+          Color(0x00005CFF),
+          Color(0x88005CFF),
+          Color(0xCC00D9FF),
+          Color(0xAA0066FF),
+          Color(0x00005CFF),
         ],
-      ),
+        stops: [0.0, 0.25, 0.48, 0.75, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: radius));
+
+    canvas.drawCircle(center, radius, glowPaint);
+
+    // ==============================================================
+    // MAIN RING
+    // ==============================================================
+
+    final ringPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 6
+      ..strokeCap = StrokeCap.round
+      ..shader = const SweepGradient(
+        colors: [
+          Color(0xFF0648D8),
+          Color(0xFF006BFF),
+          Color(0xFF00D9FF),
+          Color(0xFF007BFF),
+          Color(0xFF063CC2),
+          Color(0xFF0648D8),
+        ],
+        stops: [0.0, 0.22, 0.46, 0.64, 0.84, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: radius));
+
+    canvas.drawCircle(center, radius, ringPaint);
+
+    // ==============================================================
+    // INNER RING
+    // ==============================================================
+
+    final innerPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..color = const Color(0xFF1265FF).withValues(alpha: 0.75);
+
+    canvas.drawCircle(center, radius - 13, innerPaint);
+
+    // ==============================================================
+    // CYAN HIGHLIGHT
+    // ==============================================================
+
+    final cyanPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round
+      ..color = const Color(0xFF00E1FF);
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -2.65,
+      1.25,
+      false,
+      cyanPaint,
+    );
+
+    // ==============================================================
+    // BOTTOM GLOW
+    // ==============================================================
+
+    final bottomGlow = Paint()
+      ..shader =
+          const RadialGradient(colors: [Color(0x550078FF), Color(0x000078FF)])
+              .createShader(
+                Rect.fromCircle(
+                  center: Offset(center.dx, center.dy + radius + 20),
+                  radius: 120,
+                ),
+              );
+
+    canvas.drawCircle(
+      Offset(center.dx, center.dy + radius + 20),
+      120,
+      bottomGlow,
     );
   }
 
-  // ============================================================
-  // MOBILE HEADER
-  // ============================================================
-
-  Widget _buildMobileHeader() {
-    return Container(
-      width: double.infinity,
-      color: AppTheme.ink,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      child: Center(
-        child: Container(
-          height: 48,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(9),
-          ),
-          child: Image.asset(
-            'assets/images/onecloud_logo.png',
-            height: 34,
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ============================================================
-  // AMBIENT CIRCLE
-  // ============================================================
-
-  Widget _ambientCircle(double size, Color color, double opacity) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color.withValues(alpha: opacity),
-      ),
-    );
+  @override
+  bool shouldRepaint(covariant _EnterpriseRingPainter oldDelegate) {
+    return false;
   }
 }
 
-// ================================================================
-// NETWORK PAINTER
-// ================================================================
+// ==================================================================
+// NETWORK LINES PAINTER
+// ==================================================================
 
-class _EnterpriseNetworkPainter extends CustomPainter {
-  final int? selectedModule;
+class _NetworkLinesPainter extends CustomPainter {
+  final int? selectedCard;
 
-  const _EnterpriseNetworkPainter({required this.selectedModule});
+  const _NetworkLinesPainter({required this.selectedCard});
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
 
-    // The circle is positioned inside a 140px-wide module area.
-    // Left: name -> circle
-    // Right: circle -> name
-    const moduleAreaWidth = 140.0;
-    const nodeRadius = 8.5;
-
-    final leftX = moduleAreaWidth - nodeRadius;
-    final rightX = size.width - moduleAreaWidth + nodeRadius;
-
-    final topY = size.height * 0.12 + nodeRadius;
-    final middleY = size.height * 0.42 + nodeRadius;
-    final bottomY = size.height * 0.72 + nodeRadius;
-
-    final points = <Offset>[
-      Offset(leftX, topY),
-      Offset(leftX, middleY),
-      Offset(leftX, bottomY),
-      Offset(rightX, topY),
-      Offset(rightX, middleY),
-      Offset(rightX, bottomY),
+    final points = [
+      const Offset(168, 135),
+      Offset(size.width - 168, 135),
+      const Offset(168, 365),
+      Offset(size.width - 168, 365),
     ];
 
-    // ------------------------------------------------------------
-    // LIGHT INITIAL NETWORK
-    // ------------------------------------------------------------
-
-    final lightPaint = Paint()
-      ..color = AppTheme.tealData.withValues(alpha: 0.13)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0
-      ..strokeCap = StrokeCap.round;
-
-    // ------------------------------------------------------------
-    // ACTIVE NETWORK
-    // ------------------------------------------------------------
-
-    final activePaint = Paint()
-      ..color = AppTheme.amberAI.withValues(alpha: 0.82)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.7
-      ..strokeCap = StrokeCap.round;
-
-    // ------------------------------------------------------------
-    // SOFT ACTIVE GLOW
-    // ------------------------------------------------------------
-
-    final activeGlowPaint = Paint()
-      ..color = AppTheme.amberAI.withValues(alpha: 0.10)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 5
-      ..strokeCap = StrokeCap.round
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
-
     for (int i = 0; i < points.length; i++) {
-      final point = points[i];
+      final isSelected = selectedCard == i;
 
-      final path = Path()..moveTo(point.dx, point.dy);
+      // ==========================================================
+      // GLOW
+      // ==========================================================
 
-      final controlX = (point.dx + center.dx) / 2;
+      if (isSelected) {
+        final glowPaint = Paint()
+          ..color = const Color(0x6600BFFF)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 6
+          ..strokeCap = StrokeCap.round
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
 
-      path.cubicTo(
-        controlX,
-        point.dy,
-        controlX,
-        center.dy,
-        center.dx,
-        center.dy,
-      );
-
-      // All networks are visible initially in a very light tone.
-      canvas.drawPath(path, lightPaint);
-
-      // Selected network becomes highlighted.
-      if (selectedModule == i) {
-        canvas.drawPath(path, activeGlowPaint);
-        canvas.drawPath(path, activePaint);
+        _drawConnection(canvas, glowPaint, points[i], center);
       }
+
+      // ==========================================================
+      // MAIN LINE
+      // ==============================================================
+
+      final linePaint = Paint()
+        ..color = isSelected
+            ? const Color(0xFF1680FF)
+            : const Color(0xFF68768D).withValues(alpha: 0.65)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = isSelected ? 2.2 : 1.4
+        ..strokeCap = StrokeCap.round;
+
+      _drawConnection(canvas, linePaint, points[i], center);
     }
+  }
 
-    // ------------------------------------------------------------
-    // AI CENTER SUBTLE RING
-    // ------------------------------------------------------------
+  void _drawConnection(
+    Canvas canvas,
+    Paint paint,
+    Offset start,
+    Offset center,
+  ) {
+    final path = Path();
 
-    final ringPaint = Paint()
-      ..color = AppTheme.amberAI.withValues(alpha: 0.45)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.1;
+    path.moveTo(start.dx, start.dy);
 
-    canvas.drawCircle(center, 43, ringPaint);
+    final controlX = (start.dx + center.dx) / 2;
 
-    // ------------------------------------------------------------
-    // AI CENTER SOFT GLOW
-    // ------------------------------------------------------------
+    path.cubicTo(controlX, start.dy, controlX, center.dy, center.dx, center.dy);
 
-    final glowPaint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          AppTheme.tealData.withValues(alpha: 0.14),
-          AppTheme.tealData.withValues(alpha: 0.0),
-        ],
-      ).createShader(Rect.fromCircle(center: center, radius: 58));
-
-    canvas.drawCircle(center, 58, glowPaint);
+    canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(covariant _EnterpriseNetworkPainter oldDelegate) {
-    return oldDelegate.selectedModule != selectedModule;
+  bool shouldRepaint(covariant _NetworkLinesPainter oldDelegate) {
+    return oldDelegate.selectedCard != selectedCard;
   }
-}
-
-// ================================================================
-// AUTH MODULE MODEL
-// ================================================================
-
-class _AuthModule {
-  final String title;
-  final IconData icon;
-
-  const _AuthModule({required this.title, required this.icon});
 }

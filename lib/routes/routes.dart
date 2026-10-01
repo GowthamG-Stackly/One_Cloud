@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../pages/landing_page.dart';
+
 import '../pages/auth/login_page.dart';
 import '../pages/common/profile_page.dart';
 import '../pages/auth/register_page.dart';
@@ -192,7 +194,8 @@ class AppRoutes {
   // AUTHENTICATION
   // ==============================================================
 
-  static const String login = '/';
+  static const String home = '/';
+  static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
 
@@ -428,7 +431,7 @@ class AppRoutes {
 
   static GoRouter createRouter(Ref ref) {
     return GoRouter(
-      initialLocation: login,
+      initialLocation: home,
 
       redirect: (context, state) {
         final loggedIn = ref.read(userProvider).isLoggedIn;
@@ -437,6 +440,7 @@ class AppRoutes {
         final isLoginPage = location == login;
 
         final isPublicPage =
+            location == home ||
             location == login ||
             location == register ||
             location == forgotPassword ||
@@ -461,6 +465,10 @@ class AppRoutes {
         // AUTHENTICATION
         // ============================================================
 
+        GoRoute(
+          path: AppRoutes.home,
+          builder: (context, state) => const LandingPage(),
+        ),
         GoRoute(
           path: login,
           builder: (context, state) {

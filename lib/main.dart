@@ -15,7 +15,7 @@ class GTInStockApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Once Enterprise Cloud Platform',
+      title: 'One Enterprise Cloud Platform',
       theme: AppTheme.theme,
       routerConfig: ref.watch(appRouterProvider),
     );
