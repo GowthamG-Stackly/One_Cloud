@@ -194,6 +194,115 @@ class AppHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ============================================================
+    // MOBILE HEADER
+    // ============================================================
+    if (isMobile) {
+      return SafeArea(
+        bottom: false,
+        child: Container(
+          height: 116,
+          decoration: BoxDecoration(
+            color: AppTheme.paper,
+            border: Border(bottom: BorderSide(color: AppTheme.border)),
+          ),
+          child: Column(
+            children: [
+              // ------------------------------------------------------
+              // TOP ROW
+              // Menu + Stackly logo + Notification + Profile
+              // ------------------------------------------------------
+              SizedBox(
+                height: 58,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Row(
+                    children: [
+                      _HeaderIconButton(
+                        icon: Icons.menu_rounded,
+                        tooltip: 'Open navigation',
+                        onPressed: onMenuPressed,
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      // STACKLY LOGO
+                      Container(
+                        width: 128,
+                        height: 44,
+                        alignment: Alignment.centerLeft,
+                        child: ColorFiltered(
+                          colorFilter: const ColorFilter.mode(
+                            Color(0xFF28537A),
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset(
+                            'assets/images/stackly_logo.png',
+                            width: 128,
+                            height: 44,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.centerLeft,
+                            filterQuality: FilterQuality.high,
+                          ),
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      // NOTIFICATION
+                      _HeaderIconButton(
+                        icon: Icons.notifications_none_rounded,
+                        tooltip: 'Notifications',
+                        showNotificationDot: true,
+                        onPressed: () {
+                          onNavigate(AppRoutes.notification);
+                        },
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      // PROFILE
+                      _ProfileMenu(
+                        adminName: adminName,
+                        onDashboard: () {
+                          onNavigate(AppRoutes.dashboard);
+                        },
+                        onProfile: () {
+                          onNavigate(AppRoutes.profile);
+                        },
+                        onLogout: onLogout,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // ------------------------------------------------------
+              // SECOND ROW
+              // Full-width search bar
+              // ------------------------------------------------------
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 4, 14, 10),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: _SearchBar(
+                      onTap: () {
+                        onNavigate(AppRoutes.search);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // ============================================================
+    // DESKTOP / TABLET HEADER
+    // ============================================================
     return Container(
       height: 72,
       decoration: BoxDecoration(
@@ -203,19 +312,12 @@ class AppHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          // ================================================================
           // MENU
-          // ================================================================
-
           _HeaderIconButton(
-            icon: isMobile
-                ? Icons.menu_rounded
-                : sidebarExpanded
+            icon: sidebarExpanded
                 ? Icons.menu_open_rounded
                 : Icons.menu_rounded,
-            tooltip: isMobile
-                ? 'Open navigation'
-                : sidebarExpanded
+            tooltip: sidebarExpanded
                 ? 'Collapse navigation'
                 : 'Expand navigation',
             onPressed: onMenuPressed,
@@ -223,9 +325,7 @@ class AppHeader extends StatelessWidget {
 
           const SizedBox(width: 16),
 
-          // ================================================================
           // SEARCH
-          // ================================================================
           Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
@@ -242,9 +342,7 @@ class AppHeader extends StatelessWidget {
 
           const SizedBox(width: 16),
 
-          // ================================================================
           // NOTIFICATION
-          // ================================================================
           _HeaderIconButton(
             icon: Icons.notifications_none_rounded,
             tooltip: 'Notifications',
@@ -256,9 +354,7 @@ class AppHeader extends StatelessWidget {
 
           const SizedBox(width: 8),
 
-          // ================================================================
           // SETTINGS
-          // ================================================================
           _HeaderIconButton(
             icon: Icons.settings_outlined,
             tooltip: 'Settings',
@@ -269,11 +365,12 @@ class AppHeader extends StatelessWidget {
 
           const SizedBox(width: 12),
 
-          // ================================================================
           // PROFILE
-          // ================================================================
           _ProfileMenu(
             adminName: adminName,
+            onDashboard: () {
+              onNavigate(AppRoutes.dashboard);
+            },
             onProfile: () {
               onNavigate(AppRoutes.profile);
             },
@@ -296,17 +393,20 @@ class _SearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 850;
+    final radius = isMobile ? 20.0 : 10.0;
+
     return Material(
       color: AppTheme.paperDim,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(radius),
       child: InkWell(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(radius),
         onTap: onTap,
         child: Container(
           height: 40,
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(radius),
             border: Border.all(color: AppTheme.border),
           ),
           child: Row(
@@ -419,11 +519,13 @@ class _HeaderIconButton extends StatelessWidget {
 
 class _ProfileMenu extends ConsumerWidget {
   final String adminName;
+  final VoidCallback onDashboard;
   final VoidCallback onProfile;
   final VoidCallback onLogout;
 
   const _ProfileMenu({
     required this.adminName,
+    required this.onDashboard,
     required this.onProfile,
     required this.onLogout,
   });
@@ -441,6 +543,10 @@ class _ProfileMenu extends ConsumerWidget {
         side: BorderSide(color: AppTheme.border),
       ),
       onSelected: (value) {
+        if (value == 'dashboard') {
+          onDashboard();
+        }
+
         if (value == 'profile') {
           onProfile();
         }
@@ -450,6 +556,20 @@ class _ProfileMenu extends ConsumerWidget {
         }
       },
       itemBuilder: (context) => [
+        PopupMenuItem<String>(
+          value: 'dashboard',
+          child: Row(
+            children: [
+              Icon(
+                Icons.dashboard_outlined,
+                size: 19,
+                color: AppTheme.textMuted,
+              ),
+              const SizedBox(width: 12),
+              const Text('Dashboard'),
+            ],
+          ),
+        ),
         PopupMenuItem<String>(
           value: 'profile',
           child: Row(
@@ -475,62 +595,73 @@ class _ProfileMenu extends ConsumerWidget {
           ),
         ),
       ],
-      child: Container(
-        height: 42,
-        padding: const EdgeInsets.symmetric(horizontal: 7),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppTheme.border),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppTheme.ink3,
-              ),
-              child: const Icon(
-                Icons.person_outline_rounded,
-                color: Colors.white,
-                size: 17,
-              ),
+      child: Builder(
+        builder: (context) {
+          final isMobile = MediaQuery.of(context).size.width < 850;
+
+          return Container(
+            height: 42,
+            width: isMobile ? 42 : null,
+            padding: EdgeInsets.symmetric(horizontal: isMobile ? 1 : 7),
+            decoration: BoxDecoration(
+              shape: isMobile ? BoxShape.circle : BoxShape.rectangle,
+              borderRadius: isMobile ? null : BorderRadius.circular(22),
+              border: isMobile ? null : Border.all(color: AppTheme.border),
             ),
-
-            if (MediaQuery.of(context).size.width > 650) ...[
-              const SizedBox(width: 9),
-
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    adminName,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.text,
-                    ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppTheme.ink3,
                   ),
-                  Text(
-                    'Super Admin',
-                    style: TextStyle(fontSize: 9, color: AppTheme.textMuted),
+                  child: const Icon(
+                    Icons.person_outline_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+
+                if (!isMobile && MediaQuery.of(context).size.width > 650) ...[
+                  const SizedBox(width: 9),
+
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        adminName,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.text,
+                        ),
+                      ),
+                      Text(
+                        'Super Admin',
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: AppTheme.textMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(width: 8),
+
+                  Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 17,
+                    color: AppTheme.textMuted,
                   ),
                 ],
-              ),
-
-              const SizedBox(width: 8),
-
-              Icon(
-                Icons.keyboard_arrow_down_rounded,
-                size: 17,
-                color: AppTheme.textMuted,
-              ),
-            ],
-          ],
-        ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -600,19 +731,6 @@ class _AppSidebarState extends State<AppSidebar> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _sectionLabel('WORKSPACE', widget.collapsed),
-
-                    _SidebarItem(
-                      title: 'Dashboard',
-                      icon: Icons.dashboard_outlined,
-                      route: AppRoutes.dashboard,
-                      currentRoute: currentRoute,
-                      collapsed: widget.collapsed,
-                      onTap: widget.onNavigate,
-                    ),
-
-                    const SizedBox(height: 10),
-
                     _sectionLabel('ENTERPRISE', widget.collapsed),
 
                     _SidebarSection(
