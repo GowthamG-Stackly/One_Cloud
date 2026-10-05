@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../widgets/submodule_header.dart';
+
 class LicenseManagementPage extends StatelessWidget {
   const LicenseManagementPage({super.key});
 
@@ -14,7 +16,7 @@ class LicenseManagementPage extends StatelessWidget {
 
     return Column(
       children: [
-        _Header(
+        SubmoduleHeader(
           title: 'License Management',
           subtitle: 'Manage platform licenses and allocations.',
           icon: Icons.card_membership_outlined,
@@ -104,67 +106,6 @@ class LicenseManagementPage extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-
-  const _Header({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return _TopBar(title: title, subtitle: subtitle, icon: icon);
-  }
-}
-
-class _TopBar extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-
-  const _TopBar({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.blue, size: 32),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Platform Administration / $title',
-                  style: Theme.of(context).textTheme.titleLarge
-                      ?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 4),
-                Text(subtitle),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

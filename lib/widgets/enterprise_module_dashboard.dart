@@ -50,7 +50,7 @@ class EnterpriseModuleDashboard extends StatelessWidget {
         // ============================================================
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
+          padding: const EdgeInsets.fromLTRB(18, 7, 18, 7),
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
             border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
@@ -58,30 +58,30 @@ class EnterpriseModuleDashboard extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 34,
+                height: 34,
                 decoration: BoxDecoration(
                   color: Colors.blue.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: Colors.blue, size: 25),
+                child: Icon(icon, color: Colors.blue, size: 18),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.w700),
+                      style: Theme.of(context).textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.w700, fontSize: 18),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
                       style: TextStyle(
                         color: Colors.grey.shade600,
-                        fontSize: 13,
+                        fontSize: 11,
                       ),
                     ),
                   ],

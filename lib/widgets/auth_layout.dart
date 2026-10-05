@@ -49,37 +49,40 @@ class _AuthLayoutState extends State<AuthLayout>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // =========================================================
 
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // =========================================================
+            // MOBILE
 
-          // MOBILE
+            // =========================================================
 
-          // =========================================================
+            if (constraints.maxWidth < 700) {
+              return _buildMobile();
+            }
 
-          if (constraints.maxWidth < 700) {
-            return _buildMobile();
-          }
+            // =========================================================
 
-          // =========================================================
+            // TABLET
 
-          // TABLET
+            // =========================================================
 
-          // =========================================================
+            if (constraints.maxWidth < 1100) {
+              return _buildTablet();
+            }
 
-          if (constraints.maxWidth < 1100) {
-            return _buildTablet();
-          }
+            // =========================================================
 
-          // =========================================================
+            // DESKTOP
 
-          // DESKTOP
+            // =========================================================
 
-          // =========================================================
-
-          return _buildDesktop();
-        },
+            return _buildDesktop();
+          },
+        ),
       ),
     );
   }

@@ -156,53 +156,25 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-//       backgroundColor: const Color(0xFFF5F7FA),
+//       backgroundColor: AppTheme.paperDim,
+
 //       body: LayoutBuilder(
 //         builder: (context, constraints) {
 //           final bool mobile = constraints.maxWidth < 850;
 
-//           final double horizontalPadding = mobile ? 16 : 28;
-//           final double topPadding = mobile ? 20 : 26;
-
-//           return SafeArea(
-//             bottom: false,
+//           return SingleChildScrollView(
+//             padding: EdgeInsets.symmetric(
+//               horizontal: mobile ? 16 : 28,
+//               vertical: mobile ? 20 : 26,
+//             ),
 //             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
 //               children: [
-//                 // ============================================================
-//                 // FIXED STOCK MOVEMENTS HEADER
-//                 // ============================================================
-//                 Padding(
-//                   padding: EdgeInsets.fromLTRB(
-//                     horizontalPadding,
-//                     topPadding,
-//                     horizontalPadding,
-//                     0,
-//                   ),
-//                   child: _buildHeader(mobile),
-//                 ),
-
-//                 // ============================================================
-//                 // SCROLLABLE CONTENT
-//                 // ============================================================
-//                 Expanded(
-//                   child: SingleChildScrollView(
-//                     padding: EdgeInsets.fromLTRB(
-//                       horizontalPadding,
-//                       22,
-//                       horizontalPadding,
-//                       28,
-//                     ),
-//                     child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         _buildSummary(mobile),
-//                         const SizedBox(height: 22),
-
-//                         _buildMovementSection(mobile),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
+//                 _buildHeader(mobile),
+//                 const SizedBox(height: 22),
+//                 _buildSummary(mobile),
+//                 const SizedBox(height: 22),
+//                 _buildMovementSection(mobile),
 //               ],
 //             ),
 //           );
@@ -225,12 +197,12 @@
 //               width: 46,
 //               height: 46,
 //               decoration: BoxDecoration(
-//                 color: AppTheme.lightBlue,
+//                 color: AppTheme.paperDim,
 //                 borderRadius: BorderRadius.circular(12),
 //               ),
 //               child: const Icon(
 //                 Icons.swap_horizontal_circle_outlined,
-//                 color: AppTheme.primaryBlue,
+//                 color: AppTheme.ink3,
 //                 size: 24,
 //               ),
 //             ),
@@ -244,7 +216,7 @@
 //                     style: TextStyle(
 //                       fontSize: 26,
 //                       fontWeight: FontWeight.w800,
-//                       color: AppTheme.darkNavy,
+//                       color: AppTheme.text,
 //                     ),
 //                   ),
 //                   SizedBox(height: 3),
@@ -307,8 +279,8 @@
 //         'value': '120',
 //         'subtitle': 'Units transferred',
 //         'icon': Icons.swap_horiz,
-//         'color': AppTheme.primaryBlue,
-//         'background': AppTheme.lightBlue,
+//         'color': AppTheme.ink3,
+//         'background': AppTheme.paperDim,
 //       },
 //       {
 //         'title': 'Adjustments',
@@ -370,17 +342,14 @@
 //                       style: const TextStyle(
 //                         fontSize: 19,
 //                         fontWeight: FontWeight.w800,
-//                         color: AppTheme.darkNavy,
+//                         color: AppTheme.text,
 //                       ),
 //                     ),
 //                     const SizedBox(height: 2),
 //                     Text(
 //                       item['subtitle'].toString(),
 //                       overflow: TextOverflow.ellipsis,
-//                       style: TextStyle(
-//                         fontSize: 9,
-//                         color: Colors.grey.shade500,
-//                       ),
+//                       style: TextStyle(fontSize: 9, color: AppTheme.textMuted),
 //                     ),
 //                   ],
 //                 ),
@@ -426,7 +395,7 @@
 //                 style: TextStyle(
 //                   fontSize: 17,
 //                   fontWeight: FontWeight.w800,
-//                   color: AppTheme.darkNavy,
+//                   color: AppTheme.text,
 //                 ),
 //               ),
 //               SizedBox(height: 3),
@@ -440,7 +409,7 @@
 //         if (!mobile)
 //           Text(
 //             '9 movements',
-//             style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+//             style: TextStyle(fontSize: 10, color: AppTheme.textMuted),
 //           ),
 //       ],
 //     );
@@ -489,7 +458,7 @@
 //         hintStyle: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
 //         prefixIcon: const Icon(Icons.search, size: 18),
 //         filled: true,
-//         fillColor: const Color(0xFFF8FAFC),
+//         fillColor: AppTheme.paperDim,
 //         contentPadding: const EdgeInsets.symmetric(vertical: 12),
 //         border: OutlineInputBorder(
 //           borderRadius: BorderRadius.circular(9),
@@ -504,7 +473,7 @@
 //       value: selectedType,
 //       isExpanded: true,
 //       decoration: _dropdownDecoration(),
-//       style: const TextStyle(fontSize: 11, color: AppTheme.darkNavy),
+//       style: const TextStyle(fontSize: 11, color: AppTheme.text),
 //       items:
 //           const [
 //             'All Types',
@@ -531,7 +500,7 @@
 //       value: selectedWarehouse,
 //       isExpanded: true,
 //       decoration: _dropdownDecoration(),
-//       style: const TextStyle(fontSize: 11, color: AppTheme.darkNavy),
+//       style: const TextStyle(fontSize: 11, color: AppTheme.text),
 //       items:
 //           const [
 //             'All Warehouses',
@@ -557,7 +526,7 @@
 //   InputDecoration _dropdownDecoration() {
 //     return InputDecoration(
 //       filled: true,
-//       fillColor: const Color(0xFFF8FAFC),
+//       fillColor: AppTheme.paperDim,
 //       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
 //       border: OutlineInputBorder(
 //         borderRadius: BorderRadius.circular(9),
@@ -593,7 +562,7 @@
 //             dataRowMaxHeight: 76,
 //             horizontalMargin: 16,
 //             columnSpacing: 22,
-//             headingRowColor: MaterialStateProperty.all(const Color(0xFFF8FAFC)),
+//             headingRowColor: MaterialStateProperty.all(AppTheme.paperDim),
 //             columns: const [
 //               DataColumn(label: Text('MOVEMENT')),
 //               DataColumn(label: Text('PRODUCT')),
@@ -618,7 +587,7 @@
 //                       style: const TextStyle(
 //                         fontSize: 10,
 //                         fontWeight: FontWeight.w600,
-//                         color: AppTheme.primaryBlue,
+//                         color: AppTheme.ink3,
 //                       ),
 //                     ),
 //                   ),
@@ -637,7 +606,7 @@
 //                         _showMovementDetails(movement);
 //                       },
 //                       icon: const Icon(Icons.more_vert, size: 18),
-//                       color: Colors.grey.shade600,
+//                       color: AppTheme.textMuted,
 //                     ),
 //                   ),
 //                 ],
@@ -661,17 +630,17 @@
 //             style: const TextStyle(
 //               fontSize: 10,
 //               fontWeight: FontWeight.w700,
-//               color: AppTheme.darkNavy,
+//               color: AppTheme.text,
 //             ),
 //           ),
 //           const SizedBox(height: 4),
 //           Text(
 //             movement['date'].toString(),
-//             style: TextStyle(fontSize: 9, color: Colors.grey.shade500),
+//             style: TextStyle(fontSize: 9, color: AppTheme.textMuted),
 //           ),
 //           Text(
 //             movement['time'].toString(),
-//             style: TextStyle(fontSize: 9, color: Colors.grey.shade500),
+//             style: TextStyle(fontSize: 9, color: AppTheme.textMuted),
 //           ),
 //         ],
 //       ),
@@ -687,13 +656,13 @@
 //             width: 35,
 //             height: 35,
 //             decoration: BoxDecoration(
-//               color: AppTheme.lightBlue,
+//               color: AppTheme.paperDim,
 //               borderRadius: BorderRadius.circular(8),
 //             ),
 //             child: const Icon(
 //               Icons.inventory_2_outlined,
 //               size: 17,
-//               color: AppTheme.primaryBlue,
+//               color: AppTheme.ink3,
 //             ),
 //           ),
 //           const SizedBox(width: 8),
@@ -709,13 +678,13 @@
 //                   style: const TextStyle(
 //                     fontSize: 11,
 //                     fontWeight: FontWeight.w700,
-//                     color: AppTheme.darkNavy,
+//                     color: AppTheme.text,
 //                   ),
 //                 ),
 //                 const SizedBox(height: 3),
 //                 Text(
 //                   movement['sku'].toString(),
-//                   style: TextStyle(fontSize: 9, color: Colors.grey.shade500),
+//                   style: TextStyle(fontSize: 9, color: AppTheme.textMuted),
 //                 ),
 //               ],
 //             ),
@@ -735,7 +704,7 @@
 //     } else if (type == 'Stock Out') {
 //       color = const Color(0xFFC83C3C);
 //     } else if (type == 'Transfer') {
-//       color = AppTheme.primaryBlue;
+//       color = AppTheme.ink3;
 //     } else {
 //       color = const Color(0xFFC17B00);
 //     }
@@ -753,7 +722,7 @@
 //       width: 135,
 //       child: Row(
 //         children: [
-//           Icon(Icons.warehouse_outlined, size: 14, color: Colors.grey.shade500),
+//           Icon(Icons.warehouse_outlined, size: 14, color: AppTheme.textMuted),
 //           const SizedBox(width: 5),
 //           Expanded(
 //             child: Text(
@@ -809,12 +778,12 @@
 //                   width: 40,
 //                   height: 40,
 //                   decoration: BoxDecoration(
-//                     color: AppTheme.lightBlue,
+//                     color: AppTheme.paperDim,
 //                     borderRadius: BorderRadius.circular(9),
 //                   ),
 //                   child: const Icon(
 //                     Icons.inventory_2_outlined,
-//                     color: AppTheme.primaryBlue,
+//                     color: AppTheme.ink3,
 //                     size: 20,
 //                   ),
 //                 ),
@@ -828,7 +797,7 @@
 //                         style: const TextStyle(
 //                           fontSize: 12,
 //                           fontWeight: FontWeight.w700,
-//                           color: AppTheme.darkNavy,
+//                           color: AppTheme.text,
 //                         ),
 //                       ),
 //                       const SizedBox(height: 3),
@@ -836,7 +805,7 @@
 //                         movement['id'].toString(),
 //                         style: TextStyle(
 //                           fontSize: 9,
-//                           color: Colors.grey.shade500,
+//                           color: AppTheme.textMuted,
 //                         ),
 //                       ),
 //                     ],
@@ -891,12 +860,12 @@
 //                 Icon(
 //                   Icons.access_time_outlined,
 //                   size: 14,
-//                   color: Colors.grey.shade500,
+//                   color: AppTheme.textMuted,
 //                 ),
 //                 const SizedBox(width: 5),
 //                 Text(
 //                   '${movement['date']} • ${movement['time']}',
-//                   style: TextStyle(fontSize: 9, color: Colors.grey.shade500),
+//                   style: TextStyle(fontSize: 9, color: AppTheme.textMuted),
 //                 ),
 //               ],
 //             ),
@@ -909,7 +878,7 @@
 //   Widget _mobileInfo(String label, String value, IconData icon) {
 //     return Row(
 //       children: [
-//         Icon(icon, size: 14, color: Colors.grey.shade500),
+//         Icon(icon, size: 14, color: AppTheme.textMuted),
 //         const SizedBox(width: 5),
 //         Expanded(
 //           child: Column(
@@ -917,7 +886,7 @@
 //             children: [
 //               Text(
 //                 label,
-//                 style: TextStyle(fontSize: 8, color: Colors.grey.shade500),
+//                 style: TextStyle(fontSize: 8, color: AppTheme.textMuted),
 //               ),
 //               const SizedBox(height: 2),
 //               Text(
@@ -927,7 +896,7 @@
 //                 style: const TextStyle(
 //                   fontSize: 10,
 //                   fontWeight: FontWeight.w600,
-//                   color: AppTheme.darkNavy,
+//                   color: AppTheme.text,
 //                 ),
 //               ),
 //             ],
@@ -960,8 +929,8 @@
 //         break;
 
 //       case 'Transfer':
-//         background = AppTheme.lightBlue;
-//         foreground = AppTheme.primaryBlue;
+//         background = AppTheme.paperDim;
+//         foreground = AppTheme.ink3;
 //         icon = Icons.swap_horiz;
 //         break;
 
@@ -1038,7 +1007,7 @@
 //             movement['id'].toString(),
 //             style: const TextStyle(
 //               fontWeight: FontWeight.w800,
-//               color: AppTheme.darkNavy,
+//               color: AppTheme.text,
 //             ),
 //           ),
 //           content: Column(
@@ -1083,7 +1052,7 @@
 //           Expanded(
 //             child: Text(
 //               label,
-//               style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+//               style: TextStyle(fontSize: 11, color: AppTheme.textMuted),
 //             ),
 //           ),
 //           const SizedBox(width: 10),
@@ -1094,7 +1063,7 @@
 //               style: const TextStyle(
 //                 fontSize: 11,
 //                 fontWeight: FontWeight.w700,
-//                 color: AppTheme.darkNavy,
+//                 color: AppTheme.text,
 //               ),
 //             ),
 //           ),
@@ -1129,7 +1098,7 @@
 //                 'Record Stock Movement',
 //                 style: TextStyle(
 //                   fontWeight: FontWeight.w800,
-//                   color: AppTheme.darkNavy,
+//                   color: AppTheme.text,
 //                 ),
 //               ),
 //               content: SizedBox(
@@ -1254,13 +1223,13 @@
 //             style: TextStyle(
 //               fontSize: 14,
 //               fontWeight: FontWeight.w700,
-//               color: AppTheme.darkNavy,
+//               color: AppTheme.text,
 //             ),
 //           ),
 //           const SizedBox(height: 5),
 //           Text(
 //             'Try changing your search or filter selection.',
-//             style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+//             style: TextStyle(fontSize: 12, color: AppTheme.textMuted),
 //           ),
 //         ],
 //       ),
@@ -1273,12 +1242,12 @@
 
 //   BoxDecoration _cardDecoration() {
 //     return BoxDecoration(
-//       color: Colors.white,
+//       color: AppTheme.paper,
 //       borderRadius: BorderRadius.circular(14),
 //       border: Border.all(color: const Color(0xFFE4E8ED)),
 //       boxShadow: [
 //         BoxShadow(
-//           color: Colors.black.withOpacity(0.025),
+//           color: Colors.black.withValues(alpha: 0.025),
 //           blurRadius: 8,
 //           offset: const Offset(0, 3),
 //         ),
@@ -1288,8 +1257,8 @@
 
 //   ButtonStyle _primaryButtonStyle() {
 //     return ElevatedButton.styleFrom(
-//       backgroundColor: AppTheme.primaryBlue,
-//       foregroundColor: Colors.white,
+//       backgroundColor: AppTheme.ink3,
+//       foregroundColor: AppTheme.paper,
 //       elevation: 0,
 //       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
 //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
@@ -1298,8 +1267,8 @@
 
 //   ButtonStyle _outlineButtonStyle() {
 //     return OutlinedButton.styleFrom(
-//       foregroundColor: AppTheme.darkNavy,
-//       side: BorderSide(color: Colors.grey.shade300),
+//       foregroundColor: AppTheme.text,
+//       side: BorderSide(color: AppTheme.border),
 //       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 11),
 //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
 //     );
@@ -1465,104 +1434,113 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.paperDim,
-
       body: LayoutBuilder(
         builder: (context, constraints) {
           final bool mobile = constraints.maxWidth < 850;
 
-          return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: mobile ? 16 : 28,
-              vertical: mobile ? 20 : 26,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(mobile),
-                const SizedBox(height: 22),
-                _buildSummary(mobile),
-                const SizedBox(height: 22),
-                _buildMovementSection(mobile),
-              ],
-            ),
+          return Column(
+            children: [
+              SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    mobile ? 10 : 14,
+                    mobile ? 8 : 10,
+                    mobile ? 10 : 14,
+                    0,
+                  ),
+                  child: _buildHeader(mobile),
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(
+                    mobile ? 10 : 14,
+                    14,
+                    mobile ? 10 : 14,
+                    28,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSummary(mobile),
+                      const SizedBox(height: 18),
+                      _buildMovementSection(mobile),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           );
         },
       ),
     );
   }
 
-  // ===========================================================================
-  // HEADER
-  // ===========================================================================
-
   Widget _buildHeader(bool mobile) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: AppTheme.paperDim,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.swap_horizontal_circle_outlined,
-                color: AppTheme.ink3,
-                size: 24,
-              ),
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: mobile ? 10 : 14, vertical: 7),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: AppTheme.ink3.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(8),
             ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Stock Movements',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w800,
-                      color: AppTheme.text,
-                    ),
-                  ),
-                  SizedBox(height: 3),
-                  Text(
-                    'Track receipts, issues, transfers and inventory adjustments.',
-                    style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                  ),
-                ],
-              ),
-            ),
-            if (!mobile)
-              OutlinedButton.icon(
-                onPressed: _showMovementDialog,
-                icon: const Icon(Icons.add, size: 17),
-                label: const Text('Record Movement'),
-                style: _outlineButtonStyle(),
-              ),
-          ],
-        ),
-        if (mobile) ...[
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _showMovementDialog,
-              icon: const Icon(Icons.add, size: 17),
-              label: const Text('Record Movement'),
-              style: _primaryButtonStyle(),
+            child: const Icon(
+              Icons.swap_horizontal_circle_outlined,
+              color: AppTheme.ink3,
+              size: 17,
             ),
           ),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Stock Movements',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.text,
+                  ),
+                ),
+                const SizedBox(height: 1),
+                const Text(
+                  'Track receipts, issues, transfers and inventory adjustments.',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 10, color: Color(0xFF64748B)),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton.icon(
+            onPressed: _showMovementDialog,
+            icon: const Icon(Icons.add, size: 15),
+            label: Text(
+              mobile ? 'Record' : 'Record Movement',
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+            ),
+            style: _primaryButtonStyle(compact: true),
+          ),
         ],
-      ],
+      ),
     );
   }
-
-  // ===========================================================================
-  // SUMMARY
-  // ===========================================================================
 
   Widget _buildSummary(bool mobile) {
     final List<Map<String, dynamic>> data = [
@@ -1669,10 +1647,6 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
     );
   }
 
-  // ===========================================================================
-  // MOVEMENT SECTION
-  // ===========================================================================
-
   Widget _buildMovementSection(bool mobile) {
     return Container(
       width: double.infinity,
@@ -1722,10 +1696,6 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
       ],
     );
   }
-
-  // ===========================================================================
-  // FILTERS
-  // ===========================================================================
 
   Widget _filters(bool mobile) {
     if (mobile) {
@@ -1842,10 +1812,6 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
       ),
     );
   }
-
-  // ===========================================================================
-  // DESKTOP TABLE
-  // ===========================================================================
 
   Widget _desktopTable() {
     final List<Map<String, dynamic>> data = _filteredMovements();
@@ -2044,10 +2010,6 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
     );
   }
 
-  // ===========================================================================
-  // MOBILE
-  // ===========================================================================
-
   Widget _mobileMovements() {
     final List<Map<String, dynamic>> data = _filteredMovements();
 
@@ -2214,10 +2176,6 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
     );
   }
 
-  // ===========================================================================
-  // MOVEMENT TYPE
-  // ===========================================================================
-
   Widget _movementTypeBadge(String type) {
     Color background;
     Color foreground;
@@ -2229,19 +2187,16 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
         foreground = const Color(0xFF16834B);
         icon = Icons.arrow_downward;
         break;
-
       case 'Stock Out':
         background = const Color(0xFFFFECEC);
         foreground = const Color(0xFFC83C3C);
         icon = Icons.arrow_upward;
         break;
-
       case 'Transfer':
         background = AppTheme.paperDim;
         foreground = AppTheme.ink3;
         icon = Icons.swap_horiz;
         break;
-
       default:
         background = const Color(0xFFFFF5DF);
         foreground = const Color(0xFFC17B00);
@@ -2272,10 +2227,6 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
     );
   }
 
-  // ===========================================================================
-  // FILTERING
-  // ===========================================================================
-
   List<Map<String, dynamic>> _filteredMovements() {
     final String query = searchController.text.trim().toLowerCase();
 
@@ -2298,10 +2249,6 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
       return matchesSearch && matchesType && matchesWarehouse;
     }).toList();
   }
-
-  // ===========================================================================
-  // DETAILS
-  // ===========================================================================
 
   void _showMovementDetails(Map<String, dynamic> movement) {
     showDialog(
@@ -2380,15 +2327,9 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
     );
   }
 
-  // ===========================================================================
-  // RECORD MOVEMENT
-  // ===========================================================================
-
   void _showMovementDialog() {
     final TextEditingController productController = TextEditingController();
-
     final TextEditingController skuController = TextEditingController();
-
     final TextEditingController quantityController = TextEditingController();
 
     String movementType = 'Stock In';
@@ -2511,10 +2452,6 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
     );
   }
 
-  // ===========================================================================
-  // EMPTY STATE
-  // ===========================================================================
-
   Widget _emptyState() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 50),
@@ -2544,10 +2481,6 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
     );
   }
 
-  // ===========================================================================
-  // STYLES
-  // ===========================================================================
-
   BoxDecoration _cardDecoration() {
     return BoxDecoration(
       color: AppTheme.paper,
@@ -2563,13 +2496,22 @@ class _StockMovementsPageState extends State<StockMovementsPage> {
     );
   }
 
-  ButtonStyle _primaryButtonStyle() {
+  ButtonStyle _primaryButtonStyle({bool compact = false}) {
     return ElevatedButton.styleFrom(
       backgroundColor: AppTheme.ink3,
       foregroundColor: AppTheme.paper,
       elevation: 0,
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 10 : 18,
+        vertical: compact ? 7 : 12,
+      ),
+      minimumSize: compact ? const Size(0, 32) : null,
+      tapTargetSize: compact
+          ? MaterialTapTargetSize.shrinkWrap
+          : MaterialTapTargetSize.padded,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(compact ? 8 : 9),
+      ),
     );
   }
 

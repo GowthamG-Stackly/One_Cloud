@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../widgets/submodule_header.dart';
+
 class EmployeeManagementPage extends StatefulWidget {
   const EmployeeManagementPage({super.key});
 
@@ -59,52 +61,13 @@ class _EmployeeManagementPageState extends State<EmployeeManagementPage> {
     return Column(
       children: [
         // ------------------------------------------------------------
-        // FIXED HEADER
+        // COMPACT SHARED SUBMODULE HEADER
         // ------------------------------------------------------------
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.badge_outlined,
-                  color: Colors.blue,
-                  size: 25,
-                ),
-              ),
-              const SizedBox(width: 14),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Employee Management',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Manage employees, departments and workforce information.',
-                      style: TextStyle(color: Colors.grey, fontSize: 13),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+
+        SubmoduleHeader(
+          title: 'Employee Management',
+          subtitle: 'Manage employees, departments and workforce information.',
+          icon: Icons.badge_outlined,
         ),
 
         // ------------------------------------------------------------
@@ -119,6 +82,7 @@ class _EmployeeManagementPageState extends State<EmployeeManagementPage> {
                 // ------------------------------------------------------
                 // KPI CARDS
                 // ------------------------------------------------------
+
                 LayoutBuilder(
                   builder: (context, constraints) {
                     int columns = 4;
@@ -267,6 +231,10 @@ class _EmployeeManagementPageState extends State<EmployeeManagementPage> {
     );
   }
 
+  // ==================================================================
+  // ADD EMPLOYEE DIALOG
+  // ==================================================================
+
   void _showAddEmployeeDialog(BuildContext context) {
     final nameController = TextEditingController();
     final departmentController = TextEditingController();
@@ -321,6 +289,10 @@ class _EmployeeManagementPageState extends State<EmployeeManagementPage> {
       },
     );
   }
+
+  // ==================================================================
+  // EMPLOYEE DETAILS DIALOG
+  // ==================================================================
 
   void _showEmployeeDetails(
     BuildContext context,

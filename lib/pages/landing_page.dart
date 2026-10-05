@@ -1759,7 +1759,7 @@ class _LandingPageState extends State<LandingPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 700) {
@@ -1851,311 +1851,321 @@ class _MobileAuthStyleLandingState extends State<_MobileAuthStyleLanding>
         final ctaHeight = compact ? 112.0 : 120.0;
         final networkBottom = ctaHeight + 4;
 
-        return ColoredBox(
-          color: Colors.black,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              // Subtle blue atmosphere behind the network.
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: const Alignment(0, -0.05),
-                        radius: 1.0,
-                        colors: [
-                          const Color(0xFF0B3C8F).withOpacity(0.18),
-                          Colors.black.withOpacity(0.10),
-                          Colors.black,
-                        ],
-                        stops: const [0.0, 0.42, 1.0],
+        return SafeArea(
+          top: true,
+          bottom: false,
+          child: ColoredBox(
+            color: Colors.black,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Subtle blue atmosphere behind the network.
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: RadialGradient(
+                          center: const Alignment(0, -0.05),
+                          radius: 1.0,
+                          colors: [
+                            const Color(0xFF0B3C8F).withOpacity(0.18),
+                            Colors.black.withOpacity(0.10),
+                            Colors.black,
+                          ],
+                          stops: const [0.0, 0.42, 1.0],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
 
-              // Stackly logo.
-              Positioned(
-                top: 16,
-                left: 20,
-                child: Image.asset(
-                  'assets/images/stackly_logo.png',
-                  width: logoWidth,
-                  height: 38,
-                  fit: BoxFit.contain,
-                  alignment: Alignment.centerLeft,
-                ),
-              ),
-
-              // Platform label.
-              Positioned(
-                top: 60,
-                left: 20,
-                right: 20,
-                child: Text(
-                  'CLOUD PLATFORM  ·  HRMS  ·  CRM  ·  ERP  ·  FINANCE  ·  AI',
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                  style: GoogleFonts.ibmPlexMono(
-                    color: const Color(0xFF7D899D),
-                    fontSize: compact ? 6.8 : 7.2,
-                    letterSpacing: 0.75,
+                // Stackly logo.
+                Positioned(
+                  top: 16,
+                  left: 20,
+                  child: Image.asset(
+                    'assets/images/stackly_logo.png',
+                    width: logoWidth,
+                    height: 38,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.centerLeft,
                   ),
                 ),
-              ),
 
-              // AuthLayout-style title.
-              Positioned(
-                top: 82,
-                left: 20,
-                right: 20,
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'One identity.\n',
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: titleSize,
-                          height: 1.04,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: -1.1,
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'Infinite ',
-                        style: GoogleFonts.inter(
-                          color: const Color(0xFF2166F3),
-                          fontSize: titleSize,
-                          height: 1.04,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: -1.1,
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'Potential.',
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: titleSize,
-                          height: 1.04,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: -1.1,
-                        ),
-                      ),
-                    ],
+                // Platform label.
+                Positioned(
+                  top: 60,
+                  left: 20,
+                  right: 20,
+                  child: Text(
+                    'CLOUD PLATFORM  ·  HRMS  ·  CRM  ·  ERP  ·  FINANCE  ·  AI',
+                    maxLines: 1,
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    style: GoogleFonts.ibmPlexMono(
+                      color: const Color(0xFF7D899D),
+                      fontSize: compact ? 6.8 : 7.2,
+                      letterSpacing: 0.75,
+                    ),
                   ),
                 ),
-              ),
 
-              // Exact visual language of the AuthLayout network.
-              Positioned(
-                top: networkTop,
-                left: 0,
-                right: 0,
-                bottom: networkBottom,
-                child: LayoutBuilder(
-                  builder: (context, networkBox) {
-                    final scale = math
-                        .min(
-                          networkBox.maxWidth / 600.0,
-                          networkBox.maxHeight / 500.0,
-                        )
-                        .clamp(0.0, 1.0)
-                        .toDouble();
-
-                    return Center(
-                      child: SizedBox(
-                        width: 600 * scale,
-                        height: 500 * scale,
-                        child: FittedBox(
-                          fit: BoxFit.fill,
-                          child: SizedBox(
-                            width: 600,
-                            height: 500,
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Center(
-                                  child: SizedBox(
-                                    width: 410,
-                                    height: 410,
-                                    child: CustomPaint(
-                                      painter: _MobileEnterpriseRingPainter(),
-                                    ),
-                                  ),
-                                ),
-                                Positioned.fill(
-                                  child: CustomPaint(
-                                    painter: _MobileNetworkLinesPainter(
-                                      selectedCard: _selectedCard,
-                                      animation: _pulseController,
-                                    ),
-                                  ),
-                                ),
-                                Center(
-                                  child: Container(
-                                    width: 78,
-                                    height: 78,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(19),
-                                      gradient: const LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Color(0xFF123E9E),
-                                          Color(0xFF1768FF),
-                                          Color(0xFF0B2A72),
-                                          Color(0xFF06152F),
-                                        ],
-                                        stops: [0.0, 0.38, 0.72, 1.0],
-                                      ),
-                                      border: Border.all(
-                                        color: Color(0xFF2878FF),
-                                        width: 1.2,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Color(0x770066FF),
-                                          blurRadius: 24,
-                                          spreadRadius: 4,
-                                        ),
-                                        BoxShadow(
-                                          color: Color(0x3300BFFF),
-                                          blurRadius: 42,
-                                          spreadRadius: 6,
-                                        ),
-                                      ],
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      '1E',
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white,
-                                        fontSize: 43,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: -2,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                _mobileModuleCard(
-                                  index: 0,
-                                  left: 15,
-                                  top: 65,
-                                  icon: Icons.people_alt_outlined,
-                                  title: 'People',
-                                  subtitle: 'Manage users & teams',
-                                ),
-                                _mobileModuleCard(
-                                  index: 1,
-                                  right: 15,
-                                  top: 65,
-                                  icon: Icons.inventory_2_outlined,
-                                  title: 'Applications',
-                                  subtitle: 'Integrate & manage',
-                                ),
-                                _mobileModuleCard(
-                                  index: 2,
-                                  left: 15,
-                                  bottom: 65,
-                                  icon: Icons.shield_outlined,
-                                  title: 'Security',
-                                  subtitle: 'Protect every access',
-                                ),
-                                _mobileModuleCard(
-                                  index: 3,
-                                  right: 15,
-                                  bottom: 65,
-                                  icon: Icons.bar_chart_outlined,
-                                  title: 'Analytics',
-                                  subtitle: 'Turn data into insights',
-                                ),
-                              ],
-                            ),
+                // AuthLayout-style title.
+                Positioned(
+                  top: 82,
+                  left: 20,
+                  right: 20,
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'One identity.\n',
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: titleSize,
+                            height: 1.04,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -1.1,
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              // Compact CTA visually connected to the bottom of the network.
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: ctaHeight,
-                child: SafeArea(
-                  top: false,
-                  child: Transform.translate(
-                    offset: const Offset(0, -8),
-                    child: Container(
-                      padding: EdgeInsets.fromLTRB(20, compact ? 2 : 3, 20, 0),
-                      color: Colors.transparent,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'One connected platform for your enterprise.',
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.inter(
-                              color: Colors.white.withOpacity(0.68),
-                              fontSize: compact ? 9.5 : 10.5,
-                              fontWeight: FontWeight.w400,
-                              height: 1.25,
-                            ),
+                        TextSpan(
+                          text: 'Infinite ',
+                          style: GoogleFonts.inter(
+                            color: const Color(0xFF2166F3),
+                            fontSize: titleSize,
+                            height: 1.04,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -1.1,
                           ),
-                          const SizedBox(height: 6),
-                          SizedBox(
-                            width: compact ? 124 : 132,
-                            height: compact ? 32 : 34,
-                            child: ElevatedButton(
-                              onPressed: _goToLogin,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF2166F3),
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
+                        ),
+                        TextSpan(
+                          text: 'Potential.',
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: titleSize,
+                            height: 1.04,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -1.1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Exact visual language of the AuthLayout network.
+                Positioned(
+                  top: networkTop,
+                  left: 0,
+                  right: 0,
+                  bottom: networkBottom,
+                  child: LayoutBuilder(
+                    builder: (context, networkBox) {
+                      final scale = math
+                          .min(
+                            networkBox.maxWidth / 600.0,
+                            networkBox.maxHeight / 500.0,
+                          )
+                          .clamp(0.0, 1.0)
+                          .toDouble();
+
+                      return Center(
+                        child: SizedBox(
+                          width: 600 * scale,
+                          height: 500 * scale,
+                          child: FittedBox(
+                            fit: BoxFit.fill,
+                            child: SizedBox(
+                              width: 600,
+                              height: 500,
+                              child: Stack(
+                                clipBehavior: Clip.none,
                                 children: [
-                                  Text(
-                                    'Get Started',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 10.5,
-                                      fontWeight: FontWeight.w600,
+                                  Center(
+                                    child: SizedBox(
+                                      width: 410,
+                                      height: 410,
+                                      child: CustomPaint(
+                                        painter: _MobileEnterpriseRingPainter(),
+                                      ),
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
-                                  const Icon(
-                                    Icons.arrow_forward_rounded,
-                                    size: 12,
+                                  Positioned.fill(
+                                    child: CustomPaint(
+                                      painter: _MobileNetworkLinesPainter(
+                                        selectedCard: _selectedCard,
+                                        animation: _pulseController,
+                                      ),
+                                    ),
+                                  ),
+                                  Center(
+                                    child: Container(
+                                      width: 78,
+                                      height: 78,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(19),
+                                        gradient: const LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            Color(0xFF123E9E),
+                                            Color(0xFF1768FF),
+                                            Color(0xFF0B2A72),
+                                            Color(0xFF06152F),
+                                          ],
+                                          stops: [0.0, 0.38, 0.72, 1.0],
+                                        ),
+                                        border: Border.all(
+                                          color: Color(0xFF2878FF),
+                                          width: 1.2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Color(0x770066FF),
+                                            blurRadius: 24,
+                                            spreadRadius: 4,
+                                          ),
+                                          BoxShadow(
+                                            color: Color(0x3300BFFF),
+                                            blurRadius: 42,
+                                            spreadRadius: 6,
+                                          ),
+                                        ],
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        '1E',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white,
+                                          fontSize: 43,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: -2,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  _mobileModuleCard(
+                                    index: 0,
+                                    left: 15,
+                                    top: 65,
+                                    icon: Icons.people_alt_outlined,
+                                    title: 'People',
+                                    subtitle: 'Manage users & teams',
+                                  ),
+                                  _mobileModuleCard(
+                                    index: 1,
+                                    right: 15,
+                                    top: 65,
+                                    icon: Icons.inventory_2_outlined,
+                                    title: 'Applications',
+                                    subtitle: 'Integrate & manage',
+                                  ),
+                                  _mobileModuleCard(
+                                    index: 2,
+                                    left: 15,
+                                    bottom: 65,
+                                    icon: Icons.shield_outlined,
+                                    title: 'Security',
+                                    subtitle: 'Protect every access',
+                                  ),
+                                  _mobileModuleCard(
+                                    index: 3,
+                                    right: 15,
+                                    bottom: 65,
+                                    icon: Icons.bar_chart_outlined,
+                                    title: 'Analytics',
+                                    subtitle: 'Turn data into insights',
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                        ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                // Compact CTA visually connected to the bottom of the network.
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: ctaHeight,
+                  child: SafeArea(
+                    top: false,
+                    child: Transform.translate(
+                      offset: const Offset(0, -8),
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(
+                          20,
+                          compact ? 2 : 3,
+                          20,
+                          0,
+                        ),
+                        color: Colors.transparent,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'One connected platform for your enterprise.',
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                color: Colors.white.withOpacity(0.68),
+                                fontSize: compact ? 9.5 : 10.5,
+                                fontWeight: FontWeight.w400,
+                                height: 1.25,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            SizedBox(
+                              width: compact ? 124 : 132,
+                              height: compact ? 32 : 34,
+                              child: ElevatedButton(
+                                onPressed: _goToLogin,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF2166F3),
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Get Started',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    const Icon(
+                                      Icons.arrow_forward_rounded,
+                                      size: 12,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

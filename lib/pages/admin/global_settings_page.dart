@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../widgets/submodule_header.dart';
+
 class GlobalSettingsPage extends StatefulWidget {
   const GlobalSettingsPage({super.key});
 
@@ -17,7 +19,7 @@ class _GlobalSettingsPageState extends State<GlobalSettingsPage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _FixedHeader(
+        SubmoduleHeader(
           title: 'Global Settings',
           subtitle: 'Configure platform-wide settings and preferences.',
           icon: Icons.settings_outlined,
@@ -95,53 +97,6 @@ class _GlobalSettingsPageState extends State<GlobalSettingsPage> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _FixedHeader extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-
-  const _FixedHeader({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 32, color: Colors.blue),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Platform Administration / $title',
-                  style: Theme.of(context).textTheme.titleLarge
-                      ?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
