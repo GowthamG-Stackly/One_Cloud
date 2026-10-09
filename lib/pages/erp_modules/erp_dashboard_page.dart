@@ -11,6 +11,7 @@
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       backgroundColor: AppTheme.paper,
+
 //       body: LayoutBuilder(
 //         builder: (context, constraints) {
 //           return _ErpDashboardContent(width: constraints.maxWidth);
@@ -21,7 +22,9 @@
 // }
 
 // // ============================================================
+
 // // ERP DASHBOARD CONTENT
+
 // // ============================================================
 
 // class _ErpDashboardContent extends StatelessWidget {
@@ -32,7 +35,9 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     final bool smallMobile = width < 420;
+
 //     final bool mobile = width >= 420 && width < 700;
+
 //     final bool desktop = width >= 1100;
 
 //     final double horizontalPadding = width < 600
@@ -43,41 +48,56 @@
 
 //     return SafeArea(
 //       bottom: false,
+
 //       child: Column(
 //         children: [
 //           // ==================================================
-//           // FIXED ERP HEADER
-//           // ==================================================
 
+//           // FIXED ERP HEADER
+
+//           // ==================================================
 //           Padding(
 //             padding: EdgeInsets.fromLTRB(
 //               horizontalPadding,
+
 //               18,
+
 //               horizontalPadding,
+
 //               0,
 //             ),
+
 //             child: _ErpHeader(compact: smallMobile || mobile),
 //           ),
 
 //           // ==================================================
+
 //           // SCROLLABLE DASHBOARD CONTENT
+
 //           // ==================================================
 //           Expanded(
 //             child: SingleChildScrollView(
 //               padding: EdgeInsets.fromLTRB(
 //                 horizontalPadding,
+
 //                 20,
+
 //                 horizontalPadding,
+
 //                 28,
 //               ),
+
 //               child: Center(
 //                 child: ConstrainedBox(
 //                   constraints: const BoxConstraints(maxWidth: 1500),
+
 //                   child: Column(
 //                     crossAxisAlignment: CrossAxisAlignment.start,
+
 //                     children: [
 //                       const _SectionTitle(
 //                         title: 'ERP Overview',
+
 //                         subtitle: 'Inventory and business operations summary',
 //                       ),
 
@@ -89,6 +109,7 @@
 
 //                       _ChartsSection(
 //                         desktop: desktop,
+
 //                         tablet: width >= 700 && width < 1100,
 //                       ),
 
@@ -116,7 +137,9 @@
 // }
 
 // // ============================================================
+
 // // HEADER
+
 // // ============================================================
 
 // class _ErpHeader extends StatelessWidget {
@@ -128,63 +151,81 @@
 //   Widget build(BuildContext context) {
 //     return Container(
 //       width: double.infinity,
+
 //       // height: compact ? 150 : 120,
-//       padding: EdgeInsets.all(compact ? 18 : 24),
+//       padding: EdgeInsets.symmetric(
+//         horizontal: compact ? 12 : 18,
+//         vertical: compact ? 8 : 10,
+//       ),
+
 //       decoration: BoxDecoration(
 //         color: AppTheme.paper,
-//         borderRadius: BorderRadius.circular(18),
+
+//         borderRadius: BorderRadius.circular(12),
+
 //         border: Border.all(color: AppTheme.border),
+
 //         boxShadow: [
 //           BoxShadow(
 //             color: AppTheme.text.withValues(alpha: 0.10),
-//             blurRadius: 14,
-//             offset: const Offset(0, 4),
+
+//             blurRadius: 8,
+
+//             offset: const Offset(0, 2),
 //           ),
 //         ],
 //       ),
-//       child: compact
-//           ? Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 _welcome(),
-//                 const SizedBox(height: 16),
-//                 const _DateBadge(),
-//               ],
-//             )
-//           : Row(
-//               children: [
-//                 Expanded(child: _welcome()),
-//                 const _DateBadge(),
-//               ],
-//             ),
+
+//       child: Row(
+//         children: [
+//           Expanded(child: _welcome()),
+
+//           const _DateBadge(),
+//         ],
+//       ),
 //     );
 //   }
 
 //   Widget _welcome() {
 //     return Column(
 //       crossAxisAlignment: CrossAxisAlignment.start,
+
 //       children: [
-//         const Text(
+//         Text(
 //           'Enterprise Resource Planning',
+
 //           style: TextStyle(
-//             fontSize: 14,
+//             fontSize: compact ? 11 : 13,
+
 //             fontWeight: FontWeight.w600,
+
 //             color: AppTheme.tealData,
 //           ),
 //         ),
-//         const SizedBox(height: 4),
-//         const Text(
+
+//         const SizedBox(height: 1),
+
+//         Text(
 //           'ERP Dashboard',
+
 //           style: TextStyle(
-//             fontSize: 25,
+//             fontSize: compact ? 18 : 22,
+
 //             fontWeight: FontWeight.w800,
+
 //             color: AppTheme.text,
 //           ),
 //         ),
-//         const SizedBox(height: 6),
-//         const Text(
+
+//         const SizedBox(height: 1),
+
+//         Text(
 //           'Manage inventory, procurement, sales, dispatch and operations.',
-//           style: TextStyle(fontSize: 13, color: AppTheme.textMuted),
+
+//           style: TextStyle(
+//             fontSize: compact ? 10 : 12,
+//             color: AppTheme.textMuted,
+//           ),
 //         ),
 //       ],
 //     );
@@ -192,7 +233,9 @@
 // }
 
 // // ============================================================
+
 // // DATE BADGE
+
 // // ============================================================
 
 // class _DateBadge extends StatelessWidget {
@@ -201,25 +244,36 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     return Container(
-//       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+
 //       decoration: BoxDecoration(
 //         color: AppTheme.paper,
-//         borderRadius: BorderRadius.circular(11),
+
+//         borderRadius: BorderRadius.circular(9),
 //       ),
+
 //       child: const Row(
 //         mainAxisSize: MainAxisSize.min,
+
 //         children: [
 //           Icon(
 //             Icons.calendar_today_outlined,
-//             size: 16,
+
+//             size: 14,
+
 //             color: AppTheme.tealData,
 //           ),
+
 //           SizedBox(width: 8),
+
 //           Text(
 //             '10 September 2026',
+
 //             style: TextStyle(
-//               fontSize: 12,
+//               fontSize: 10,
+
 //               fontWeight: FontWeight.w700,
+
 //               color: AppTheme.text,
 //             ),
 //           ),
@@ -230,11 +284,14 @@
 // }
 
 // // ============================================================
+
 // // SECTION TITLE
+
 // // ============================================================
 
 // class _SectionTitle extends StatelessWidget {
 //   final String title;
+
 //   final String subtitle;
 
 //   const _SectionTitle({required this.title, required this.subtitle});
@@ -243,18 +300,25 @@
 //   Widget build(BuildContext context) {
 //     return Column(
 //       crossAxisAlignment: CrossAxisAlignment.start,
+
 //       children: [
 //         Text(
 //           title,
+
 //           style: const TextStyle(
 //             fontSize: 18,
+
 //             fontWeight: FontWeight.w800,
+
 //             color: AppTheme.text,
 //           ),
 //         ),
+
 //         const SizedBox(height: 3),
+
 //         Text(
 //           subtitle,
+
 //           style: const TextStyle(fontSize: 11, color: AppTheme.textMuted),
 //         ),
 //       ],
@@ -263,7 +327,9 @@
 // }
 
 // // ============================================================
+
 // // KPI SECTION
+
 // // ============================================================
 
 // class _KpiSection extends StatelessWidget {
@@ -274,58 +340,97 @@
 //     const List<_KpiData> items = [
 //       _KpiData(
 //         title: 'Total Products',
+
 //         value: '1,248',
+
 //         subtitle: 'Active products',
+
 //         icon: Icons.inventory_2_outlined,
+
 //         color: AppTheme.tealData,
 //       ),
+
 //       _KpiData(
 //         title: 'Total Stock',
+
 //         value: '18,420',
+
 //         subtitle: 'Units in inventory',
+
 //         icon: Icons.warehouse_outlined,
+
 //         color: AppTheme.tealData,
 //       ),
+
 //       _KpiData(
 //         title: 'Low Stock',
+
 //         value: '24',
+
 //         subtitle: 'Need attention',
+
 //         icon: Icons.warning_amber_rounded,
+
 //         color: AppTheme.amberAI,
 //       ),
+
 //       _KpiData(
 //         title: 'Out of Stock',
+
 //         value: '7',
+
 //         subtitle: 'Items unavailable',
+
 //         icon: Icons.remove_shopping_cart_outlined,
+
 //         color: const Color(0xFFE05A5A),
 //       ),
+
 //       _KpiData(
 //         title: 'Purchase Orders',
+
 //         value: '6',
+
 //         subtitle: '2 pending',
+
 //         icon: Icons.shopping_cart_outlined,
+
 //         color: AppTheme.amberAI,
 //       ),
+
 //       _KpiData(
 //         title: 'Sales Orders',
+
 //         value: '8',
+
 //         subtitle: '3 processing',
+
 //         icon: Icons.receipt_long_outlined,
+
 //         color: AppTheme.tealData,
 //       ),
+
 //       _KpiData(
 //         title: 'Ready to Dispatch',
+
 //         value: '1',
+
 //         subtitle: 'Awaiting dispatch',
+
 //         icon: Icons.local_shipping_outlined,
+
 //         color: AppTheme.amberAI,
 //       ),
+
 //       _KpiData(
 //         title: 'In Transit',
+
 //         value: '2',
+
 //         subtitle: 'Active shipments',
+
 //         icon: Icons.route_outlined,
+
 //         color: AppTheme.tealData,
 //       ),
 //     ];
@@ -348,7 +453,9 @@
 
 //         return Wrap(
 //           spacing: 14,
+
 //           runSpacing: 14,
+
 //           children: items.map((item) {
 //             final double cardWidth = columns == 1
 //                 ? availableWidth
@@ -356,6 +463,7 @@
 
 //             return SizedBox(
 //               width: cardWidth,
+
 //               child: _KpiCard(data: item),
 //             );
 //           }).toList(),
@@ -366,7 +474,9 @@
 // }
 
 // // ============================================================
+
 // // KPI CARD
+
 // // ============================================================
 
 // class _KpiCard extends StatelessWidget {
@@ -378,65 +488,100 @@
 //   Widget build(BuildContext context) {
 //     return Container(
 //       constraints: const BoxConstraints(minHeight: 112),
+
 //       padding: const EdgeInsets.all(16),
+
 //       decoration: BoxDecoration(
 //         color: AppTheme.paper,
+
 //         borderRadius: BorderRadius.circular(15),
+
 //         border: Border.all(color: AppTheme.border),
+
 //         boxShadow: [
 //           BoxShadow(
 //             color: AppTheme.text.withValues(alpha: 0.08),
+
 //             blurRadius: 10,
+
 //             offset: const Offset(0, 3),
 //           ),
 //         ],
 //       ),
+
 //       child: Row(
 //         children: [
 //           Container(
 //             width: 46,
+
 //             height: 46,
+
 //             decoration: BoxDecoration(
 //               color: data.color.withValues(alpha: 0.10),
+
 //               borderRadius: BorderRadius.circular(12),
 //             ),
+
 //             child: Icon(data.icon, color: data.color, size: 22),
 //           ),
+
 //           const SizedBox(width: 13),
+
 //           Expanded(
 //             child: Column(
 //               mainAxisAlignment: MainAxisAlignment.center,
+
 //               crossAxisAlignment: CrossAxisAlignment.start,
+
 //               children: [
 //                 Text(
 //                   data.title,
+
 //                   maxLines: 1,
+
 //                   overflow: TextOverflow.ellipsis,
+
 //                   style: const TextStyle(
 //                     fontSize: 11,
+
 //                     color: AppTheme.textMuted,
+
 //                     fontWeight: FontWeight.w500,
 //                   ),
 //                 ),
+
 //                 const SizedBox(height: 3),
+
 //                 Text(
 //                   data.value,
+
 //                   maxLines: 1,
+
 //                   overflow: TextOverflow.ellipsis,
+
 //                   style: const TextStyle(
 //                     fontSize: 22,
+
 //                     fontWeight: FontWeight.w800,
+
 //                     color: AppTheme.text,
 //                   ),
 //                 ),
+
 //                 const SizedBox(height: 2),
+
 //                 Text(
 //                   data.subtitle,
+
 //                   maxLines: 1,
+
 //                   overflow: TextOverflow.ellipsis,
+
 //                   style: TextStyle(
 //                     fontSize: 10,
+
 //                     color: data.color,
+
 //                     fontWeight: FontWeight.w600,
 //                   ),
 //                 ),
@@ -450,11 +595,14 @@
 // }
 
 // // ============================================================
+
 // // MAIN CHARTS
+
 // // ============================================================
 
 // class _ChartsSection extends StatelessWidget {
 //   final bool desktop;
+
 //   final bool tablet;
 
 //   const _ChartsSection({required this.desktop, required this.tablet});
@@ -462,12 +610,16 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     // Tablet uses the same stacked layout as mobile for comfortable spacing.
+
 //     if (desktop) {
 //       return Row(
 //         crossAxisAlignment: CrossAxisAlignment.start,
+
 //         children: [
 //           const Expanded(flex: 7, child: _StockMovementCard()),
+
 //           const SizedBox(width: 18),
+
 //           const Expanded(flex: 4, child: _InventoryHealthCard()),
 //         ],
 //       );
@@ -476,7 +628,9 @@
 //     return const Column(
 //       children: [
 //         _StockMovementCard(),
+
 //         SizedBox(height: 18),
+
 //         _InventoryHealthCard(),
 //       ],
 //     );
@@ -484,7 +638,9 @@
 // }
 
 // // ============================================================
+
 // // STOCK MOVEMENT
+
 // // ============================================================
 
 // class _StockMovementCard extends StatelessWidget {
@@ -494,28 +650,41 @@
 //   Widget build(BuildContext context) {
 //     return const _Panel(
 //       title: 'Stock Movement',
+
 //       subtitle: 'Inventory movement across the last 7 days',
+
 //       trailing: _SmallBadge(text: 'Last 7 Days'),
+
 //       child: Column(
 //         children: [
 //           SizedBox(height: 14),
+
 //           SizedBox(
 //             height: 270,
+
 //             width: double.infinity,
+
 //             child: CustomPaint(
 //               painter: _BarChartPainter(
 //                 values: [320, 460, 280, 540, 390, 610, 480],
+
 //                 labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
 //               ),
 //             ),
 //           ),
+
 //           SizedBox(height: 12),
+
 //           Wrap(
 //             spacing: 18,
+
 //             runSpacing: 8,
+
 //             children: [
 //               _LegendItem(text: 'Stock In', color: AppTheme.tealData),
+
 //               _LegendItem(text: 'Stock Out', color: AppTheme.tealData),
+
 //               _LegendItem(text: 'Transfer', color: AppTheme.amberAI),
 //             ],
 //           ),
@@ -526,7 +695,9 @@
 // }
 
 // // ============================================================
+
 // // INVENTORY HEALTH
+
 // // ============================================================
 
 // class _InventoryHealthCard extends StatelessWidget {
@@ -536,45 +707,70 @@
 //   Widget build(BuildContext context) {
 //     return const _Panel(
 //       title: 'Inventory Health',
+
 //       subtitle: 'Current availability of products',
+
 //       child: Column(
 //         children: [
 //           SizedBox(height: 10),
+
 //           SizedBox(
 //             height: 230,
+
 //             width: double.infinity,
+
 //             child: CustomPaint(
 //               painter: _PieChartPainter(
 //                 values: [1217, 24, 7],
+
 //                 colors: [
 //                   AppTheme.tealData,
+
 //                   AppTheme.amberAI,
+
 //                   const Color(0xFFE05A5A),
 //                 ],
+
 //                 centerValue: '1,248',
+
 //                 centerLabel: 'Products',
 //               ),
 //             ),
 //           ),
+
 //           SizedBox(height: 8),
+
 //           _HealthRow(
 //             title: 'Healthy Stock',
+
 //             value: '1,217',
+
 //             percentage: '97.5%',
+
 //             color: AppTheme.tealData,
 //           ),
+
 //           SizedBox(height: 10),
+
 //           _HealthRow(
 //             title: 'Low Stock',
+
 //             value: '24',
+
 //             percentage: '1.9%',
+
 //             color: AppTheme.amberAI,
 //           ),
+
 //           SizedBox(height: 10),
+
 //           _HealthRow(
 //             title: 'Out of Stock',
+
 //             value: '7',
+
 //             percentage: '0.6%',
+
 //             color: const Color(0xFFE05A5A),
 //           ),
 //         ],
@@ -584,19 +780,27 @@
 // }
 
 // // ============================================================
+
 // // HEALTH ROW
+
 // // ============================================================
 
 // class _HealthRow extends StatelessWidget {
 //   final String title;
+
 //   final String value;
+
 //   final String percentage;
+
 //   final Color color;
 
 //   const _HealthRow({
 //     required this.title,
+
 //     required this.value,
+
 //     required this.percentage,
+
 //     required this.color,
 //   });
 
@@ -606,37 +810,55 @@
 //       children: [
 //         Container(
 //           width: 9,
+
 //           height: 9,
+
 //           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
 //         ),
+
 //         const SizedBox(width: 9),
+
 //         Expanded(
 //           child: Text(
 //             title,
+
 //             style: const TextStyle(
 //               fontSize: 12,
+
 //               color: AppTheme.textMuted,
+
 //               fontWeight: FontWeight.w500,
 //             ),
 //           ),
 //         ),
+
 //         Text(
 //           value,
+
 //           style: const TextStyle(
 //             fontSize: 12,
+
 //             color: AppTheme.text,
+
 //             fontWeight: FontWeight.w700,
 //           ),
 //         ),
+
 //         const SizedBox(width: 8),
+
 //         SizedBox(
 //           width: 45,
+
 //           child: Text(
 //             percentage,
+
 //             textAlign: TextAlign.right,
+
 //             style: TextStyle(
 //               fontSize: 11,
+
 //               color: color,
+
 //               fontWeight: FontWeight.w700,
 //             ),
 //           ),
@@ -647,7 +869,9 @@
 // }
 
 // // ============================================================
+
 // // OPERATIONAL SECTION
+
 // // ============================================================
 
 // class _OperationalSection extends StatelessWidget {
@@ -660,9 +884,12 @@
 //     if (desktop) {
 //       return const Row(
 //         crossAxisAlignment: CrossAxisAlignment.start,
+
 //         children: [
 //           Expanded(child: _ProcurementCard()),
+
 //           SizedBox(width: 18),
+
 //           Expanded(child: _SalesOrderCard()),
 //         ],
 //       );
@@ -675,7 +902,9 @@
 // }
 
 // // ============================================================
+
 // // PROCUREMENT
+
 // // ============================================================
 
 // class _ProcurementCard extends StatelessWidget {
@@ -685,31 +914,49 @@
 //   Widget build(BuildContext context) {
 //     return const _Panel(
 //       title: 'Procurement Pipeline',
+
 //       subtitle: 'Current purchase order status',
+
 //       child: Column(
 //         children: [
 //           SizedBox(height: 12),
+
 //           _ProgressRow(
 //             title: 'Pending',
+
 //             value: 2,
+
 //             total: 6,
+
 //             color: AppTheme.amberAI,
 //           ),
+
 //           SizedBox(height: 20),
+
 //           _ProgressRow(
 //             title: 'Approved',
+
 //             value: 2,
+
 //             total: 6,
+
 //             color: AppTheme.tealData,
 //           ),
+
 //           SizedBox(height: 20),
+
 //           _ProgressRow(
 //             title: 'Received',
+
 //             value: 2,
+
 //             total: 6,
+
 //             color: AppTheme.tealData,
 //           ),
+
 //           SizedBox(height: 18),
+
 //           _PoValueRow(),
 //         ],
 //       ),
@@ -718,19 +965,27 @@
 // }
 
 // // ============================================================
+
 // // PROGRESS ROW
+
 // // ============================================================
 
 // class _ProgressRow extends StatelessWidget {
 //   final String title;
+
 //   final int value;
+
 //   final int total;
+
 //   final Color color;
 
 //   const _ProgressRow({
 //     required this.title,
+
 //     required this.value,
+
 //     required this.total,
+
 //     required this.color,
 //   });
 
@@ -740,36 +995,50 @@
 
 //     return Column(
 //       crossAxisAlignment: CrossAxisAlignment.start,
+
 //       children: [
 //         Row(
 //           children: [
 //             Expanded(
 //               child: Text(
 //                 title,
+
 //                 style: const TextStyle(
 //                   fontSize: 12,
+
 //                   fontWeight: FontWeight.w700,
+
 //                   color: AppTheme.text,
 //                 ),
 //               ),
 //             ),
+
 //             Text(
 //               '$value Orders',
+
 //               style: TextStyle(
 //                 fontSize: 11,
+
 //                 fontWeight: FontWeight.w700,
+
 //                 color: color,
 //               ),
 //             ),
 //           ],
 //         ),
+
 //         const SizedBox(height: 8),
+
 //         ClipRRect(
 //           borderRadius: BorderRadius.circular(20),
+
 //           child: LinearProgressIndicator(
 //             value: progress,
+
 //             minHeight: 9,
+
 //             backgroundColor: AppTheme.border,
+
 //             valueColor: AlwaysStoppedAnimation<Color>(color),
 //           ),
 //         ),
@@ -779,7 +1048,9 @@
 // }
 
 // // ============================================================
+
 // // PO VALUE
+
 // // ============================================================
 
 // class _PoValueRow extends StatelessWidget {
@@ -789,26 +1060,37 @@
 //   Widget build(BuildContext context) {
 //     return Container(
 //       width: double.infinity,
+
 //       padding: const EdgeInsets.all(12),
+
 //       decoration: BoxDecoration(
 //         color: AppTheme.paper,
+
 //         borderRadius: BorderRadius.circular(10),
 //       ),
+
 //       child: const Row(
 //         children: [
 //           Icon(Icons.payments_outlined, size: 18, color: AppTheme.tealData),
+
 //           SizedBox(width: 9),
+
 //           Expanded(
 //             child: Text(
 //               'Total PO Value',
+
 //               style: TextStyle(fontSize: 12, color: AppTheme.textMuted),
 //             ),
 //           ),
+
 //           Text(
 //             '₹6,32,050',
+
 //             style: TextStyle(
 //               fontSize: 14,
+
 //               fontWeight: FontWeight.w800,
+
 //               color: AppTheme.text,
 //             ),
 //           ),
@@ -819,7 +1101,9 @@
 // }
 
 // // ============================================================
+
 // // SALES ORDERS
+
 // // ============================================================
 
 // class _SalesOrderCard extends StatelessWidget {
@@ -829,7 +1113,9 @@
 //   Widget build(BuildContext context) {
 //     return const _Panel(
 //       title: 'Sales Order Pipeline',
+
 //       subtitle: 'Current sales order distribution',
+
 //       child: _SalesOrderContent(),
 //     );
 //   }
@@ -848,23 +1134,33 @@
 //           return const Column(
 //             children: [
 //               SizedBox(height: 8),
+
 //               SizedBox(
 //                 height: 220,
+
 //                 width: double.infinity,
+
 //                 child: CustomPaint(
 //                   painter: _PieChartPainter(
 //                     values: [2, 3, 3],
+
 //                     colors: [
 //                       AppTheme.amberAI,
+
 //                       AppTheme.tealData,
+
 //                       AppTheme.tealData,
 //                     ],
+
 //                     centerValue: '8',
+
 //                     centerLabel: 'Orders',
 //                   ),
 //                 ),
 //               ),
+
 //               SizedBox(height: 10),
+
 //               _OrderLegendList(),
 //             ],
 //           );
@@ -874,22 +1170,30 @@
 //           children: [
 //             Expanded(
 //               flex: 5,
+
 //               child: SizedBox(
 //                 height: 220,
+
 //                 child: CustomPaint(
 //                   painter: _PieChartPainter(
 //                     values: [2, 3, 3],
+
 //                     colors: [
 //                       AppTheme.amberAI,
+
 //                       AppTheme.tealData,
+
 //                       AppTheme.tealData,
 //                     ],
+
 //                     centerValue: '8',
+
 //                     centerLabel: 'Orders',
 //                   ),
 //                 ),
 //               ),
 //             ),
+
 //             Expanded(flex: 4, child: _OrderLegendList()),
 //           ],
 //         );
@@ -899,7 +1203,9 @@
 // }
 
 // // ============================================================
+
 // // ORDER LEGEND
+
 // // ============================================================
 
 // class _OrderLegendList extends StatelessWidget {
@@ -909,11 +1215,16 @@
 //   Widget build(BuildContext context) {
 //     return const Column(
 //       crossAxisAlignment: CrossAxisAlignment.start,
+
 //       children: [
 //         _OrderLegend(title: 'Pending', value: '2', color: AppTheme.amberAI),
+
 //         SizedBox(height: 18),
+
 //         _OrderLegend(title: 'Processing', value: '3', color: AppTheme.tealData),
+
 //         SizedBox(height: 18),
+
 //         _OrderLegend(title: 'Completed', value: '3', color: AppTheme.tealData),
 //       ],
 //     );
@@ -922,12 +1233,16 @@
 
 // class _OrderLegend extends StatelessWidget {
 //   final String title;
+
 //   final String value;
+
 //   final Color color;
 
 //   const _OrderLegend({
 //     required this.title,
+
 //     required this.value,
+
 //     required this.color,
 //   });
 
@@ -937,21 +1252,30 @@
 //       children: [
 //         Container(
 //           width: 10,
+
 //           height: 10,
+
 //           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
 //         ),
+
 //         const SizedBox(width: 8),
+
 //         Expanded(
 //           child: Text(
 //             title,
+
 //             style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
 //           ),
 //         ),
+
 //         Text(
 //           value,
+
 //           style: const TextStyle(
 //             fontSize: 14,
+
 //             fontWeight: FontWeight.w800,
+
 //             color: AppTheme.text,
 //           ),
 //         ),
@@ -961,7 +1285,9 @@
 // }
 
 // // ============================================================
+
 // // ACTIVITY SECTION
+
 // // ============================================================
 
 // class _ActivitySection extends StatelessWidget {
@@ -974,9 +1300,12 @@
 //     if (desktop) {
 //       return const Row(
 //         crossAxisAlignment: CrossAxisAlignment.start,
+
 //         children: [
 //           Expanded(flex: 7, child: _RecentActivityCard()),
+
 //           SizedBox(width: 18),
+
 //           Expanded(flex: 4, child: _AttentionCard()),
 //         ],
 //       );
@@ -989,7 +1318,9 @@
 // }
 
 // // ============================================================
+
 // // RECENT ACTIVITY
+
 // // ============================================================
 
 // class _RecentActivityCard extends StatelessWidget {
@@ -999,57 +1330,92 @@
 //   Widget build(BuildContext context) {
 //     return const _Panel(
 //       title: 'Recent Activity',
+
 //       subtitle: 'Latest inventory and order updates',
+
 //       trailing: TextButton(
 //         onPressed: null,
+
 //         child: Text(
 //           'View All',
+
 //           style: TextStyle(
 //             fontSize: 11,
+
 //             fontWeight: FontWeight.w700,
+
 //             color: AppTheme.tealData,
 //           ),
 //         ),
 //       ),
+
 //       child: Column(
 //         children: [
 //           _ActivityItem(
 //             icon: Icons.inventory_2_outlined,
+
 //             color: AppTheme.tealData,
+
 //             title: 'Product Added',
+
 //             description: 'Wireless Keyboard added to inventory',
+
 //             time: '10 min ago',
 //           ),
+
 //           Divider(height: 1, color: AppTheme.border),
+
 //           _ActivityItem(
 //             icon: Icons.download_outlined,
+
 //             color: AppTheme.tealData,
+
 //             title: 'Stock Received',
+
 //             description: '120 pcs Wireless Keyboard received',
+
 //             time: '35 min ago',
 //           ),
+
 //           Divider(height: 1, color: AppTheme.border),
+
 //           _ActivityItem(
 //             icon: Icons.upload_outlined,
+
 //             color: AppTheme.amberAI,
+
 //             title: 'Stock Dispatched',
+
 //             description: '45 pcs USB-C Cable dispatched',
+
 //             time: '1 hour ago',
 //           ),
+
 //           Divider(height: 1, color: AppTheme.border),
+
 //           _ActivityItem(
 //             icon: Icons.warning_amber_rounded,
+
 //             color: AppTheme.amberAI,
+
 //             title: 'Low Stock Alert',
+
 //             description: 'Wireless Mouse has reached low stock',
+
 //             time: '2 hours ago',
 //           ),
+
 //           Divider(height: 1, color: AppTheme.border),
+
 //           _ActivityItem(
 //             icon: Icons.shopping_cart_outlined,
+
 //             color: AppTheme.amberAI,
+
 //             title: 'Purchase Order Received',
+
 //             description: 'PO-2026-00418 completed',
+
 //             time: '3 hours ago',
 //           ),
 //         ],
@@ -1059,21 +1425,31 @@
 // }
 
 // // ============================================================
+
 // // ACTIVITY ITEM
+
 // // ============================================================
 
 // class _ActivityItem extends StatelessWidget {
 //   final IconData icon;
+
 //   final Color color;
+
 //   final String title;
+
 //   final String description;
+
 //   final String time;
 
 //   const _ActivityItem({
 //     required this.icon,
+
 //     required this.color,
+
 //     required this.title,
+
 //     required this.description,
+
 //     required this.time,
 //   });
 
@@ -1081,49 +1457,72 @@
 //   Widget build(BuildContext context) {
 //     return Padding(
 //       padding: const EdgeInsets.symmetric(vertical: 12),
+
 //       child: Row(
 //         crossAxisAlignment: CrossAxisAlignment.center,
+
 //         children: [
 //           Container(
 //             width: 40,
+
 //             height: 40,
+
 //             decoration: BoxDecoration(
 //               color: color.withValues(alpha: 0.10),
+
 //               shape: BoxShape.circle,
 //             ),
+
 //             child: Icon(icon, color: color, size: 19),
 //           ),
+
 //           const SizedBox(width: 12),
+
 //           Expanded(
 //             child: Column(
 //               crossAxisAlignment: CrossAxisAlignment.start,
+
 //               children: [
 //                 Text(
 //                   title,
+
 //                   maxLines: 1,
+
 //                   overflow: TextOverflow.ellipsis,
+
 //                   style: const TextStyle(
 //                     fontSize: 12,
+
 //                     fontWeight: FontWeight.w700,
+
 //                     color: AppTheme.text,
 //                   ),
 //                 ),
+
 //                 const SizedBox(height: 3),
+
 //                 Text(
 //                   description,
+
 //                   maxLines: 2,
+
 //                   overflow: TextOverflow.ellipsis,
+
 //                   style: const TextStyle(
 //                     fontSize: 10,
+
 //                     color: AppTheme.textMuted,
 //                   ),
 //                 ),
 //               ],
 //             ),
 //           ),
+
 //           const SizedBox(width: 8),
+
 //           Text(
 //             time,
+
 //             style: const TextStyle(fontSize: 9, color: AppTheme.textMuted),
 //           ),
 //         ],
@@ -1133,7 +1532,9 @@
 // }
 
 // // ============================================================
+
 // // ATTENTION
+
 // // ============================================================
 
 // class _AttentionCard extends StatelessWidget {
@@ -1143,38 +1544,62 @@
 //   Widget build(BuildContext context) {
 //     return const _Panel(
 //       title: 'Attention Required',
+
 //       subtitle: 'Items that need immediate action',
+
 //       child: Column(
 //         children: [
 //           _AttentionItem(
 //             icon: Icons.warning_amber_rounded,
+
 //             color: AppTheme.amberAI,
+
 //             title: 'Low Stock Items',
+
 //             value: '24',
+
 //             description: 'Products below reorder level',
 //           ),
+
 //           SizedBox(height: 11),
+
 //           _AttentionItem(
 //             icon: Icons.remove_shopping_cart_outlined,
+
 //             color: const Color(0xFFE05A5A),
+
 //             title: 'Out of Stock',
+
 //             value: '7',
+
 //             description: 'Products currently unavailable',
 //           ),
+
 //           SizedBox(height: 11),
+
 //           _AttentionItem(
 //             icon: Icons.pending_actions_outlined,
+
 //             color: AppTheme.amberAI,
+
 //             title: 'Pending Purchase Orders',
+
 //             value: '2',
+
 //             description: 'Orders awaiting approval',
 //           ),
+
 //           SizedBox(height: 11),
+
 //           _AttentionItem(
 //             icon: Icons.local_shipping_outlined,
+
 //             color: AppTheme.amberAI,
+
 //             title: 'Delayed Dispatch',
+
 //             value: '1',
+
 //             description: 'Shipment requires attention',
 //           ),
 //         ],
@@ -1184,21 +1609,31 @@
 // }
 
 // // ============================================================
+
 // // ATTENTION ITEM
+
 // // ============================================================
 
 // class _AttentionItem extends StatelessWidget {
 //   final IconData icon;
+
 //   final Color color;
+
 //   final String title;
+
 //   final String value;
+
 //   final String description;
 
 //   const _AttentionItem({
 //     required this.icon,
+
 //     required this.color,
+
 //     required this.title,
+
 //     required this.value,
+
 //     required this.description,
 //   });
 
@@ -1206,57 +1641,85 @@
 //   Widget build(BuildContext context) {
 //     return Container(
 //       width: double.infinity,
+
 //       padding: const EdgeInsets.all(12),
+
 //       decoration: BoxDecoration(
 //         color: AppTheme.paper,
+
 //         borderRadius: BorderRadius.circular(11),
+
 //         border: Border.all(color: AppTheme.border),
 //       ),
+
 //       child: Row(
 //         children: [
 //           Container(
 //             width: 38,
+
 //             height: 38,
+
 //             decoration: BoxDecoration(
 //               color: color.withValues(alpha: 0.10),
+
 //               borderRadius: BorderRadius.circular(10),
 //             ),
+
 //             child: Icon(icon, color: color, size: 18),
 //           ),
+
 //           const SizedBox(width: 10),
+
 //           Expanded(
 //             child: Column(
 //               crossAxisAlignment: CrossAxisAlignment.start,
+
 //               children: [
 //                 Text(
 //                   title,
+
 //                   maxLines: 1,
+
 //                   overflow: TextOverflow.ellipsis,
+
 //                   style: const TextStyle(
 //                     fontSize: 11,
+
 //                     fontWeight: FontWeight.w700,
+
 //                     color: AppTheme.text,
 //                   ),
 //                 ),
+
 //                 const SizedBox(height: 3),
+
 //                 Text(
 //                   description,
+
 //                   maxLines: 1,
+
 //                   overflow: TextOverflow.ellipsis,
+
 //                   style: const TextStyle(
 //                     fontSize: 9,
+
 //                     color: AppTheme.textMuted,
 //                   ),
 //                 ),
 //               ],
 //             ),
 //           ),
+
 //           const SizedBox(width: 8),
+
 //           Text(
 //             value,
+
 //             style: TextStyle(
 //               fontSize: 18,
+
 //               fontWeight: FontWeight.w800,
+
 //               color: color,
 //             ),
 //           ),
@@ -1267,7 +1730,9 @@
 // }
 
 // // ============================================================
+
 // // QUICK ACTIONS
+
 // // ============================================================
 
 // class _QuickActionsSection extends StatelessWidget {
@@ -1278,63 +1743,100 @@
 //     const List<_QuickAction> actions = [
 //       _QuickAction(
 //         title: 'Inventory',
+
 //         subtitle: 'Manage stock',
+
 //         icon: Icons.inventory_2_outlined,
+
 //         color: AppTheme.tealData,
 //       ),
+
 //       _QuickAction(
 //         title: 'Receive Stock',
+
 //         subtitle: 'Stock inward',
+
 //         icon: Icons.download_outlined,
+
 //         color: AppTheme.tealData,
 //       ),
+
 //       _QuickAction(
 //         title: 'Purchase Order',
+
 //         subtitle: 'Create PO',
+
 //         icon: Icons.shopping_cart_outlined,
+
 //         color: AppTheme.amberAI,
 //       ),
+
 //       _QuickAction(
 //         title: 'Sales Order',
+
 //         subtitle: 'Create order',
+
 //         icon: Icons.receipt_long_outlined,
+
 //         color: AppTheme.tealData,
 //       ),
+
 //       _QuickAction(
 //         title: 'Dispatch',
+
 //         subtitle: 'Ship order',
+
 //         icon: Icons.local_shipping_outlined,
+
 //         color: AppTheme.amberAI,
 //       ),
+
 //       _QuickAction(
 //         title: 'Vendors',
+
 //         subtitle: 'Manage vendors',
+
 //         icon: Icons.business_outlined,
+
 //         color: AppTheme.tealData,
 //       ),
+
 //       _QuickAction(
 //         title: 'Production',
+
 //         subtitle: 'Manage production',
+
 //         icon: Icons.precision_manufacturing_outlined,
+
 //         color: AppTheme.amberAI,
 //       ),
+
 //       _QuickAction(
 //         title: 'Asset Management',
+
 //         subtitle: 'Manage assets',
+
 //         icon: Icons.business_center_outlined,
+
 //         color: AppTheme.tealData,
 //       ),
+
 //       _QuickAction(
 //         title: 'Maintenance',
+
 //         subtitle: 'Manage maintenance',
+
 //         icon: Icons.build_outlined,
+
 //         color: AppTheme.amberAI,
 //       ),
 //     ];
 
 //     return _Panel(
 //       title: 'Quick Actions',
+
 //       subtitle: 'Frequently used ERP operations',
+
 //       child: LayoutBuilder(
 //         builder: (context, constraints) {
 //           final double available = constraints.maxWidth;
@@ -1353,7 +1855,9 @@
 
 //           return Wrap(
 //             spacing: 12,
+
 //             runSpacing: 12,
+
 //             children: actions.map((action) {
 //               final double cardWidth = columns == 1
 //                   ? available
@@ -1361,6 +1865,7 @@
 
 //               return SizedBox(
 //                 width: cardWidth,
+
 //                 child: _QuickActionCard(action: action),
 //               );
 //             }).toList(),
@@ -1372,7 +1877,9 @@
 // }
 
 // // ============================================================
+
 // // QUICK ACTION CARD
+
 // // ============================================================
 
 // class _QuickActionCard extends StatelessWidget {
@@ -1384,51 +1891,78 @@
 //   Widget build(BuildContext context) {
 //     return Material(
 //       color: Colors.transparent,
+
 //       child: InkWell(
 //         onTap: () {},
+
 //         borderRadius: BorderRadius.circular(13),
+
 //         child: Container(
 //           constraints: const BoxConstraints(minHeight: 92),
+
 //           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+
 //           decoration: BoxDecoration(
 //             color: AppTheme.paper,
+
 //             borderRadius: BorderRadius.circular(13),
+
 //             border: Border.all(color: AppTheme.border),
 //           ),
+
 //           child: Row(
 //             children: [
 //               Container(
 //                 width: 40,
+
 //                 height: 40,
+
 //                 decoration: BoxDecoration(
 //                   color: action.color.withValues(alpha: 0.10),
+
 //                   borderRadius: BorderRadius.circular(10),
 //                 ),
+
 //                 child: Icon(action.icon, color: action.color, size: 20),
 //               ),
+
 //               const SizedBox(width: 10),
+
 //               Expanded(
 //                 child: Column(
 //                   mainAxisAlignment: MainAxisAlignment.center,
+
 //                   crossAxisAlignment: CrossAxisAlignment.start,
+
 //                   children: [
 //                     Text(
 //                       action.title,
+
 //                       maxLines: 1,
+
 //                       overflow: TextOverflow.ellipsis,
+
 //                       style: const TextStyle(
 //                         fontSize: 11,
+
 //                         fontWeight: FontWeight.w700,
+
 //                         color: AppTheme.text,
 //                       ),
 //                     ),
+
 //                     const SizedBox(height: 3),
+
 //                     Text(
 //                       action.subtitle,
+
 //                       maxLines: 1,
+
 //                       overflow: TextOverflow.ellipsis,
+
 //                       style: const TextStyle(
 //                         fontSize: 9,
+
 //                         color: AppTheme.textMuted,
 //                       ),
 //                     ),
@@ -1444,19 +1978,27 @@
 // }
 
 // // ============================================================
+
 // // COMMON PANEL
+
 // // ============================================================
 
 // class _Panel extends StatelessWidget {
 //   final String title;
+
 //   final String subtitle;
+
 //   final Widget child;
+
 //   final Widget? trailing;
 
 //   const _Panel({
 //     required this.title,
+
 //     required this.subtitle,
+
 //     required this.child,
+
 //     this.trailing,
 //   });
 
@@ -1464,56 +2006,81 @@
 //   Widget build(BuildContext context) {
 //     return Container(
 //       width: double.infinity,
+
 //       padding: const EdgeInsets.all(18),
+
 //       decoration: BoxDecoration(
 //         color: AppTheme.paper,
+
 //         borderRadius: BorderRadius.circular(16),
+
 //         border: Border.all(color: AppTheme.border),
+
 //         boxShadow: [
 //           BoxShadow(
 //             color: AppTheme.text.withValues(alpha: 0.08),
+
 //             blurRadius: 11,
+
 //             offset: const Offset(0, 3),
 //           ),
 //         ],
 //       ),
+
 //       child: Column(
 //         crossAxisAlignment: CrossAxisAlignment.start,
+
 //         children: [
 //           Row(
 //             crossAxisAlignment: CrossAxisAlignment.start,
+
 //             children: [
 //               Expanded(
 //                 child: Column(
 //                   crossAxisAlignment: CrossAxisAlignment.start,
+
 //                   children: [
 //                     Text(
 //                       title,
+
 //                       maxLines: 1,
+
 //                       overflow: TextOverflow.ellipsis,
+
 //                       style: const TextStyle(
 //                         fontSize: 15,
+
 //                         fontWeight: FontWeight.w800,
+
 //                         color: AppTheme.text,
 //                       ),
 //                     ),
+
 //                     const SizedBox(height: 4),
+
 //                     Text(
 //                       subtitle,
+
 //                       maxLines: 2,
+
 //                       overflow: TextOverflow.ellipsis,
+
 //                       style: const TextStyle(
 //                         fontSize: 10,
+
 //                         color: AppTheme.textMuted,
 //                       ),
 //                     ),
 //                   ],
 //                 ),
 //               ),
+
 //               if (trailing != null) ...[const SizedBox(width: 8), trailing!],
 //             ],
 //           ),
+
 //           const SizedBox(height: 4),
+
 //           child,
 //         ],
 //       ),
@@ -1522,7 +2089,9 @@
 // }
 
 // // ============================================================
+
 // // SMALL BADGE
+
 // // ============================================================
 
 // class _SmallBadge extends StatelessWidget {
@@ -1534,15 +2103,21 @@
 //   Widget build(BuildContext context) {
 //     return Container(
 //       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+
 //       decoration: BoxDecoration(
 //         color: AppTheme.paper,
+
 //         borderRadius: BorderRadius.circular(8),
 //       ),
+
 //       child: Text(
 //         text,
+
 //         style: const TextStyle(
 //           fontSize: 9,
+
 //           fontWeight: FontWeight.w700,
+
 //           color: AppTheme.tealData,
 //         ),
 //       ),
@@ -1551,11 +2126,14 @@
 // }
 
 // // ============================================================
+
 // // LEGEND
+
 // // ============================================================
 
 // class _LegendItem extends StatelessWidget {
 //   final String text;
+
 //   final Color color;
 
 //   const _LegendItem({required this.text, required this.color});
@@ -1564,21 +2142,30 @@
 //   Widget build(BuildContext context) {
 //     return Row(
 //       mainAxisSize: MainAxisSize.min,
+
 //       children: [
 //         Container(
 //           width: 8,
+
 //           height: 8,
+
 //           decoration: BoxDecoration(
 //             color: color,
+
 //             borderRadius: BorderRadius.circular(2),
 //           ),
 //         ),
+
 //         const SizedBox(width: 6),
+
 //         Text(
 //           text,
+
 //           style: const TextStyle(
 //             fontSize: 10,
+
 //             color: AppTheme.textMuted,
+
 //             fontWeight: FontWeight.w500,
 //           ),
 //         ),
@@ -1588,11 +2175,14 @@
 // }
 
 // // ============================================================
+
 // // BAR CHART
+
 // // ============================================================
 
 // class _BarChartPainter extends CustomPainter {
 //   final List<double> values;
+
 //   final List<String> labels;
 
 //   const _BarChartPainter({required this.values, required this.labels});
@@ -1604,11 +2194,15 @@
 //     }
 
 //     const double left = 35;
+
 //     const double right = 12;
+
 //     const double top = 20;
+
 //     const double bottom = 35;
 
 //     final double chartWidth = size.width - left - right;
+
 //     final double chartHeight = size.height - top - bottom;
 
 //     double maxValue = 0;
@@ -1632,12 +2226,15 @@
 
 //       canvas.drawLine(
 //         Offset(left, y),
+
 //         Offset(size.width - right, y),
+
 //         gridPaint,
 //       );
 //     }
 
 //     final double slotWidth = chartWidth / values.length;
+
 //     final double barWidth = math.min(34, slotWidth * 0.50);
 
 //     final Paint barPaint = Paint()..color = AppTheme.tealData;
@@ -1653,18 +2250,23 @@
 
 //       canvas.drawRRect(
 //         RRect.fromRectAndRadius(rect, const Radius.circular(5)),
+
 //         barPaint,
 //       );
 
 //       final TextPainter valuePainter = TextPainter(
 //         text: TextSpan(
 //           text: values[i].round().toString(),
+
 //           style: const TextStyle(
 //             fontSize: 9,
+
 //             fontWeight: FontWeight.w700,
+
 //             color: AppTheme.textMuted,
 //           ),
 //         ),
+
 //         textDirection: TextDirection.ltr,
 //       );
 
@@ -1672,8 +2274,10 @@
 
 //       valuePainter.paint(
 //         canvas,
+
 //         Offset(
 //           x + barWidth / 2 - valuePainter.width / 2,
+
 //           math.max(0, y - valuePainter.height - 4),
 //         ),
 //       );
@@ -1683,8 +2287,10 @@
 //       final TextPainter labelPainter = TextPainter(
 //         text: TextSpan(
 //           text: label,
+
 //           style: const TextStyle(fontSize: 9, color: AppTheme.textMuted),
 //         ),
+
 //         textDirection: TextDirection.ltr,
 //       );
 
@@ -1692,6 +2298,7 @@
 
 //       labelPainter.paint(
 //         canvas,
+
 //         Offset(x + barWidth / 2 - labelPainter.width / 2, size.height - 22),
 //       );
 //     }
@@ -1704,19 +2311,27 @@
 // }
 
 // // ============================================================
+
 // // PIE / DONUT CHART
+
 // // ============================================================
 
 // class _PieChartPainter extends CustomPainter {
 //   final List<double> values;
+
 //   final List<Color> colors;
+
 //   final String centerValue;
+
 //   final String centerLabel;
 
 //   const _PieChartPainter({
 //     required this.values,
+
 //     required this.colors,
+
 //     required this.centerValue,
+
 //     required this.centerLabel,
 //   });
 
@@ -1773,6 +2388,7 @@
 //     }
 
 //     // Donut center
+
 //     final Paint centerPaint = Paint()
 //       ..color = AppTheme.ink
 //       ..style = PaintingStyle.fill;
@@ -1780,15 +2396,20 @@
 //     canvas.drawCircle(center, radius * 0.55, centerPaint);
 
 //     // Center value
+
 //     final TextPainter valuePainter = TextPainter(
 //       text: TextSpan(
 //         text: centerValue,
+
 //         style: const TextStyle(
 //           fontSize: 21,
+
 //           fontWeight: FontWeight.w800,
+
 //           color: AppTheme.text,
 //         ),
 //       ),
+
 //       textDirection: TextDirection.ltr,
 //     );
 
@@ -1796,19 +2417,25 @@
 
 //     valuePainter.paint(
 //       canvas,
+
 //       Offset(center.dx - valuePainter.width / 2, center.dy - 13),
 //     );
 
 //     // Center label
+
 //     final TextPainter labelPainter = TextPainter(
 //       text: TextSpan(
 //         text: centerLabel,
+
 //         style: const TextStyle(
 //           fontSize: 9,
+
 //           fontWeight: FontWeight.w500,
+
 //           color: AppTheme.textMuted,
 //         ),
 //       ),
+
 //       textDirection: TextDirection.ltr,
 //     );
 
@@ -1816,6 +2443,7 @@
 
 //     labelPainter.paint(
 //       canvas,
+
 //       Offset(center.dx - labelPainter.width / 2, center.dy + 13),
 //     );
 //   }
@@ -1830,35 +2458,51 @@
 // }
 
 // // ============================================================
+
 // // MODELS
+
 // // ============================================================
 
 // class _KpiData {
 //   final String title;
+
 //   final String value;
+
 //   final String subtitle;
+
 //   final IconData icon;
+
 //   final Color color;
 
 //   const _KpiData({
 //     required this.title,
+
 //     required this.value,
+
 //     required this.subtitle,
+
 //     required this.icon,
+
 //     required this.color,
 //   });
 // }
 
 // class _QuickAction {
 //   final String title;
+
 //   final String subtitle;
+
 //   final IconData icon;
+
 //   final Color color;
 
 //   const _QuickAction({
 //     required this.title,
+
 //     required this.subtitle,
+
 //     required this.icon,
+
 //     required this.color,
 //   });
 // }
@@ -2016,35 +2660,27 @@ class _ErpHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-
-      // height: compact ? 150 : 120,
       padding: EdgeInsets.symmetric(
         horizontal: compact ? 12 : 18,
-        vertical: compact ? 8 : 10,
+        vertical: compact ? 9 : 10,
       ),
-
       decoration: BoxDecoration(
         color: AppTheme.paper,
-
         borderRadius: BorderRadius.circular(12),
-
         border: Border.all(color: AppTheme.border),
-
         boxShadow: [
           BoxShadow(
             color: AppTheme.text.withValues(alpha: 0.10),
-
             blurRadius: 8,
-
             offset: const Offset(0, 2),
           ),
         ],
       ),
-
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(child: _welcome()),
-
+          const SizedBox(width: 8),
           const _DateBadge(),
         ],
       ),
@@ -2054,44 +2690,38 @@ class _ErpHeader extends StatelessWidget {
   Widget _welcome() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'Enterprise Resource Planning',
-
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            fontSize: compact ? 11 : 13,
-
+            fontSize: compact ? 10 : 13,
             fontWeight: FontWeight.w600,
-
             color: AppTheme.tealData,
           ),
         ),
-
-        const SizedBox(height: 1),
-
+        const SizedBox(height: 2),
         Text(
           'ERP Dashboard',
-
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            fontSize: compact ? 18 : 22,
-
+            fontSize: compact ? 17 : 22,
             fontWeight: FontWeight.w800,
-
             color: AppTheme.text,
           ),
         ),
-
-        const SizedBox(height: 1),
-
-        Text(
-          'Manage inventory, procurement, sales, dispatch and operations.',
-
-          style: TextStyle(
-            fontSize: compact ? 10 : 12,
-            color: AppTheme.textMuted,
+        if (!compact) ...[
+          const SizedBox(height: 2),
+          Text(
+            'Manage inventory, procurement, sales, dispatch and operations.',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
           ),
-        ),
+        ],
       ],
     );
   }
@@ -2106,39 +2736,50 @@ class _ErpHeader extends StatelessWidget {
 class _DateBadge extends StatelessWidget {
   const _DateBadge();
 
+  String _getCurrentDate() {
+    final DateTime now = DateTime.now();
+    const List<String> months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return '${now.day} ${months[now.month - 1]} ${now.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
       decoration: BoxDecoration(
         color: AppTheme.paper,
-
         borderRadius: BorderRadius.circular(9),
+        border: Border.all(color: AppTheme.border),
       ),
-
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
-
         children: [
-          Icon(
+          const Icon(
             Icons.calendar_today_outlined,
-
             size: 14,
-
             color: AppTheme.tealData,
           ),
-
-          SizedBox(width: 8),
-
+          const SizedBox(width: 7),
           Text(
-            '10 September 2026',
-
-            style: TextStyle(
+            _getCurrentDate(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
               fontSize: 10,
-
               fontWeight: FontWeight.w700,
-
               color: AppTheme.text,
             ),
           ),

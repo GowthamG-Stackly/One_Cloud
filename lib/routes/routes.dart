@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../pages/landing_page.dart';
+import '../pages/notification_page.dart';
 
 import '../pages/auth/login_page.dart';
 import '../pages/common/profile_page.dart';
@@ -30,11 +31,13 @@ import '../pages/integration/integration_dashboard_page.dart';
 import '../pages/search/search_dashboard_page.dart';
 import '../pages/security_compliance/security_compliance_dashboard_page.dart';
 
+import '../pages/admin/super_admin_dashboard_page.dart';
+import '../pages/admin/global_dashboard_page.dart';
 import '../pages/admin/global_settings_page.dart';
 import '../pages/admin/platform_config_page.dart';
 import '../pages/admin/license_management_page.dart';
 import '../pages/admin/feature_management_page.dart';
-import '../pages/admin/resource_management_page.dart';
+import '../pages/admin/platform_branding_page.dart';
 import '../pages/admin/system_health_page.dart';
 import '../pages/admin/tenant_templates_page.dart';
 
@@ -208,6 +211,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String features = '/features';
   static const String contact = '/contact';
+  static const String notificationCenter = '/notification-center';
 
   // ==============================================================
   // ==============================================================
@@ -233,11 +237,13 @@ class AppRoutes {
   static const String security = '/security';
 
   // Admin MODULES
+  static const String superAdminDashboard = '/admin/super-admin-dashboard';
+  static const String globalDashboard = '/admin/global-dashboard';
   static const String globalSettings = '/admin/global-settings';
   static const String platformConfig = '/admin/platform-config';
   static const String licenseManagement = '/admin/license-management';
   static const String featureManagement = '/admin/feature-management';
-  static const String resourceManagement = '/admin/resource-management';
+  static const String platformBranding = '/admin/platform-branding';
   static const String systemHealth = '/admin/system-health';
   static const String tenantTemplates = '/admin/tenant-templates';
 
@@ -431,7 +437,8 @@ class AppRoutes {
 
   static GoRouter createRouter(Ref ref) {
     return GoRouter(
-      initialLocation: home,
+      initialLocation: AppRoutes.home,
+      overridePlatformDefaultLocation: true,
 
       redirect: (context, state) {
         final loggedIn = ref.read(userProvider).isLoggedIn;
@@ -519,7 +526,18 @@ class AppRoutes {
                 return const AdminDashboardPage();
               },
             ),
-
+            GoRoute(
+              path: superAdminDashboard,
+              builder: (context, state) {
+                return const SuperAdminDashboardPage();
+              },
+            ),
+            GoRoute(
+              path: globalDashboard,
+              builder: (context, state) {
+                return const GlobalDashboardPage();
+              },
+            ),
             GoRoute(
               path: globalSettings,
               builder: (context, state) {
@@ -549,9 +567,9 @@ class AppRoutes {
             ),
 
             GoRoute(
-              path: resourceManagement,
+              path: platformBranding,
               builder: (context, state) {
-                return const ResourceManagementPage();
+                return const PlatformBrandingPage();
               },
             ),
 
@@ -1553,6 +1571,12 @@ class AppRoutes {
               path: profile,
               builder: (context, state) {
                 return const ProfilePage();
+              },
+            ),
+            GoRoute(
+              path: notificationCenter,
+              builder: (context, state) {
+                return const NotificationPage();
               },
             ),
           ],

@@ -227,54 +227,81 @@ class _DispatchPageState extends State<DispatchPage> {
   Widget _pageHeader(bool mobile) {
     return Container(
       width: double.infinity,
+
       padding: EdgeInsets.symmetric(horizontal: mobile ? 10 : 14, vertical: 7),
+
       decoration: BoxDecoration(
         color: AppTheme.paper,
+
         borderRadius: BorderRadius.circular(10),
+
         border: Border.all(color: AppTheme.border),
       ),
+
       child: Row(
         children: [
           Container(
             width: 32,
+
             height: 32,
+
             decoration: BoxDecoration(
               color: AppTheme.ink3.withValues(alpha: 0.08),
+
               borderRadius: BorderRadius.circular(8),
             ),
+
             child: const Icon(
               Icons.local_shipping_outlined,
+
               color: AppTheme.ink3,
+
               size: 17,
             ),
           ),
+
           const SizedBox(width: 9),
+
           const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               mainAxisSize: MainAxisSize.min,
+
               children: [
                 Text(
                   'Dispatch',
+
                   maxLines: 1,
+
                   overflow: TextOverflow.ellipsis,
+
                   style: TextStyle(
                     fontSize: 17,
+
                     fontWeight: FontWeight.w800,
+
                     color: AppTheme.text,
                   ),
                 ),
+
                 SizedBox(height: 1),
+
                 Text(
                   'Manage shipments, deliveries and dispatch operations.',
+
                   maxLines: 1,
+
                   overflow: TextOverflow.ellipsis,
+
                   style: TextStyle(fontSize: 10, color: AppTheme.textMuted),
                 ),
               ],
             ),
           ),
+
           const SizedBox(width: 8),
+
           _newDispatchButton(mobile),
         ],
       ),
@@ -284,17 +311,26 @@ class _DispatchPageState extends State<DispatchPage> {
   Widget _newDispatchButton(bool mobile) {
     return ElevatedButton.icon(
       onPressed: _showNewDispatchDialog,
+
       icon: const Icon(Icons.local_shipping_outlined, size: 15),
+
       label: Text(
         mobile ? 'Add' : 'New Dispatch',
+
         style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
       ),
+
       style: ElevatedButton.styleFrom(
         backgroundColor: AppTheme.ink3,
+
         foregroundColor: AppTheme.paper,
+
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+
         minimumSize: const Size(0, 32),
+
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
@@ -309,28 +345,36 @@ class _DispatchPageState extends State<DispatchPage> {
   Widget _summaryCards(bool mobile) {
     final cards = [
       _summaryCard('Ready', '1', Icons.inventory_outlined),
-
       _summaryCard('In Transit', '2', Icons.local_shipping_outlined),
-
       _summaryCard('Delivered', '2', Icons.check_circle_outline),
-
       _summaryCard('Delayed', '1', Icons.warning_amber_outlined),
     ];
 
-    return GridView.count(
-      crossAxisCount: mobile ? 2 : 4,
+    if (mobile) {
+      return Column(
+        children: [
+          cards[0],
+          const SizedBox(height: 12),
+          cards[1],
+          const SizedBox(height: 12),
+          cards[2],
+          const SizedBox(height: 12),
+          cards[3],
+        ],
+      );
+    }
 
-      crossAxisSpacing: 14,
-
-      mainAxisSpacing: 14,
-
-      childAspectRatio: mobile ? 1.55 : 2.25,
-
+    return GridView.builder(
+      itemCount: cards.length,
       shrinkWrap: true,
-
       physics: const NeverScrollableScrollPhysics(),
-
-      children: cards,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        mainAxisExtent: 120,
+      ),
+      itemBuilder: (context, index) => cards[index],
     );
   }
 
@@ -627,6 +671,8 @@ class _DispatchPageState extends State<DispatchPage> {
                 Text(
                   dispatch['dispatchId'],
 
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppTheme.ink3,
 
@@ -730,6 +776,8 @@ class _DispatchPageState extends State<DispatchPage> {
               Text(
                 dispatch['customer'],
 
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
               ),
 
@@ -761,6 +809,8 @@ class _DispatchPageState extends State<DispatchPage> {
                     child: Text(
                       dispatch['tracking'],
 
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: AppTheme.textMuted, fontSize: 11),
                     ),
                   ),
@@ -888,31 +938,23 @@ class _DispatchPageState extends State<DispatchPage> {
             ),
           ),
 
-          content: SizedBox(
-            width: 430,
-
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-
-              children: [
-                _detailRow('Sales Order', dispatch['orderId']),
-
-                _detailRow('Customer', dispatch['customer']),
-
-                _detailRow('Date', dispatch['date']),
-
-                _detailRow('Warehouse', dispatch['warehouse']),
-
-                _detailRow('Carrier', dispatch['carrier']),
-
-                _detailRow('Tracking', dispatch['tracking']),
-
-                _detailRow('Packages', '${dispatch['packages']}'),
-
-                _detailRow('Destination', dispatch['destination']),
-
-                _detailRow('Status', dispatch['status']),
-              ],
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 430),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _detailRow('Sales Order', dispatch['orderId']),
+                  _detailRow('Customer', dispatch['customer']),
+                  _detailRow('Date', dispatch['date']),
+                  _detailRow('Warehouse', dispatch['warehouse']),
+                  _detailRow('Carrier', dispatch['carrier']),
+                  _detailRow('Tracking', dispatch['tracking']),
+                  _detailRow('Packages', '${dispatch['packages']}'),
+                  _detailRow('Destination', dispatch['destination']),
+                  _detailRow('Status', dispatch['status']),
+                ],
+              ),
             ),
           ),
 
@@ -982,27 +1024,21 @@ class _DispatchPageState extends State<DispatchPage> {
             style: TextStyle(color: AppTheme.text, fontWeight: FontWeight.w700),
           ),
 
-          content: SizedBox(
-            width: 430,
-
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-
-              children: [
-                _dialogField('Sales Order', 'Select sales order'),
-
-                const SizedBox(height: 12),
-
-                _dialogField('Warehouse', 'Select warehouse'),
-
-                const SizedBox(height: 12),
-
-                _dialogField('Carrier', 'Enter carrier'),
-
-                const SizedBox(height: 12),
-
-                _dialogField('Destination', 'Enter destination'),
-              ],
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 430),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _dialogField('Sales Order', 'Select sales order'),
+                  const SizedBox(height: 12),
+                  _dialogField('Warehouse', 'Select warehouse'),
+                  const SizedBox(height: 12),
+                  _dialogField('Carrier', 'Enter carrier'),
+                  const SizedBox(height: 12),
+                  _dialogField('Destination', 'Enter destination'),
+                ],
+              ),
             ),
           ),
 

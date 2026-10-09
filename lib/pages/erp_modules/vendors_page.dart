@@ -24,7 +24,7 @@ class _VendorsPageState extends State<VendorsPage> {
 
       'phone': '+91 98765 42100',
 
-      'email': 'ravi@techsource.in',
+      'email': 'ravi\@techsource.in',
 
       'category': 'Electronics',
 
@@ -44,7 +44,7 @@ class _VendorsPageState extends State<VendorsPage> {
 
       'phone': '+91 98662 31540',
 
-      'email': 'priya@electromart.in',
+      'email': 'priya\@electromart.in',
 
       'category': 'Computer Accessories',
 
@@ -64,7 +64,7 @@ class _VendorsPageState extends State<VendorsPage> {
 
       'phone': '+91 98491 27650',
 
-      'email': 'suresh@networkworld.in',
+      'email': 'suresh\@networkworld.in',
 
       'category': 'Networking',
 
@@ -84,7 +84,7 @@ class _VendorsPageState extends State<VendorsPage> {
 
       'phone': '+91 98201 54820',
 
-      'email': 'anita@officeessentials.in',
+      'email': 'anita\@officeessentials.in',
 
       'category': 'Office Supplies',
 
@@ -104,7 +104,7 @@ class _VendorsPageState extends State<VendorsPage> {
 
       'phone': '+91 98192 63210',
 
-      'email': 'kiran@primeit.in',
+      'email': 'kiran\@primeit.in',
 
       'category': 'IT Hardware',
 
@@ -124,7 +124,7 @@ class _VendorsPageState extends State<VendorsPage> {
 
       'phone': '+91 99100 45120',
 
-      'email': 'vikram@metrobs.in',
+      'email': 'vikram\@metrobs.in',
 
       'category': 'General Supplies',
 
@@ -213,54 +213,81 @@ class _VendorsPageState extends State<VendorsPage> {
   Widget _pageHeader(bool mobile) {
     return Container(
       width: double.infinity,
+
       padding: EdgeInsets.symmetric(horizontal: mobile ? 10 : 14, vertical: 7),
+
       decoration: BoxDecoration(
         color: AppTheme.paper,
+
         borderRadius: BorderRadius.circular(10),
+
         border: Border.all(color: AppTheme.border),
       ),
+
       child: Row(
         children: [
           Container(
             width: 32,
+
             height: 32,
+
             decoration: BoxDecoration(
               color: AppTheme.ink3.withValues(alpha: 0.08),
+
               borderRadius: BorderRadius.circular(8),
             ),
+
             child: const Icon(
               Icons.people_outline,
+
               color: AppTheme.ink3,
+
               size: 17,
             ),
           ),
+
           const SizedBox(width: 9),
+
           const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               mainAxisSize: MainAxisSize.min,
+
               children: [
                 Text(
                   'Vendors',
+
                   maxLines: 1,
+
                   overflow: TextOverflow.ellipsis,
+
                   style: TextStyle(
                     fontSize: 17,
+
                     fontWeight: FontWeight.w800,
+
                     color: AppTheme.text,
                   ),
                 ),
+
                 SizedBox(height: 1),
+
                 Text(
                   'Manage suppliers and vendor relationships.',
+
                   maxLines: 1,
+
                   overflow: TextOverflow.ellipsis,
+
                   style: TextStyle(fontSize: 10, color: AppTheme.textMuted),
                 ),
               ],
             ),
           ),
+
           const SizedBox(width: 8),
+
           _addVendorButton(mobile),
         ],
       ),
@@ -270,17 +297,26 @@ class _VendorsPageState extends State<VendorsPage> {
   Widget _addVendorButton(bool mobile) {
     return ElevatedButton.icon(
       onPressed: _showAddVendorDialog,
+
       icon: const Icon(Icons.person_add_outlined, size: 15),
+
       label: Text(
         mobile ? 'Add' : 'Add Vendor',
+
         style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
       ),
+
       style: ElevatedButton.styleFrom(
         backgroundColor: AppTheme.ink3,
+
         foregroundColor: AppTheme.paper,
+
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+
         minimumSize: const Size(0, 32),
+
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
@@ -295,78 +331,71 @@ class _VendorsPageState extends State<VendorsPage> {
   Widget _summaryCards(bool mobile) {
     final cards = [
       _summaryCard('Total Vendors', '6', Icons.people_outline),
-
       _summaryCard('Active Vendors', '5', Icons.check_circle_outline),
-
       _summaryCard('Purchase Orders', '84', Icons.receipt_long_outlined),
-
       _summaryCard('Categories', '6', Icons.category_outlined),
     ];
 
-    return GridView.count(
-      crossAxisCount: mobile ? 2 : 4,
+    if (mobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (int i = 0; i < cards.length; i++) ...[
+            cards[i],
+            if (i < cards.length - 1) const SizedBox(height: 14),
+          ],
+        ],
+      );
+    }
 
-      crossAxisSpacing: 14,
-
-      mainAxisSpacing: 14,
-
-      childAspectRatio: mobile ? 1.55 : 2.25,
-
+    return GridView.builder(
+      itemCount: cards.length,
       shrinkWrap: true,
-
       physics: const NeverScrollableScrollPhysics(),
-
-      children: cards,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        mainAxisExtent: 120,
+      ),
+      itemBuilder: (context, index) => cards[index],
     );
   }
 
   Widget _summaryCard(String title, String value, IconData icon) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
-
       decoration: _decoration(),
-
       child: Row(
         children: [
           Container(
             height: 42,
-
             width: 42,
-
             decoration: BoxDecoration(
               color: AppTheme.paperDim.withValues(alpha: 0.35),
-
               borderRadius: BorderRadius.circular(10),
             ),
-
             child: Icon(icon, color: AppTheme.ink3, size: 22),
           ),
-
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-
               crossAxisAlignment: CrossAxisAlignment.start,
-
               children: [
                 Text(
                   title,
-
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
                 ),
-
                 const SizedBox(height: 4),
-
                 Text(
                   value,
-
                   style: const TextStyle(
                     fontSize: 22,
-
                     fontWeight: FontWeight.w700,
-
                     color: AppTheme.text,
                   ),
                 ),
@@ -823,29 +852,29 @@ class _VendorsPageState extends State<VendorsPage> {
             ),
           ),
 
-          content: SizedBox(
-            width: 430,
-
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-
-              children: [
-                _detailRow('Vendor Code', vendor['code']),
-
-                _detailRow('Contact', vendor['contact']),
-
-                _detailRow('Phone', vendor['phone']),
-
-                _detailRow('Email', vendor['email']),
-
-                _detailRow('Category', vendor['category']),
-
-                _detailRow('Location', vendor['location']),
-
-                _detailRow('Purchase Orders', '${vendor['orders']}'),
-
-                _detailRow('Status', vendor['status']),
-              ],
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 430),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _detailRow('Vendor Code', vendor['code']),
+                  const SizedBox(height: 12),
+                  _detailRow('Contact', vendor['contact']),
+                  const SizedBox(height: 12),
+                  _detailRow('Phone', vendor['phone']),
+                  const SizedBox(height: 12),
+                  _detailRow('Email', vendor['email']),
+                  const SizedBox(height: 12),
+                  _detailRow('Category', vendor['category']),
+                  const SizedBox(height: 12),
+                  _detailRow('Location', vendor['location']),
+                  const SizedBox(height: 12),
+                  _detailRow('Purchase Orders', '${vendor['orders']}'),
+                  const SizedBox(height: 12),
+                  _detailRow('Status', vendor['status']),
+                ],
+              ),
             ),
           ),
 
@@ -870,7 +899,7 @@ class _VendorsPageState extends State<VendorsPage> {
 
         children: [
           SizedBox(
-            width: 115,
+            width: 105,
 
             child: Text(
               label,
@@ -915,27 +944,21 @@ class _VendorsPageState extends State<VendorsPage> {
             style: TextStyle(color: AppTheme.text, fontWeight: FontWeight.w700),
           ),
 
-          content: SizedBox(
-            width: 430,
-
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-
-              children: [
-                _dialogField('Vendor Name', 'Enter vendor name'),
-
-                const SizedBox(height: 12),
-
-                _dialogField('Contact Person', 'Enter contact person'),
-
-                const SizedBox(height: 12),
-
-                _dialogField('Phone', 'Enter phone number'),
-
-                const SizedBox(height: 12),
-
-                _dialogField('Email', 'Enter email address'),
-              ],
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 430),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _dialogField('Vendor Name', 'Enter vendor name'),
+                  const SizedBox(height: 12),
+                  _dialogField('Contact Person', 'Enter contact person'),
+                  const SizedBox(height: 12),
+                  _dialogField('Phone', 'Enter phone number'),
+                  const SizedBox(height: 12),
+                  _dialogField('Email', 'Enter email address'),
+                ],
+              ),
             ),
           ),
 

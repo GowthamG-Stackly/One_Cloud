@@ -255,54 +255,81 @@ class _SalesOrdersPageState extends State<SalesOrdersPage> {
   Widget _pageHeader(bool mobile) {
     return Container(
       width: double.infinity,
+
       padding: EdgeInsets.symmetric(horizontal: mobile ? 10 : 14, vertical: 7),
+
       decoration: BoxDecoration(
         color: AppTheme.paper,
+
         borderRadius: BorderRadius.circular(10),
+
         border: Border.all(color: AppTheme.border),
       ),
+
       child: Row(
         children: [
           Container(
             width: 32,
+
             height: 32,
+
             decoration: BoxDecoration(
               color: AppTheme.ink3.withValues(alpha: 0.08),
+
               borderRadius: BorderRadius.circular(8),
             ),
+
             child: const Icon(
               Icons.receipt_long_outlined,
+
               color: AppTheme.ink3,
+
               size: 17,
             ),
           ),
+
           const SizedBox(width: 9),
+
           const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               mainAxisSize: MainAxisSize.min,
+
               children: [
                 Text(
                   'Sales Orders',
+
                   maxLines: 1,
+
                   overflow: TextOverflow.ellipsis,
+
                   style: TextStyle(
                     fontSize: 17,
+
                     fontWeight: FontWeight.w800,
+
                     color: AppTheme.text,
                   ),
                 ),
+
                 SizedBox(height: 1),
+
                 Text(
                   'Create, manage and track customer orders.',
+
                   maxLines: 1,
+
                   overflow: TextOverflow.ellipsis,
+
                   style: TextStyle(fontSize: 10, color: AppTheme.textMuted),
                 ),
               ],
             ),
           ),
+
           const SizedBox(width: 8),
+
           _createOrderButton(mobile),
         ],
       ),
@@ -312,17 +339,26 @@ class _SalesOrdersPageState extends State<SalesOrdersPage> {
   Widget _createOrderButton(bool mobile) {
     return ElevatedButton.icon(
       onPressed: _showCreateOrderDialog,
+
       icon: const Icon(Icons.add, size: 15),
+
       label: Text(
         mobile ? 'Add' : 'Create Order',
+
         style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
       ),
+
       style: ElevatedButton.styleFrom(
         backgroundColor: AppTheme.ink3,
+
         foregroundColor: AppTheme.paper,
+
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+
         minimumSize: const Size(0, 32),
+
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
@@ -337,78 +373,74 @@ class _SalesOrdersPageState extends State<SalesOrdersPage> {
   Widget _summaryCards(bool mobile) {
     final cards = [
       _summaryCard('Total Orders', '8', Icons.receipt_long_outlined),
-
       _summaryCard('Pending', '2', Icons.pending_outlined),
-
       _summaryCard('Processing', '3', Icons.autorenew),
-
       _summaryCard('Completed', '3', Icons.check_circle_outline),
     ];
 
-    return GridView.count(
-      crossAxisCount: mobile ? 2 : 4,
+    if (mobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          cards[0],
+          const SizedBox(height: 14),
+          cards[1],
+          const SizedBox(height: 14),
+          cards[2],
+          const SizedBox(height: 14),
+          cards[3],
+        ],
+      );
+    }
 
-      crossAxisSpacing: 14,
-
-      mainAxisSpacing: 14,
-
-      childAspectRatio: mobile ? 1.55 : 2.25,
-
+    return GridView.builder(
+      itemCount: cards.length,
       shrinkWrap: true,
-
       physics: const NeverScrollableScrollPhysics(),
-
-      children: cards,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        mainAxisExtent: 120,
+      ),
+      itemBuilder: (context, index) => cards[index],
     );
   }
 
   Widget _summaryCard(String title, String value, IconData icon) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
-
       decoration: _decoration(),
-
       child: Row(
         children: [
           Container(
             height: 42,
-
             width: 42,
-
             decoration: BoxDecoration(
               color: AppTheme.paperDim.withValues(alpha: 0.35),
-
               borderRadius: BorderRadius.circular(10),
             ),
-
             child: Icon(icon, color: AppTheme.ink3, size: 22),
           ),
-
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-
               crossAxisAlignment: CrossAxisAlignment.start,
-
               children: [
                 Text(
                   title,
-
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
                 ),
-
                 const SizedBox(height: 4),
-
                 Text(
                   value,
-
                   style: const TextStyle(
                     fontSize: 22,
-
                     fontWeight: FontWeight.w700,
-
                     color: AppTheme.text,
                   ),
                 ),
@@ -907,29 +939,22 @@ class _SalesOrdersPageState extends State<SalesOrdersPage> {
             ),
           ),
 
-          content: SizedBox(
-            width: 430,
-
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-
-              children: [
-                _detailRow('Customer', order['customer']),
-
-                _detailRow('Order Date', order['date']),
-
-                _detailRow('Warehouse', order['warehouse']),
-
-                _detailRow('Items', '${order['items']} items'),
-
-                _detailRow('Quantity', '${order['quantity']} units'),
-
-                _detailRow('Amount', _currency(order['amount'])),
-
-                _detailRow('Priority', order['priority']),
-
-                _detailRow('Status', order['status']),
-              ],
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 430),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _detailRow('Customer', order['customer']),
+                  _detailRow('Order Date', order['date']),
+                  _detailRow('Warehouse', order['warehouse']),
+                  _detailRow('Items', '${order['items']} items'),
+                  _detailRow('Quantity', '${order['quantity']} units'),
+                  _detailRow('Amount', _currency(order['amount'])),
+                  _detailRow('Priority', order['priority']),
+                  _detailRow('Status', order['status']),
+                ],
+              ),
             ),
           ),
 
@@ -999,27 +1024,21 @@ class _SalesOrdersPageState extends State<SalesOrdersPage> {
             style: TextStyle(color: AppTheme.text, fontWeight: FontWeight.w700),
           ),
 
-          content: SizedBox(
-            width: 430,
-
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-
-              children: [
-                _dialogField('Customer', 'Enter customer name'),
-
-                const SizedBox(height: 12),
-
-                _dialogField('Warehouse', 'Select warehouse'),
-
-                const SizedBox(height: 12),
-
-                _dialogField('Product', 'Select product'),
-
-                const SizedBox(height: 12),
-
-                _dialogField('Quantity', 'Enter quantity'),
-              ],
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 430),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _dialogField('Customer', 'Enter customer name'),
+                  const SizedBox(height: 12),
+                  _dialogField('Warehouse', 'Select warehouse'),
+                  const SizedBox(height: 12),
+                  _dialogField('Product', 'Select product'),
+                  const SizedBox(height: 12),
+                  _dialogField('Quantity', 'Enter quantity'),
+                ],
+              ),
             ),
           ),
 
