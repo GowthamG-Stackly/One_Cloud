@@ -141,30 +141,43 @@ class _ProcurementPageState extends State<ProcurementPage> {
 
           return SafeArea(
             bottom: false,
+
             child: Column(
               children: [
                 Padding(
                   padding: EdgeInsets.fromLTRB(
                     mobile ? 10 : 14,
+
                     mobile ? 8 : 10,
+
                     mobile ? 10 : 14,
+
                     0,
                   ),
+
                   child: _pageHeader(mobile),
                 ),
+
                 Expanded(
                   child: SingleChildScrollView(
                     padding: EdgeInsets.fromLTRB(
                       mobile ? 10 : 14,
+
                       14,
+
                       mobile ? 10 : 14,
+
                       28,
                     ),
+
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+
                       children: [
                         _summaryCards(mobile),
+
                         const SizedBox(height: 18),
+
                         _purchaseOrders(mobile),
                       ],
                     ),
@@ -187,61 +200,92 @@ class _ProcurementPageState extends State<ProcurementPage> {
   Widget _pageHeader(bool mobile) {
     return Container(
       width: double.infinity,
+
       padding: EdgeInsets.symmetric(horizontal: mobile ? 10 : 14, vertical: 7),
+
       decoration: BoxDecoration(
         color: AppTheme.paper,
+
         borderRadius: BorderRadius.circular(10),
+
         border: Border.all(color: AppTheme.border),
       ),
+
       child: Row(
         children: [
           Container(
             width: 32,
+
             height: 32,
+
             decoration: BoxDecoration(
               color: AppTheme.ink3.withValues(alpha: 0.08),
+
               borderRadius: BorderRadius.circular(8),
             ),
+
             child: const Icon(
               Icons.shopping_cart_outlined,
+
               color: AppTheme.ink3,
+
               size: 17,
             ),
           ),
+
           const SizedBox(width: 9),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               mainAxisSize: MainAxisSize.min,
+
               children: [
                 const Text(
                   'Procurement',
+
                   maxLines: 1,
+
                   overflow: TextOverflow.ellipsis,
+
                   style: TextStyle(
                     fontSize: 17,
+
                     fontWeight: FontWeight.w800,
+
                     color: AppTheme.text,
                   ),
                 ),
+
                 const SizedBox(height: 1),
+
                 const Text(
                   'Manage purchase orders and supplier purchases.',
+
                   maxLines: 1,
+
                   overflow: TextOverflow.ellipsis,
+
                   style: TextStyle(fontSize: 10, color: AppTheme.textMuted),
                 ),
               ],
             ),
           ),
+
           const SizedBox(width: 8),
+
           ElevatedButton.icon(
             onPressed: _showNewOrderDialog,
+
             icon: const Icon(Icons.add, size: 15),
+
             label: Text(
               mobile ? 'New Order' : 'New Purchase Order',
+
               style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
             ),
+
             style: _newOrderButtonStyle(compact: true),
           ),
         ],
@@ -252,16 +296,23 @@ class _ProcurementPageState extends State<ProcurementPage> {
   ButtonStyle _newOrderButtonStyle({bool compact = false}) {
     return ElevatedButton.styleFrom(
       backgroundColor: AppTheme.ink3,
+
       foregroundColor: AppTheme.paper,
+
       elevation: 0,
+
       padding: EdgeInsets.symmetric(
         horizontal: compact ? 10 : 18,
+
         vertical: compact ? 7 : 14,
       ),
+
       minimumSize: compact ? const Size(0, 32) : null,
+
       tapTargetSize: compact
           ? MaterialTapTargetSize.shrinkWrap
           : MaterialTapTargetSize.padded,
+
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(compact ? 8 : 10),
       ),
@@ -277,78 +328,71 @@ class _ProcurementPageState extends State<ProcurementPage> {
   Widget _summaryCards(bool mobile) {
     final cards = [
       _summaryCard('Purchase Orders', '6', Icons.receipt_long_outlined),
-
       _summaryCard('Pending', '2', Icons.pending_actions_outlined),
-
       _summaryCard('Approved', '2', Icons.check_circle_outline),
-
       _summaryCard('Received', '2', Icons.inventory_2_outlined),
     ];
 
-    return GridView.count(
-      crossAxisCount: mobile ? 2 : 4,
+    if (mobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (int i = 0; i < cards.length; i++) ...[
+            cards[i],
+            if (i < cards.length - 1) const SizedBox(height: 14),
+          ],
+        ],
+      );
+    }
 
-      crossAxisSpacing: 14,
-
-      mainAxisSpacing: 14,
-
-      childAspectRatio: mobile ? 1.55 : 2.25,
-
+    return GridView.builder(
+      itemCount: cards.length,
       shrinkWrap: true,
-
       physics: const NeverScrollableScrollPhysics(),
-
-      children: cards,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        mainAxisExtent: 120,
+      ),
+      itemBuilder: (context, index) => cards[index],
     );
   }
 
   Widget _summaryCard(String title, String value, IconData icon) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
-
       decoration: _cardDecoration(),
-
       child: Row(
         children: [
           Container(
             height: 42,
-
             width: 42,
-
             decoration: BoxDecoration(
               color: AppTheme.paperDim.withValues(alpha: 0.35),
-
               borderRadius: BorderRadius.circular(10),
             ),
-
             child: Icon(icon, color: AppTheme.ink3, size: 22),
           ),
-
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-
               crossAxisAlignment: CrossAxisAlignment.start,
-
               children: [
                 Text(
                   title,
-
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
                 ),
-
                 const SizedBox(height: 4),
-
                 Text(
                   value,
-
                   style: const TextStyle(
                     color: AppTheme.text,
-
                     fontSize: 22,
-
                     fontWeight: FontWeight.w700,
                   ),
                 ),

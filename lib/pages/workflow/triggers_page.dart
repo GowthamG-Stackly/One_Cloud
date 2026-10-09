@@ -7,47 +7,160 @@ class TriggersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Triggers')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Triggers',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final bool isMobile = constraints.maxWidth < 600;
+
+          return SingleChildScrollView(
+            padding: EdgeInsets.all(isMobile ? 16 : 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Triggers',
+                  style: TextStyle(
+                    fontSize: isMobile ? 24 : 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Configure events that start workflows and automated processes.',
+                  style: TextStyle(fontSize: isMobile ? 14 : 16),
+                ),
+                const SizedBox(height: 24),
+
+                _TriggerCard(
+                  title: 'Purchase Order Created',
+                  subtitle: 'Starts Purchase Approval Workflow',
+                  isMobile: isMobile,
+                ),
+
+                _TriggerCard(
+                  title: 'Invoice Received',
+                  subtitle: 'Starts Invoice Processing Workflow',
+                  isMobile: isMobile,
+                ),
+
+                _TriggerCard(
+                  title: 'Stock Below Minimum',
+                  subtitle: 'Starts Reorder Process',
+                  isMobile: isMobile,
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            const Text(
-              'Configure events that start workflows and automated processes.',
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 24),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.flash_on_outlined),
-                title: const Text('Purchase Order Created'),
-                subtitle: const Text('Starts Purchase Approval Workflow'),
-                trailing: const Icon(Icons.check_circle_outline),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _TriggerCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final bool isMobile;
+
+  const _TriggerCard({
+    required this.title,
+    required this.subtitle,
+    required this.isMobile,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: EdgeInsets.all(isMobile ? 14 : 16),
+        child: isMobile
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.flash_on_outlined, size: 24),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              subtitle,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle_outline,
+                        size: 21,
+                        color: Colors.green.shade600,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Active',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.green.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            : Row(
+                children: [
+                  const Icon(Icons.flash_on_outlined, size: 24),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          subtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.grey.shade700),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.check_circle_outline,
+                    color: Colors.green.shade600,
+                  ),
+                ],
               ),
-            ),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.flash_on_outlined),
-                title: const Text('Invoice Received'),
-                subtitle: const Text('Starts Invoice Processing Workflow'),
-                trailing: const Icon(Icons.check_circle_outline),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.flash_on_outlined),
-                title: const Text('Stock Below Minimum'),
-                subtitle: const Text('Starts Reorder Process'),
-                trailing: const Icon(Icons.check_circle_outline),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

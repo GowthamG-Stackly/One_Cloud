@@ -269,34 +269,42 @@ class AssetManagementPage extends StatelessWidget {
   }
 
   Widget _kpis() {
-    final data = [
-      ['Total Assets', '486', Icons.inventory_2_outlined],
-      ['Operational', '442', Icons.check_circle_outline],
-      ['Under Maintenance', '18', Icons.build_outlined],
-      ['Total Asset Value', '₹18.6Cr', Icons.currency_rupee],
+    final cards = [
+      _kpi('Total Assets', '486', Icons.inventory_2_outlined),
+      _kpi('Operational', '442', Icons.check_circle_outline),
+      _kpi('Under Maintenance', '18', Icons.build_outlined),
+      _kpi('Total Asset Value', '₹18.6Cr', Icons.currency_rupee),
     ];
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final isMobile = constraints.maxWidth < 650;
 
+        if (isMobile) {
+          return Column(
+            children: [
+              cards[0],
+              const SizedBox(height: 10),
+              cards[1],
+              const SizedBox(height: 10),
+              cards[2],
+              const SizedBox(height: 10),
+              cards[3],
+            ],
+          );
+        }
+
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: data.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: isMobile ? 2 : 4,
-            crossAxisSpacing: isMobile ? 10 : 14,
-            mainAxisSpacing: isMobile ? 10 : 14,
-            childAspectRatio: isMobile ? 1.65 : 2.2,
+          itemCount: cards.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            crossAxisSpacing: 14,
+            mainAxisSpacing: 14,
+            childAspectRatio: 2.2,
           ),
-          itemBuilder: (context, index) {
-            return _kpi(
-              data[index][0] as String,
-              data[index][1] as String,
-              data[index][2] as IconData,
-            );
-          },
+          itemBuilder: (context, index) => cards[index],
         );
       },
     );
@@ -305,43 +313,66 @@ class AssetManagementPage extends StatelessWidget {
   Widget _kpi(String title, String value, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(12),
+
       decoration: _card(),
+
       child: Row(
         children: [
           Container(
             width: 34,
+
             height: 34,
+
             decoration: BoxDecoration(
               color: AppTheme.ink3.withValues(alpha: 0.10),
+
               borderRadius: BorderRadius.circular(9),
             ),
+
             child: Icon(icon, color: AppTheme.ink3, size: 18),
           ),
+
           const SizedBox(width: 8),
+
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+
               crossAxisAlignment: CrossAxisAlignment.start,
+
               mainAxisSize: MainAxisSize.min,
+
               children: [
                 Text(
                   title,
+
                   maxLines: 2,
+
                   overflow: TextOverflow.ellipsis,
+
                   style: const TextStyle(
                     fontSize: 11,
+
                     color: AppTheme.textMuted,
+
                     height: 1.15,
                   ),
                 ),
+
                 const SizedBox(height: 4),
+
                 Text(
                   value,
+
                   maxLines: 1,
+
                   overflow: TextOverflow.ellipsis,
+
                   style: const TextStyle(
                     fontSize: 18,
+
                     fontWeight: FontWeight.w700,
+
                     color: AppTheme.text,
                   ),
                 ),

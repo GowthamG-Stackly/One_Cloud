@@ -104,71 +104,109 @@ class _ProductionPageState extends State<ProductionPage> {
   Widget _header(bool isMobile) {
     return Container(
       width: double.infinity,
+
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 10 : 14,
+
         vertical: 7,
       ),
+
       decoration: BoxDecoration(
         color: AppTheme.paper,
+
         borderRadius: BorderRadius.circular(10),
+
         border: Border.all(color: AppTheme.border),
       ),
+
       child: Row(
         children: [
           Container(
             width: 32,
+
             height: 32,
+
             decoration: BoxDecoration(
               color: AppTheme.ink3.withValues(alpha: 0.08),
+
               borderRadius: BorderRadius.circular(8),
             ),
+
             child: const Icon(
               Icons.precision_manufacturing_outlined,
+
               color: AppTheme.ink3,
+
               size: 17,
             ),
           ),
+
           const SizedBox(width: 9),
+
           const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               mainAxisSize: MainAxisSize.min,
+
               children: [
                 Text(
                   'Production',
+
                   maxLines: 1,
+
                   overflow: TextOverflow.ellipsis,
+
                   style: TextStyle(
                     fontSize: 17,
+
                     fontWeight: FontWeight.w800,
+
                     color: AppTheme.text,
                   ),
                 ),
+
                 SizedBox(height: 1),
+
                 Text(
                   'Plan, track and manage production operations.',
+
                   maxLines: 1,
+
                   overflow: TextOverflow.ellipsis,
+
                   style: TextStyle(fontSize: 10, color: AppTheme.textMuted),
                 ),
               ],
             ),
           ),
+
           const SizedBox(width: 8),
+
           ElevatedButton.icon(
             onPressed: _showCreateOrder,
+
             icon: const Icon(Icons.add, size: 15),
+
             label: Text(
               isMobile ? 'Add' : 'Create Production Order',
+
               style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
             ),
+
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.ink3,
+
               foregroundColor: AppTheme.paper,
+
               elevation: 0,
+
               padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+
               minimumSize: const Size(0, 32),
+
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -182,37 +220,55 @@ class _ProductionPageState extends State<ProductionPage> {
   Widget _kpis(bool isMobile) {
     final items = [
       ['Active Orders', '12', Icons.assignment],
-
       ['Units in Production', '1,248', Icons.precision_manufacturing],
-
       ['Completed Today', '386', Icons.check_circle],
-
       ['Efficiency', '94.6%', Icons.trending_up],
     ];
 
+    if (isMobile) {
+      return Column(
+        children: [
+          _kpiCard(
+            items[0][0] as String,
+            items[0][1] as String,
+            items[0][2] as IconData,
+          ),
+          const SizedBox(height: 14),
+          _kpiCard(
+            items[1][0] as String,
+            items[1][1] as String,
+            items[1][2] as IconData,
+          ),
+          const SizedBox(height: 14),
+          _kpiCard(
+            items[2][0] as String,
+            items[2][1] as String,
+            items[2][2] as IconData,
+          ),
+          const SizedBox(height: 14),
+          _kpiCard(
+            items[3][0] as String,
+            items[3][1] as String,
+            items[3][2] as IconData,
+          ),
+        ],
+      );
+    }
+
     return GridView.builder(
       shrinkWrap: true,
-
       physics: const NeverScrollableScrollPhysics(),
-
       itemCount: items.length,
-
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: isMobile ? 2 : 4,
-
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
         crossAxisSpacing: 14,
-
         mainAxisSpacing: 14,
-
-        childAspectRatio: isMobile ? 1.45 : 2.1,
+        childAspectRatio: 2.1,
       ),
-
       itemBuilder: (context, index) {
         return _kpiCard(
           items[index][0] as String,
-
           items[index][1] as String,
-
           items[index][2] as IconData,
         );
       },
