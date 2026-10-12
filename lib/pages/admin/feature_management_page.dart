@@ -834,8 +834,40 @@ class _FeatureManagementPageState extends State<FeatureManagementPage> {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
               _statusBadge(feature.enabled),
+              PopupMenuButton<String>(
+                tooltip: 'More actions',
+                padding: EdgeInsets.zero,
+                onSelected: (value) => _handleAction(value, feature),
+                itemBuilder: (context) => const [
+                  PopupMenuItem<String>(
+                    value: 'organization',
+                    child: Row(
+                      children: [
+                        Icon(Icons.business_outlined, size: 18),
+                        SizedBox(width: 10),
+                        Text('Organization Access'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'history',
+                    child: Row(
+                      children: [
+                        Icon(Icons.history, size: 18),
+                        SizedBox(width: 10),
+                        Text('View History'),
+                      ],
+                    ),
+                  ),
+                ],
+                icon: Icon(
+                  Icons.more_vert,
+                  color: AppTheme.textMuted,
+                  size: 22,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -1107,12 +1139,12 @@ class _FeatureManagementPageState extends State<FeatureManagementPage> {
             feature.enabled = false;
           });
 
-          Navigator.of(context).pop();
+          Navigator.of(context, rootNavigator: true).pop();
 
           _showSnackBar(
             'Feature Disabled',
             '"${feature.name}" has been deactivated across the platform.',
-            AppTheme.danger,
+            AppTheme.success,
           );
         },
       ),
@@ -1139,7 +1171,7 @@ class _FeatureManagementPageState extends State<FeatureManagementPage> {
             feature.enabled = true;
           });
 
-          Navigator.of(context).pop();
+          Navigator.of(context, rootNavigator: true).pop();
 
           _showSnackBar(
             'Feature Enabled',
@@ -1174,7 +1206,7 @@ class _FeatureManagementPageState extends State<FeatureManagementPage> {
                 feature.enabled = enabled;
               });
 
-              Navigator.of(context).pop();
+              Navigator.of(context, rootNavigator: true).pop();
 
               _showSnackBar(
                 'Configuration Saved',
@@ -1207,7 +1239,7 @@ class _FeatureManagementPageState extends State<FeatureManagementPage> {
               });
             },
             onSave: () {
-              Navigator.of(context).pop();
+              Navigator.of(context, rootNavigator: true).pop();
 
               _showSnackBar(
                 'Access Updated',
@@ -1230,7 +1262,7 @@ class _FeatureManagementPageState extends State<FeatureManagementPage> {
       child: _HistoryDialog(
         feature: feature,
         onRollback: () {
-          Navigator.of(context).pop();
+          Navigator.of(context, rootNavigator: true).pop();
           _showRollbackDialog(feature);
         },
       ),
@@ -1262,7 +1294,7 @@ class _FeatureManagementPageState extends State<FeatureManagementPage> {
         actionText: 'Rollback Change',
         actionColor: AppTheme.danger,
         onAction: () {
-          Navigator.of(context).pop();
+          Navigator.of(context, rootNavigator: true).pop();
 
           _showSnackBar(
             'Configuration Rolled Back',
@@ -1282,7 +1314,7 @@ class _FeatureManagementPageState extends State<FeatureManagementPage> {
     _showResponsiveDialog(
       child: _ExportDialog(
         onExport: () {
-          Navigator.of(context).pop();
+          Navigator.of(context, rootNavigator: true).pop();
 
           _showSnackBar(
             'Export Started',
@@ -1527,7 +1559,7 @@ class _ConfirmationDialog extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context, rootNavigator: true).pop();
                 },
                 icon: Icon(Icons.close, color: AppTheme.textMuted, size: 20),
               ),
@@ -1581,7 +1613,7 @@ class _ConfirmationDialog extends StatelessWidget {
             children: [
               OutlinedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context, rootNavigator: true).pop();
                 },
                 child: const Text('Cancel'),
               ),
@@ -2188,7 +2220,7 @@ class _UsageDialog extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context, rootNavigator: true).pop();
               },
               child: const Text('Close'),
             ),
@@ -2569,7 +2601,7 @@ Widget _dialogTitle(BuildContext context, String title, String subtitle) {
       ),
       IconButton(
         onPressed: () {
-          Navigator.of(context).pop();
+          Navigator.of(context, rootNavigator: true).pop();
         },
         icon: Icon(Icons.close, color: AppTheme.textMuted, size: 20),
       ),
@@ -2675,7 +2707,7 @@ Widget _dialogActions(
     children: [
       OutlinedButton(
         onPressed: () {
-          Navigator.of(context).pop();
+          Navigator.of(context, rootNavigator: true).pop();
         },
         child: const Text('Cancel'),
       ),
