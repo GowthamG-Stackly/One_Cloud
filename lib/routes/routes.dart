@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../pages/landing_page.dart';
-import '../pages/notification_page.dart';
 
 import '../pages/auth/login_page.dart';
 import '../pages/common/profile_page.dart';
@@ -211,7 +210,6 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String features = '/features';
   static const String contact = '/contact';
-  static const String notificationCenter = '/notification-center';
 
   // ==============================================================
   // ==============================================================
@@ -1571,12 +1569,6 @@ class AppRoutes {
               path: profile,
               builder: (context, state) {
                 return const ProfilePage();
-              },
-            ),
-            GoRoute(
-              path: notificationCenter,
-              builder: (context, state) {
-                return const NotificationPage();
               },
             ),
           ],
