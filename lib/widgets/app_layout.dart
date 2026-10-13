@@ -1,3 +1,2494 @@
+// import 'package:flutter/material.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:go_router/go_router.dart';
+
+// import '../app_theme.dart';
+// import '../providers/user_provider.dart';
+// import '../providers/registration_provider.dart';
+// import '../routes/routes.dart';
+
+// class AppLayout extends ConsumerStatefulWidget {
+//   final Widget child;
+
+//   const AppLayout({super.key, required this.child});
+
+//   @override
+//   ConsumerState<AppLayout> createState() => _AppLayoutState();
+// }
+
+// class _AppLayoutState extends ConsumerState<AppLayout> {
+//   static const double desktopBreakpoint = 850;
+//   static const double expandedSidebarWidth = 255;
+//   static const double collapsedSidebarWidth = 80;
+
+//   bool sidebarExpanded = true;
+//   bool mobileSidebarOpen = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (!mounted) return;
+
+//       final width = MediaQuery.of(context).size.width;
+
+//       setState(() {
+//         sidebarExpanded = width >= desktopBreakpoint;
+//       });
+//     });
+//   }
+
+//   void _toggleSidebar() {
+//     setState(() {
+//       sidebarExpanded = !sidebarExpanded;
+//     });
+//   }
+
+//   void _openMobileSidebar() {
+//     setState(() {
+//       mobileSidebarOpen = true;
+//     });
+//   }
+
+//   void _closeMobileSidebar() {
+//     setState(() {
+//       mobileSidebarOpen = false;
+//     });
+//   }
+
+//   void _navigate(String route) {
+//     final currentRoute = GoRouterState.of(context).uri.path;
+
+//     if (currentRoute == route) {
+//       if (mobileSidebarOpen) {
+//         _closeMobileSidebar();
+//       }
+//       return;
+//     }
+
+//     context.push(route);
+
+//     if (mobileSidebarOpen) {
+//       _closeMobileSidebar();
+//     }
+//   }
+
+//   void _logout() {
+//     ref.read(userProvider.notifier).logout();
+//     context.go(AppRoutes.login);
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenWidth = MediaQuery.of(context).size.width;
+//     final isMobile = screenWidth < desktopBreakpoint;
+
+//     final registration = ref.watch(registrationProvider);
+
+//     final adminName = '${registration.firstName} ${registration.lastName}'
+//         .trim();
+
+//     final displayName = adminName.isNotEmpty ? adminName : 'Admin User';
+
+//     return Scaffold(
+//       backgroundColor: AppTheme.paperDim,
+//       body: Stack(
+//         children: [
+//           Row(
+//             children: [
+//               if (!isMobile)
+//                 AnimatedContainer(
+//                   duration: const Duration(milliseconds: 220),
+//                   curve: Curves.easeOutCubic,
+//                   width: sidebarExpanded
+//                       ? expandedSidebarWidth
+//                       : collapsedSidebarWidth,
+//                   child: AppSidebar(
+//                     collapsed: !sidebarExpanded,
+//                     adminName: displayName,
+//                     onNavigate: _navigate,
+//                   ),
+//                 ),
+
+//               Expanded(
+//                 child: Column(
+//                   children: [
+//                     AppHeader(
+//                       isMobile: isMobile,
+//                       sidebarExpanded: sidebarExpanded,
+//                       adminName: displayName,
+//                       onMenuPressed: isMobile
+//                           ? _openMobileSidebar
+//                           : _toggleSidebar,
+//                       onNavigate: _navigate,
+//                       onLogout: _logout,
+//                     ),
+
+//                     Expanded(
+//                       child: Container(
+//                         width: double.infinity,
+//                         color: AppTheme.paperDim,
+//                         child: Column(
+//                           children: [
+//                             if (isMobile)
+//                               Padding(
+//                                 padding: const EdgeInsets.fromLTRB(
+//                                   14,
+//                                   10,
+//                                   14,
+//                                   10,
+//                                 ),
+//                                 child: _SearchBar(
+//                                   onTap: () {
+//                                     _navigate(AppRoutes.search);
+//                                   },
+//                                 ),
+//                               ),
+//                             Expanded(child: widget.child),
+//                           ],
+//                         ),
+//                       ),
+//                     ),
+
+//                     const AppFooter(),
+//                   ],
+//                 ),
+//               ),
+//             ],
+//           ),
+
+//           if (isMobile && mobileSidebarOpen)
+//             Positioned.fill(
+//               child: Row(
+//                 children: [
+//                   SizedBox(
+//                     width: 280,
+//                     child: AppSidebar(
+//                       collapsed: false,
+//                       mobile: true,
+//                       adminName: displayName,
+//                       onNavigate: _navigate,
+//                     ),
+//                   ),
+
+//                   Expanded(
+//                     child: GestureDetector(
+//                       onTap: _closeMobileSidebar,
+//                       child: Container(
+//                         color: Colors.black.withValues(alpha: 0.45),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================================
+// // APP HEADER
+// // ============================================================================
+
+// class AppHeader extends StatelessWidget {
+//   final bool isMobile;
+//   final bool sidebarExpanded;
+//   final String adminName;
+//   final VoidCallback onMenuPressed;
+//   final Function(String route) onNavigate;
+//   final VoidCallback onLogout;
+
+//   const AppHeader({
+//     super.key,
+//     required this.isMobile,
+//     required this.sidebarExpanded,
+//     required this.adminName,
+//     required this.onMenuPressed,
+//     required this.onNavigate,
+//     required this.onLogout,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     // ============================================================
+//     // MOBILE HEADER
+//     // ============================================================
+//     if (isMobile) {
+//       final topInset = MediaQuery.of(context).padding.top;
+
+//       return Container(
+//         height: topInset + 58,
+//         padding: EdgeInsets.only(top: topInset),
+//         decoration: BoxDecoration(
+//           color: AppTheme.paper,
+//           border: Border(bottom: BorderSide(color: AppTheme.border)),
+//         ),
+//         child: SizedBox(
+//           height: 58,
+//           child: Padding(
+//             padding: const EdgeInsets.symmetric(horizontal: 14),
+//             child: Row(
+//               children: [
+//                 _HeaderIconButton(
+//                   icon: Icons.menu_rounded,
+//                   tooltip: 'Open navigation',
+//                   onPressed: onMenuPressed,
+//                 ),
+//                 const SizedBox(width: 10),
+//                 SizedBox(
+//                   width: 128,
+//                   height: 44,
+//                   child: Align(
+//                     alignment: Alignment.centerLeft,
+//                     child: ColorFiltered(
+//                       colorFilter: const ColorFilter.mode(
+//                         Color(0xFF28537A),
+//                         BlendMode.srcIn,
+//                       ),
+//                       child: Image.asset(
+//                         'assets/images/stackly_logo.png',
+//                         width: 128,
+//                         height: 44,
+//                         fit: BoxFit.contain,
+//                         alignment: Alignment.centerLeft,
+//                         filterQuality: FilterQuality.high,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//                 const Spacer(),
+//                 _HeaderIconButton(
+//                   icon: Icons.notifications_none_rounded,
+//                   tooltip: 'Notifications',
+//                   showNotificationDot: true,
+//                   onPressed: () {
+//                     onNavigate(AppRoutes.notificationCenter);
+//                   },
+//                 ),
+//                 const SizedBox(width: 8),
+//                 _ProfileMenu(
+//                   adminName: adminName,
+//                   onDashboard: () {
+//                     onNavigate(AppRoutes.dashboard);
+//                   },
+//                   onProfile: () {
+//                     onNavigate(AppRoutes.profile);
+//                   },
+//                   onLogout: onLogout,
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       );
+//     }
+
+//     // ============================================================
+//     // DESKTOP / TABLET HEADER
+//     // ============================================================
+//     return Container(
+//       height: 72,
+//       decoration: BoxDecoration(
+//         color: AppTheme.paper,
+//         border: Border(bottom: BorderSide(color: AppTheme.border)),
+//       ),
+//       padding: const EdgeInsets.symmetric(horizontal: 20),
+//       child: Row(
+//         children: [
+//           // MENU
+//           _HeaderIconButton(
+//             icon: sidebarExpanded
+//                 ? Icons.menu_open_rounded
+//                 : Icons.menu_rounded,
+//             tooltip: sidebarExpanded
+//                 ? 'Collapse navigation'
+//                 : 'Expand navigation',
+//             onPressed: onMenuPressed,
+//           ),
+
+//           const SizedBox(width: 16),
+
+//           // SEARCH
+//           Expanded(
+//             child: Align(
+//               alignment: Alignment.centerLeft,
+//               child: ConstrainedBox(
+//                 constraints: const BoxConstraints(maxWidth: 520),
+//                 child: _SearchBar(
+//                   onTap: () {
+//                     onNavigate(AppRoutes.search);
+//                   },
+//                 ),
+//               ),
+//             ),
+//           ),
+
+//           const SizedBox(width: 16),
+
+//           // NOTIFICATION
+//           // NOTIFICATION
+//           _HeaderIconButton(
+//             icon: Icons.notifications_none_rounded,
+//             tooltip: 'Notifications',
+//             showNotificationDot: true,
+//             onPressed: () {
+//               onNavigate(AppRoutes.notificationCenter);
+//             },
+//           ),
+
+//           const SizedBox(width: 8),
+
+//           // SETTINGS
+//           _HeaderIconButton(
+//             icon: Icons.settings_outlined,
+//             tooltip: 'Settings',
+//             onPressed: () {
+//               onNavigate(AppRoutes.globalSettings);
+//             },
+//           ),
+
+//           const SizedBox(width: 12),
+
+//           // PROFILE
+//           _ProfileMenu(
+//             adminName: adminName,
+//             onDashboard: () {
+//               onNavigate(AppRoutes.dashboard);
+//             },
+//             onProfile: () {
+//               onNavigate(AppRoutes.profile);
+//             },
+//             onLogout: onLogout,
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================================
+// // SEARCH BAR
+// // ============================================================================
+
+// class _SearchBar extends StatelessWidget {
+//   final VoidCallback onTap;
+
+//   const _SearchBar({required this.onTap});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final isMobile = MediaQuery.of(context).size.width < 850;
+//     final radius = isMobile ? 20.0 : 10.0;
+
+//     return Material(
+//       color: AppTheme.paperDim,
+//       borderRadius: BorderRadius.circular(radius),
+//       child: InkWell(
+//         borderRadius: BorderRadius.circular(radius),
+//         onTap: onTap,
+//         child: Container(
+//           height: 40,
+//           padding: const EdgeInsets.symmetric(horizontal: 14),
+//           decoration: BoxDecoration(
+//             borderRadius: BorderRadius.circular(radius),
+//             border: Border.all(color: AppTheme.border),
+//           ),
+//           child: Row(
+//             children: [
+//               Icon(Icons.search_rounded, size: 18, color: AppTheme.textMuted),
+
+//               const SizedBox(width: 10),
+
+//               Expanded(
+//                 child: Text(
+//                   'Search tenants, users, settings, audit logs...',
+//                   maxLines: 1,
+//                   overflow: TextOverflow.ellipsis,
+//                   style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
+//                 ),
+//               ),
+
+//               if (MediaQuery.of(context).size.width > 700)
+//                 Container(
+//                   padding: const EdgeInsets.symmetric(
+//                     horizontal: 7,
+//                     vertical: 3,
+//                   ),
+//                   decoration: BoxDecoration(
+//                     color: AppTheme.paper,
+//                     borderRadius: BorderRadius.circular(5),
+//                     border: Border.all(color: AppTheme.border),
+//                   ),
+//                   child: Text(
+//                     '⌘K',
+//                     style: TextStyle(
+//                       color: AppTheme.textMuted,
+//                       fontSize: 10,
+//                       fontWeight: FontWeight.w600,
+//                     ),
+//                   ),
+//                 ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================================
+// // HEADER ICON BUTTON
+// // ============================================================================
+
+// class _HeaderIconButton extends StatelessWidget {
+//   final IconData icon;
+//   final String tooltip;
+//   final VoidCallback onPressed;
+//   final bool showNotificationDot;
+
+//   const _HeaderIconButton({
+//     required this.icon,
+//     required this.tooltip,
+//     required this.onPressed,
+//     this.showNotificationDot = false,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Tooltip(
+//       message: tooltip,
+//       child: Stack(
+//         clipBehavior: Clip.none,
+//         children: [
+//           Material(
+//             color: AppTheme.paper,
+//             borderRadius: BorderRadius.circular(9),
+//             child: InkWell(
+//               borderRadius: BorderRadius.circular(9),
+//               onTap: onPressed,
+//               child: Container(
+//                 width: 40,
+//                 height: 40,
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(9),
+//                   border: Border.all(color: AppTheme.border),
+//                 ),
+//                 child: Icon(icon, size: 19, color: AppTheme.textMuted),
+//               ),
+//             ),
+//           ),
+
+//           if (showNotificationDot)
+//             Positioned(
+//               right: 7,
+//               top: 5,
+//               child: Container(
+//                 width: 5,
+//                 height: 5,
+//                 decoration: BoxDecoration(
+//                   color: AppTheme.danger,
+//                   shape: BoxShape.circle,
+//                 ),
+//               ),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================================
+// // PROFILE MENU
+// // ============================================================================
+
+// class _ProfileMenu extends ConsumerWidget {
+//   final String adminName;
+//   final VoidCallback onDashboard;
+//   final VoidCallback onProfile;
+//   final VoidCallback onLogout;
+
+//   const _ProfileMenu({
+//     required this.adminName,
+//     required this.onDashboard,
+//     required this.onProfile,
+//     required this.onLogout,
+//   });
+
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final user = context.findAncestorStateOfType<_AppLayoutState>();
+
+//     return PopupMenuButton<String>(
+//       offset: const Offset(0, 52),
+//       elevation: 8,
+//       color: AppTheme.paper,
+//       shape: RoundedRectangleBorder(
+//         borderRadius: BorderRadius.circular(12),
+//         side: BorderSide(color: AppTheme.border),
+//       ),
+//       onSelected: (value) {
+//         if (value == 'dashboard') {
+//           onDashboard();
+//         }
+
+//         if (value == 'profile') {
+//           onProfile();
+//         }
+
+//         if (value == 'logout') {
+//           onLogout();
+//         }
+//       },
+//       itemBuilder: (context) => [
+//         PopupMenuItem<String>(
+//           value: 'dashboard',
+//           child: Row(
+//             children: [
+//               Icon(
+//                 Icons.dashboard_outlined,
+//                 size: 19,
+//                 color: AppTheme.textMuted,
+//               ),
+//               const SizedBox(width: 12),
+//               const Text('Dashboard'),
+//             ],
+//           ),
+//         ),
+//         PopupMenuItem<String>(
+//           value: 'profile',
+//           child: Row(
+//             children: [
+//               Icon(
+//                 Icons.person_outline_rounded,
+//                 size: 19,
+//                 color: AppTheme.textMuted,
+//               ),
+//               const SizedBox(width: 12),
+//               const Text('Profile'),
+//             ],
+//           ),
+//         ),
+//         PopupMenuItem<String>(
+//           value: 'logout',
+//           child: Row(
+//             children: [
+//               Icon(Icons.logout_rounded, size: 19, color: AppTheme.danger),
+//               const SizedBox(width: 12),
+//               Text('Log out', style: TextStyle(color: AppTheme.danger)),
+//             ],
+//           ),
+//         ),
+//       ],
+//       child: Builder(
+//         builder: (context) {
+//           final isMobile = MediaQuery.of(context).size.width < 850;
+
+//           return Container(
+//             height: 42,
+//             width: isMobile ? 42 : null,
+//             padding: EdgeInsets.symmetric(horizontal: isMobile ? 1 : 7),
+//             decoration: BoxDecoration(
+//               shape: isMobile ? BoxShape.circle : BoxShape.rectangle,
+//               borderRadius: isMobile ? null : BorderRadius.circular(22),
+//               border: isMobile ? null : Border.all(color: AppTheme.border),
+//             ),
+//             child: Row(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 Container(
+//                   width: 34,
+//                   height: 34,
+//                   decoration: BoxDecoration(
+//                     shape: BoxShape.circle,
+//                     color: AppTheme.ink3,
+//                   ),
+//                   child: const Icon(
+//                     Icons.person_outline_rounded,
+//                     color: Colors.white,
+//                     size: 18,
+//                   ),
+//                 ),
+
+//                 if (!isMobile && MediaQuery.of(context).size.width > 650) ...[
+//                   const SizedBox(width: 9),
+
+//                   Column(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Text(
+//                         adminName,
+//                         style: TextStyle(
+//                           fontSize: 12,
+//                           fontWeight: FontWeight.w600,
+//                           color: AppTheme.text,
+//                         ),
+//                       ),
+//                       Text(
+//                         'Super Admin',
+//                         style: TextStyle(
+//                           fontSize: 9,
+//                           color: AppTheme.textMuted,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+
+//                   const SizedBox(width: 8),
+
+//                   Icon(
+//                     Icons.keyboard_arrow_down_rounded,
+//                     size: 17,
+//                     color: AppTheme.textMuted,
+//                   ),
+//                 ],
+//               ],
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================================
+// // APP SIDEBAR
+// // ============================================================================
+
+// class AppSidebar extends StatefulWidget {
+//   final bool collapsed;
+//   final bool mobile;
+//   final String adminName;
+//   final Function(String route) onNavigate;
+
+//   const AppSidebar({
+//     super.key,
+//     required this.collapsed,
+//     required this.onNavigate,
+//     required this.adminName,
+//     this.mobile = false,
+//   });
+
+//   @override
+//   State<AppSidebar> createState() => _AppSidebarState();
+// }
+
+// class _AppSidebarState extends State<AppSidebar> {
+//   String? expandedSection;
+
+//   void _toggleSection(String title) {
+//     setState(() {
+//       if (expandedSection == title) {
+//         expandedSection = null;
+//       } else {
+//         expandedSection = title;
+//       }
+//     });
+//   }
+
+//   bool _isSectionExpanded(String title, String route, String currentRoute) {
+//     if (expandedSection == title) return true;
+//     if (expandedSection != null) return false;
+//     return currentRoute != route && currentRoute.startsWith('$route/');
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final currentRoute = GoRouterState.of(context).uri.path;
+
+//     return Material(
+//       color: AppTheme.ink,
+//       child: SafeArea(
+//         child: Column(
+//           children: [
+//             // ==============================================================
+//             // BRAND
+//             // ==============================================================
+
+//             _SidebarBrand(collapsed: widget.collapsed),
+
+//             const SizedBox(height: 0),
+
+//             // ==============================================================
+//             // NAVIGATION
+//             // ==============================================================
+//             Expanded(
+//               child: SingleChildScrollView(
+//                 padding: const EdgeInsets.symmetric(
+//                   horizontal: 10,
+//                   vertical: 8,
+//                 ),
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     _sectionLabel('ENTERPRISE', widget.collapsed),
+
+//                     _SidebarSection(
+//                       title: 'Platform Administration',
+//                       icon: Icons.admin_panel_settings_outlined,
+//                       route: AppRoutes.admin,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'Platform Administration',
+//                         AppRoutes.admin,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('Platform Administration');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'Platform Administration',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.admin,
+//                         ),
+//                         _NavItem(
+//                           'Super Admin Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.superAdminDashboard,
+//                         ),
+//                         _NavItem(
+//                           'Global Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.globalDashboard,
+//                         ),
+//                         _NavItem(
+//                           'Platform Configuration',
+//                           Icons.tune_outlined,
+//                           AppRoutes.platformConfig,
+//                         ),
+//                         _NavItem(
+//                           'Global Settings',
+//                           Icons.settings_outlined,
+//                           AppRoutes.globalSettings,
+//                         ),
+//                         _NavItem(
+//                           'Platform Branding',
+//                           Icons.dns_outlined,
+//                           AppRoutes.platformBranding,
+//                         ),
+//                         _NavItem(
+//                           'License Management',
+//                           Icons.badge_outlined,
+//                           AppRoutes.licenseManagement,
+//                         ),
+//                         _NavItem(
+//                           'Feature Management',
+//                           Icons.extension_outlined,
+//                           AppRoutes.featureManagement,
+//                         ),
+//                         _NavItem(
+//                           'Platform Health Overview',
+//                           Icons.monitor_heart_outlined,
+//                           AppRoutes.systemHealth,
+//                         ),
+
+//                         _NavItem(
+//                           'Tenant Templates',
+//                           Icons.view_quilt_outlined,
+//                           AppRoutes.tenantTemplates,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'HRMS',
+//                       icon: Icons.people_alt_outlined,
+//                       route: AppRoutes.hrms,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'HRMS',
+//                         AppRoutes.hrms,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('HRMS');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'HRMS Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.hrms,
+//                         ),
+//                         _NavItem(
+//                           'Employee Management',
+//                           Icons.badge_outlined,
+//                           AppRoutes.hrmsEmployees,
+//                         ),
+//                         _NavItem(
+//                           'Attendance',
+//                           Icons.access_time_outlined,
+//                           AppRoutes.hrmsAttendance,
+//                         ),
+//                         _NavItem(
+//                           'Leave',
+//                           Icons.event_available_outlined,
+//                           AppRoutes.hrmsLeave,
+//                         ),
+//                         _NavItem(
+//                           'Payroll',
+//                           Icons.payments_outlined,
+//                           AppRoutes.hrmsPayroll,
+//                         ),
+//                         _NavItem(
+//                           'Recruitment',
+//                           Icons.person_add_alt_1_outlined,
+//                           AppRoutes.hrmsRecruitment,
+//                         ),
+//                         _NavItem(
+//                           'Performance',
+//                           Icons.insights_outlined,
+//                           AppRoutes.hrmsPerformance,
+//                         ),
+//                         _NavItem(
+//                           'Learning',
+//                           Icons.school_outlined,
+//                           AppRoutes.hrmsLearning,
+//                         ),
+//                         _NavItem(
+//                           'ESS / MSS',
+//                           Icons.account_circle_outlined,
+//                           AppRoutes.hrmsEssMss,
+//                         ),
+//                         _NavItem(
+//                           'HRMS Assets',
+//                           Icons.inventory_2_outlined,
+//                           AppRoutes.hrmsAssets,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'CRM',
+//                       icon: Icons.groups_outlined,
+//                       route: AppRoutes.crm,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'CRM',
+//                         AppRoutes.crm,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('CRM');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'CRM Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.crm,
+//                         ),
+//                         _NavItem(
+//                           'Leads',
+//                           Icons.person_search_outlined,
+//                           AppRoutes.crmLeads,
+//                         ),
+//                         _NavItem(
+//                           'Opportunities',
+//                           Icons.trending_up_outlined,
+//                           AppRoutes.crmOpportunities,
+//                         ),
+//                         _NavItem(
+//                           'Accounts',
+//                           Icons.business_outlined,
+//                           AppRoutes.crmAccounts,
+//                         ),
+//                         _NavItem(
+//                           'Contacts',
+//                           Icons.contacts_outlined,
+//                           AppRoutes.crmContacts,
+//                         ),
+//                         _NavItem(
+//                           'Activities',
+//                           Icons.task_alt_outlined,
+//                           AppRoutes.crmActivities,
+//                         ),
+//                         _NavItem(
+//                           'Sales Pipeline',
+//                           Icons.account_tree_outlined,
+//                           AppRoutes.crmPipeline,
+//                         ),
+//                         _NavItem(
+//                           'Quotations',
+//                           Icons.request_quote_outlined,
+//                           AppRoutes.crmQuotations,
+//                         ),
+//                         _NavItem(
+//                           'Campaigns',
+//                           Icons.campaign_outlined,
+//                           AppRoutes.crmCampaigns,
+//                         ),
+//                         _NavItem(
+//                           'Customer Support',
+//                           Icons.support_agent_outlined,
+//                           AppRoutes.crmCustomerSupport,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'ERP',
+//                       icon: Icons.inventory_2_outlined,
+//                       route: AppRoutes.erp,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'ERP',
+//                         AppRoutes.erp,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('ERP');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'ERP Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.erp,
+//                         ),
+//                         _NavItem(
+//                           'Inventory',
+//                           Icons.inventory_2_outlined,
+//                           AppRoutes.inventory,
+//                         ),
+//                         _NavItem(
+//                           'Warehouses',
+//                           Icons.warehouse_outlined,
+//                           AppRoutes.warehouses,
+//                         ),
+//                         _NavItem(
+//                           'Stock Movements',
+//                           Icons.swap_vert_circle_outlined,
+//                           AppRoutes.stockMovements,
+//                         ),
+//                         _NavItem(
+//                           'Procurement',
+//                           Icons.shopping_cart_outlined,
+//                           AppRoutes.procurement,
+//                         ),
+//                         _NavItem(
+//                           'Vendors',
+//                           Icons.storefront_outlined,
+//                           AppRoutes.vendors,
+//                         ),
+//                         _NavItem(
+//                           'Sales Orders',
+//                           Icons.receipt_long_outlined,
+//                           AppRoutes.salesOrders,
+//                         ),
+//                         _NavItem(
+//                           'Dispatch',
+//                           Icons.local_shipping_outlined,
+//                           AppRoutes.dispatch,
+//                         ),
+//                         _NavItem(
+//                           'Production',
+//                           Icons.precision_manufacturing_outlined,
+//                           AppRoutes.production,
+//                         ),
+//                         _NavItem(
+//                           'Asset Management',
+//                           Icons.business_center_outlined,
+//                           AppRoutes.assetManagement,
+//                         ),
+//                         _NavItem(
+//                           'Maintenance',
+//                           Icons.build_outlined,
+//                           AppRoutes.maintenance,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'Finance & Accounting',
+//                       icon: Icons.account_balance_outlined,
+//                       route: AppRoutes.finance,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'Finance & Accounting',
+//                         AppRoutes.finance,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('Finance & Accounting');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'Finance Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.finance,
+//                         ),
+//                         _NavItem(
+//                           'General Ledger',
+//                           Icons.menu_book_outlined,
+//                           AppRoutes.financeGeneralLedger,
+//                         ),
+//                         _NavItem(
+//                           'Accounts Payable',
+//                           Icons.arrow_upward_outlined,
+//                           AppRoutes.financeAccountsPayable,
+//                         ),
+//                         _NavItem(
+//                           'Accounts Receivable',
+//                           Icons.arrow_downward_outlined,
+//                           AppRoutes.financeAccountsReceivable,
+//                         ),
+//                         _NavItem(
+//                           'Asset Management',
+//                           Icons.account_balance_wallet_outlined,
+//                           AppRoutes.financeAssetManagement,
+//                         ),
+//                         _NavItem(
+//                           'Budgeting',
+//                           Icons.pie_chart_outline,
+//                           AppRoutes.financeBudgeting,
+//                         ),
+//                         _NavItem(
+//                           'Costing',
+//                           Icons.calculate_outlined,
+//                           AppRoutes.financeCosting,
+//                         ),
+//                         _NavItem(
+//                           'Financial Reports',
+//                           Icons.bar_chart_outlined,
+//                           AppRoutes.financeFinancialReports,
+//                         ),
+//                         _NavItem(
+//                           'Reconciliation',
+//                           Icons.compare_arrows_outlined,
+//                           AppRoutes.financeReconciliation,
+//                         ),
+//                         _NavItem(
+//                           'Multi Currency',
+//                           Icons.currency_exchange_outlined,
+//                           AppRoutes.financeMultiCurrency,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'Workflow & Automation',
+//                       icon: Icons.account_tree_outlined,
+//                       route: AppRoutes.workflow,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'Workflow & Automation',
+//                         AppRoutes.workflow,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('Workflow & Automation');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'Workflow Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.workflow,
+//                         ),
+//                         _NavItem(
+//                           'Workflow Builder',
+//                           Icons.account_tree_outlined,
+//                           AppRoutes.workflowBuilder,
+//                         ),
+//                         _NavItem(
+//                           'Approvals',
+//                           Icons.approval_outlined,
+//                           AppRoutes.workflowApprovals,
+//                         ),
+//                         _NavItem(
+//                           'Business Rules',
+//                           Icons.rule_outlined,
+//                           AppRoutes.workflowBusinessRules,
+//                         ),
+//                         _NavItem(
+//                           'Process Automation',
+//                           Icons.auto_awesome_outlined,
+//                           AppRoutes.workflowProcessAutomation,
+//                         ),
+//                         _NavItem(
+//                           'Task Management',
+//                           Icons.task_alt_outlined,
+//                           AppRoutes.workflowTasks,
+//                         ),
+//                         _NavItem(
+//                           'Triggers',
+//                           Icons.flash_on_outlined,
+//                           AppRoutes.workflowTriggers,
+//                         ),
+//                         _NavItem(
+//                           'SLAs & Escalations',
+//                           Icons.timer_outlined,
+//                           AppRoutes.workflowSlas,
+//                         ),
+//                         _NavItem(
+//                           'Process Monitoring',
+//                           Icons.monitor_outlined,
+//                           AppRoutes.workflowMonitoring,
+//                         ),
+//                         _NavItem(
+//                           'Workflow Templates',
+//                           Icons.dashboard_customize_outlined,
+//                           AppRoutes.workflowTemplates,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'Document Management',
+//                       icon: Icons.folder_outlined,
+//                       route: AppRoutes.documents,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'Document Management',
+//                         AppRoutes.documents,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('Document Management');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'Document Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.documents,
+//                         ),
+//                         _NavItem(
+//                           'Repository',
+//                           Icons.folder_open_outlined,
+//                           AppRoutes.documentRepository,
+//                         ),
+//                         _NavItem(
+//                           'Versioning',
+//                           Icons.history_outlined,
+//                           AppRoutes.documentVersioning,
+//                         ),
+//                         _NavItem(
+//                           'Upload / Download',
+//                           Icons.cloud_upload_outlined,
+//                           AppRoutes.documentUploadDownload,
+//                         ),
+//                         _NavItem(
+//                           'Access Control',
+//                           Icons.lock_outline,
+//                           AppRoutes.documentAccessControl,
+//                         ),
+//                         _NavItem(
+//                           'Templates',
+//                           Icons.description_outlined,
+//                           AppRoutes.documentTemplates,
+//                         ),
+//                         _NavItem(
+//                           'Tagging & Search',
+//                           Icons.label_outline,
+//                           AppRoutes.documentTaggingSearch,
+//                         ),
+//                         _NavItem(
+//                           'Retention Policies',
+//                           Icons.archive_outlined,
+//                           AppRoutes.documentRetentionPolicies,
+//                         ),
+//                         _NavItem(
+//                           'Audit Trails',
+//                           Icons.fact_check_outlined,
+//                           AppRoutes.documentAuditTrails,
+//                         ),
+//                         _NavItem(
+//                           'OCR Integration',
+//                           Icons.document_scanner_outlined,
+//                           AppRoutes.documentOcrIntegration,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'Subscription',
+//                       icon: Icons.card_membership_outlined,
+//                       route: AppRoutes.subscription,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'Subscription',
+//                         AppRoutes.subscription,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('Subscription');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'Subscription Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.subscription,
+//                         ),
+//                         _NavItem(
+//                           'Plans & Features',
+//                           Icons.layers_outlined,
+//                           AppRoutes.subscriptionPlansFeatures,
+//                         ),
+//                         _NavItem(
+//                           'Tenant Subscriptions',
+//                           Icons.business_outlined,
+//                           AppRoutes.tenantSubscriptions,
+//                         ),
+//                         _NavItem(
+//                           'Usage & Quotas',
+//                           Icons.data_usage_outlined,
+//                           AppRoutes.subscriptionUsageQuotas,
+//                         ),
+//                         _NavItem(
+//                           'Payment Tracking',
+//                           Icons.payment_outlined,
+//                           AppRoutes.subscriptionPaymentTracking,
+//                         ),
+//                         _NavItem(
+//                           'License Allocation',
+//                           Icons.assignment_outlined,
+//                           AppRoutes.subscriptionLicenseAllocation,
+//                         ),
+//                         _NavItem(
+//                           'Renewals',
+//                           Icons.autorenew_outlined,
+//                           AppRoutes.subscriptionRenewals,
+//                         ),
+//                         _NavItem(
+//                           'Trial Management',
+//                           Icons.hourglass_empty_outlined,
+//                           AppRoutes.subscriptionTrialManagement,
+//                         ),
+//                         _NavItem(
+//                           'Billing Integration',
+//                           Icons.receipt_outlined,
+//                           AppRoutes.subscriptionBillingIntegration,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'Revenue',
+//                       icon: Icons.show_chart_outlined,
+//                       route: AppRoutes.revenue,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'Revenue',
+//                         AppRoutes.revenue,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('Revenue');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'Revenue Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.revenue,
+//                         ),
+//                         _NavItem(
+//                           'Revenue Tracking',
+//                           Icons.track_changes_outlined,
+//                           AppRoutes.revenueTracking,
+//                         ),
+//                         _NavItem(
+//                           'Usage Analytics',
+//                           Icons.analytics_outlined,
+//                           AppRoutes.revenueUsageAnalytics,
+//                         ),
+//                         _NavItem(
+//                           'Forecasting',
+//                           Icons.insights_outlined,
+//                           AppRoutes.revenueForecasting,
+//                         ),
+//                         _NavItem(
+//                           'Revenue Recognition',
+//                           Icons.fact_check_outlined,
+//                           AppRoutes.revenueRecognition,
+//                         ),
+//                         _NavItem(
+//                           'Commission Management',
+//                           Icons.percent_outlined,
+//                           AppRoutes.revenueCommissionManagement,
+//                         ),
+//                         _NavItem(
+//                           'Financial Analytics',
+//                           Icons.bar_chart_outlined,
+//                           AppRoutes.revenueFinancialAnalytics,
+//                         ),
+//                         _NavItem(
+//                           'Invoicing',
+//                           Icons.receipt_long_outlined,
+//                           AppRoutes.revenueInvoicing,
+//                         ),
+//                         _NavItem(
+//                           'Integration',
+//                           Icons.integration_instructions_outlined,
+//                           AppRoutes.revenueIntegration,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'Reporting & BI',
+//                       icon: Icons.analytics_outlined,
+//                       route: AppRoutes.reporting,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'Reporting & BI',
+//                         AppRoutes.reporting,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('Reporting & BI');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'Reporting Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.reporting,
+//                         ),
+//                         _NavItem(
+//                           'Standard Reports',
+//                           Icons.description_outlined,
+//                           AppRoutes.reportingStandardReports,
+//                         ),
+//                         _NavItem(
+//                           'Ad Hoc Reports',
+//                           Icons.edit_document,
+//                           AppRoutes.reportingAdHocReports,
+//                         ),
+//                         _NavItem(
+//                           'Data Exploration',
+//                           Icons.explore_outlined,
+//                           AppRoutes.reportingDataExploration,
+//                         ),
+//                         _NavItem(
+//                           'Data Export',
+//                           Icons.download_outlined,
+//                           AppRoutes.reportingDataExport,
+//                         ),
+//                         _NavItem(
+//                           'Scheduled Reports',
+//                           Icons.schedule_outlined,
+//                           AppRoutes.reportingScheduledReports,
+//                         ),
+//                         _NavItem(
+//                           'Data Visualization',
+//                           Icons.bar_chart_outlined,
+//                           AppRoutes.reportingDataVisualization,
+//                         ),
+//                         _NavItem(
+//                           'Self-Service Analytics',
+//                           Icons.auto_graph_outlined,
+//                           AppRoutes.reportingSelfServiceAnalytics,
+//                         ),
+//                         _NavItem(
+//                           'BI Management',
+//                           Icons.manage_search_outlined,
+//                           AppRoutes.reportingBiManagement,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'Enterprise AI',
+//                       icon: Icons.auto_awesome_outlined,
+//                       route: AppRoutes.ai,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'Enterprise AI',
+//                         AppRoutes.ai,
+//                         currentRoute,
+//                       ),
+//                       accentColor: AppTheme.amberAI,
+//                       onToggle: () {
+//                         _toggleSection('Enterprise AI');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'AI Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.ai,
+//                         ),
+//                         _NavItem(
+//                           'AI Models',
+//                           Icons.psychology_outlined,
+//                           AppRoutes.enterpriseAiModels,
+//                         ),
+//                         _NavItem(
+//                           'Chat / Copilot',
+//                           Icons.chat_bubble_outline,
+//                           AppRoutes.enterpriseAiChatCopilot,
+//                         ),
+//                         _NavItem(
+//                           'Document AI / OCR',
+//                           Icons.document_scanner_outlined,
+//                           AppRoutes.enterpriseAiDocumentAiOcr,
+//                         ),
+//                         _NavItem(
+//                           'Predictive Analytics',
+//                           Icons.query_stats_outlined,
+//                           AppRoutes.enterpriseAiPredictiveAnalytics,
+//                         ),
+//                         _NavItem(
+//                           'Recommendations',
+//                           Icons.lightbulb_outline,
+//                           AppRoutes.enterpriseAiRecommendations,
+//                         ),
+//                         _NavItem(
+//                           'AI Workflows',
+//                           Icons.account_tree_outlined,
+//                           AppRoutes.enterpriseAiWorkflows,
+//                         ),
+//                         _NavItem(
+//                           'Model Management',
+//                           Icons.model_training_outlined,
+//                           AppRoutes.enterpriseAiModelManagement,
+//                         ),
+//                         _NavItem(
+//                           'Prompt Engineering',
+//                           Icons.code_outlined,
+//                           AppRoutes.enterpriseAiPromptEngineering,
+//                         ),
+//                         _NavItem(
+//                           'Usage Logs',
+//                           Icons.history_outlined,
+//                           AppRoutes.enterpriseAiUsageLogs,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'Notifications',
+//                       icon: Icons.notifications_none_outlined,
+//                       route: AppRoutes.notification,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       accentColor: AppTheme.tealData,
+//                       expanded: _isSectionExpanded(
+//                         'Notifications',
+//                         AppRoutes.notification,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('Notifications');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'Notification Center',
+//                           Icons.notifications_none_outlined,
+//                           AppRoutes.notification,
+//                         ),
+//                         _NavItem(
+//                           'In-App',
+//                           Icons.web_asset_outlined,
+//                           AppRoutes.notificationInApp,
+//                         ),
+//                         _NavItem(
+//                           'Email',
+//                           Icons.email_outlined,
+//                           AppRoutes.notificationEmail,
+//                         ),
+//                         _NavItem(
+//                           'SMS',
+//                           Icons.sms_outlined,
+//                           AppRoutes.notificationSms,
+//                         ),
+//                         _NavItem(
+//                           'Push',
+//                           Icons.phone_android_outlined,
+//                           AppRoutes.notificationPush,
+//                         ),
+//                         _NavItem(
+//                           'Templates',
+//                           Icons.description_outlined,
+//                           AppRoutes.notificationTemplates,
+//                         ),
+//                         _NavItem(
+//                           'Preferences',
+//                           Icons.tune_outlined,
+//                           AppRoutes.notificationPreferences,
+//                         ),
+//                         _NavItem(
+//                           'Schedules',
+//                           Icons.schedule_outlined,
+//                           AppRoutes.notificationSchedules,
+//                         ),
+//                         _NavItem(
+//                           'Delivery Tracking',
+//                           Icons.delivery_dining_outlined,
+//                           AppRoutes.notificationDeliveryTracking,
+//                         ),
+//                         _NavItem(
+//                           'Multi Channel',
+//                           Icons.hub_outlined,
+//                           AppRoutes.notificationMultiChannel,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'Calendar',
+//                       icon: Icons.calendar_month_outlined,
+//                       route: AppRoutes.calendar,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'Calendar',
+//                         AppRoutes.calendar,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('Calendar');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'Calendar Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.calendar,
+//                         ),
+//                         _NavItem(
+//                           'User Calendars',
+//                           Icons.person_outline,
+//                           AppRoutes.calendarUserCalendars,
+//                         ),
+//                         _NavItem(
+//                           'Team Calendars',
+//                           Icons.groups_outlined,
+//                           AppRoutes.calendarTeamCalendars,
+//                         ),
+//                         _NavItem(
+//                           'Meeting Scheduler',
+//                           Icons.event_outlined,
+//                           AppRoutes.calendarMeetingScheduler,
+//                         ),
+//                         _NavItem(
+//                           'Recurring Booking',
+//                           Icons.repeat_outlined,
+//                           AppRoutes.calendarRecurringBooking,
+//                         ),
+//                         _NavItem(
+//                           'Reminders',
+//                           Icons.alarm_outlined,
+//                           AppRoutes.calendarReminders,
+//                         ),
+//                         _NavItem(
+//                           'Integrations',
+//                           Icons.integration_instructions_outlined,
+//                           AppRoutes.calendarIntegrations,
+//                         ),
+//                         _NavItem(
+//                           'Availability',
+//                           Icons.access_time_outlined,
+//                           AppRoutes.calendarAvailability,
+//                         ),
+//                         _NavItem(
+//                           'Event Notifications',
+//                           Icons.notifications_outlined,
+//                           AppRoutes.calendarEventNotifications,
+//                         ),
+//                         _NavItem(
+//                           'Shared Calendars',
+//                           Icons.calendar_view_month_outlined,
+//                           AppRoutes.calendarSharedCalendars,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'Integration',
+//                       icon: Icons.integration_instructions_outlined,
+//                       route: AppRoutes.integration,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'Integration',
+//                         AppRoutes.integration,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('Integration');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'Integration Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.integration,
+//                         ),
+//                         _NavItem(
+//                           'API Management',
+//                           Icons.api_outlined,
+//                           AppRoutes.integrationApiManagement,
+//                         ),
+//                         _NavItem(
+//                           'Third Party Integrations',
+//                           Icons.extension_outlined,
+//                           AppRoutes.integrationThirdPartyIntegrations,
+//                         ),
+//                         _NavItem(
+//                           'Webhooks',
+//                           Icons.webhook_outlined,
+//                           AppRoutes.integrationWebhooks,
+//                         ),
+//                         _NavItem(
+//                           'Event Streaming',
+//                           Icons.stream_outlined,
+//                           AppRoutes.integrationEventStreaming,
+//                         ),
+//                         _NavItem(
+//                           'Data Transformation',
+//                           Icons.transform_outlined,
+//                           AppRoutes.integrationDataTransformation,
+//                         ),
+//                         _NavItem(
+//                           'ETL / Data Sync',
+//                           Icons.sync_alt_outlined,
+//                           AppRoutes.integrationEtlDataSync,
+//                         ),
+//                         _NavItem(
+//                           'Connectors',
+//                           Icons.cable_outlined,
+//                           AppRoutes.integrationConnectors,
+//                         ),
+//                         _NavItem(
+//                           'Integration Logs',
+//                           Icons.receipt_long_outlined,
+//                           AppRoutes.integrationLogs,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'Search',
+//                       icon: Icons.search_outlined,
+//                       route: AppRoutes.search,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'Search',
+//                         AppRoutes.search,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('Search');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'Global Search',
+//                           Icons.search_outlined,
+//                           AppRoutes.searchGlobalSearch,
+//                         ),
+//                         _NavItem(
+//                           'Index Management',
+//                           Icons.storage_outlined,
+//                           AppRoutes.searchIndexManagement,
+//                         ),
+//                         _NavItem(
+//                           'Search Analytics',
+//                           Icons.analytics_outlined,
+//                           AppRoutes.searchAnalytics,
+//                         ),
+//                         _NavItem(
+//                           'Autocomplete',
+//                           Icons.auto_awesome_outlined,
+//                           AppRoutes.searchAutocomplete,
+//                         ),
+//                         _NavItem(
+//                           'Relevance Ranking',
+//                           Icons.sort_outlined,
+//                           AppRoutes.searchRelevanceRanking,
+//                         ),
+//                         _NavItem(
+//                           'Saved Searches',
+//                           Icons.bookmark_outline,
+//                           AppRoutes.searchSavedSearches,
+//                         ),
+//                         _NavItem(
+//                           'Multi Tenant Index',
+//                           Icons.account_tree_outlined,
+//                           AppRoutes.searchMultiTenantIndex,
+//                         ),
+//                         _NavItem(
+//                           'Synonyms',
+//                           Icons.link_outlined,
+//                           AppRoutes.searchSynonyms,
+//                         ),
+//                         _NavItem(
+//                           'Suggestion Engine',
+//                           Icons.lightbulb_outline,
+//                           AppRoutes.searchSuggestionEngine,
+//                         ),
+//                       ],
+//                     ),
+
+//                     _SidebarSection(
+//                       title: 'Security & Compliance',
+//                       icon: Icons.security_outlined,
+//                       route: AppRoutes.security,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       expanded: _isSectionExpanded(
+//                         'Security & Compliance',
+//                         AppRoutes.security,
+//                         currentRoute,
+//                       ),
+//                       onToggle: () {
+//                         _toggleSection('Security & Compliance');
+//                       },
+//                       onNavigate: widget.onNavigate,
+//                       children: [
+//                         _NavItem(
+//                           'Security Dashboard',
+//                           Icons.dashboard_outlined,
+//                           AppRoutes.security,
+//                         ),
+//                         _NavItem(
+//                           'Audit Logs',
+//                           Icons.history_outlined,
+//                           AppRoutes.securityAuditLogs,
+//                         ),
+//                         _NavItem(
+//                           'Activity Tracking',
+//                           Icons.track_changes_outlined,
+//                           AppRoutes.securityActivityTracking,
+//                         ),
+//                         _NavItem(
+//                           'Compliance Reports',
+//                           Icons.fact_check_outlined,
+//                           AppRoutes.securityComplianceReports,
+//                         ),
+//                         _NavItem(
+//                           'Data Retention',
+//                           Icons.delete_sweep_outlined,
+//                           AppRoutes.securityDataRetention,
+//                         ),
+//                         _NavItem(
+//                           'Policy Management',
+//                           Icons.policy_outlined,
+//                           AppRoutes.securityPolicyManagement,
+//                         ),
+//                         _NavItem(
+//                           'Threat Detection',
+//                           Icons.gpp_maybe_outlined,
+//                           AppRoutes.securityThreatDetection,
+//                         ),
+//                         _NavItem(
+//                           'Vulnerability Management',
+//                           Icons.bug_report_outlined,
+//                           AppRoutes.securityVulnerabilityManagement,
+//                         ),
+//                         _NavItem(
+//                           'Encryption Keys',
+//                           Icons.key_outlined,
+//                           AppRoutes.securityEncryptionKeyManagement,
+//                         ),
+//                         _NavItem(
+//                           'Security Alerts',
+//                           Icons.warning_amber_outlined,
+//                           AppRoutes.securityAlerts,
+//                         ),
+//                       ],
+//                     ),
+
+//                     const SizedBox(height: 18),
+
+//                     _sectionLabel('GENERAL', widget.collapsed),
+
+//                     _SidebarItem(
+//                       title: 'Profile',
+//                       icon: Icons.person_outline_rounded,
+//                       route: AppRoutes.profile,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       onTap: widget.onNavigate,
+//                     ),
+
+//                     _SidebarItem(
+//                       title: 'About',
+//                       icon: Icons.info_outline_rounded,
+//                       route: AppRoutes.about,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       onTap: widget.onNavigate,
+//                     ),
+
+//                     _SidebarItem(
+//                       title: 'Features',
+//                       icon: Icons.widgets_outlined,
+//                       route: AppRoutes.features,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       onTap: widget.onNavigate,
+//                     ),
+
+//                     _SidebarItem(
+//                       title: 'Contact',
+//                       icon: Icons.mail_outline_rounded,
+//                       route: AppRoutes.contact,
+//                       currentRoute: currentRoute,
+//                       collapsed: widget.collapsed,
+//                       onTap: widget.onNavigate,
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+
+//             // ==============================================================
+//             // SIDEBAR BOTTOM
+//             // ==============================================================
+//             if (!widget.collapsed)
+//               _SidebarBottom(
+//                 adminName: widget.adminName,
+//                 onProfile: () {
+//                   widget.onNavigate(AppRoutes.profile);
+//                 },
+//               ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _sectionLabel(String title, bool collapsed) {
+//     if (collapsed) {
+//       return const SizedBox(height: 8);
+//     }
+
+//     return Padding(
+//       padding: const EdgeInsets.fromLTRB(12, 8, 12, 7),
+//       child: Text(
+//         title,
+//         style: TextStyle(
+//           color: AppTheme.textMuted.withValues(alpha: 0.75),
+//           fontSize: 9,
+//           letterSpacing: 1.5,
+//           fontWeight: FontWeight.w600,
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================================
+// // SIDEBAR BRAND
+// // ============================================================================
+// class _SidebarBrand extends StatelessWidget {
+//   final bool collapsed;
+
+//   const _SidebarBrand({required this.collapsed});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: EdgeInsets.fromLTRB(
+//         collapsed ? 10 : 14,
+//         collapsed ? 10 : 12,
+//         collapsed ? 10 : 14,
+//         collapsed ? 10 : 12,
+//       ),
+//       child: Column(
+//         mainAxisSize: MainAxisSize.min,
+//         children: [
+//           // STACKLY LOGO — DO NOT CHANGE SIZE
+//           SizedBox(
+//             width: collapsed ? 52 : 150,
+//             height: collapsed ? 42 : 42,
+//             child: Image.asset(
+//               'assets/images/stackly_logo.png',
+//               fit: BoxFit.contain,
+//               filterQuality: FilterQuality.high,
+//             ),
+//           ),
+
+//           if (!collapsed) ...[
+//             const SizedBox(height: 5),
+
+//             // ONE ENTERPRISE CLOUD — SMALLER
+//             Container(
+//               height: 30,
+//               width: double.infinity,
+//               alignment: Alignment.center,
+//               decoration: BoxDecoration(
+//                 color: const Color(0xFF172A42),
+//                 borderRadius: BorderRadius.circular(18),
+//               ),
+//               child: const FittedBox(
+//                 fit: BoxFit.scaleDown,
+//                 child: Text(
+//                   'ONE ENTERPRISE CLOUD',
+//                   maxLines: 1,
+//                   style: TextStyle(
+//                     color: Color(0xFF7FD1C1),
+//                     fontSize: 11,
+//                     fontWeight: FontWeight.w500,
+//                     letterSpacing: 1.4,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================================
+// // SIDEBAR SECTION
+// // ============================================================================
+
+// class _SidebarSection extends StatelessWidget {
+//   final String title;
+//   final IconData icon;
+//   final String route;
+//   final String currentRoute;
+//   final bool collapsed;
+//   final bool expanded;
+//   final Color? accentColor;
+//   final VoidCallback onToggle;
+//   final Function(String route) onNavigate;
+//   final List<_NavItem> children;
+
+//   const _SidebarSection({
+//     required this.title,
+//     required this.icon,
+//     required this.route,
+//     required this.currentRoute,
+//     required this.collapsed,
+//     required this.expanded,
+//     required this.onToggle,
+//     required this.onNavigate,
+//     required this.children,
+//     this.accentColor,
+//   });
+
+//   bool get sectionActive {
+//     return currentRoute == route || currentRoute.startsWith('$route/');
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     if (collapsed) {
+//       return Padding(
+//         padding: const EdgeInsets.only(bottom: 3),
+//         child: _SidebarItem(
+//           title: title,
+//           icon: icon,
+//           route: route,
+//           currentRoute: currentRoute,
+//           collapsed: true,
+//           accentColor: accentColor,
+//           onTap: onNavigate,
+//         ),
+//       );
+//     }
+
+//     return Column(
+//       children: [
+//         Material(
+//           color: sectionActive
+//               ? Colors.white.withValues(alpha: 0.08)
+//               : Colors.transparent,
+//           borderRadius: BorderRadius.circular(8),
+//           child: InkWell(
+//             borderRadius: BorderRadius.circular(8),
+//             onTap: onToggle,
+//             hoverColor: Colors.white.withValues(alpha: 0.05),
+//             child: Container(
+//               height: 42,
+//               padding: const EdgeInsets.symmetric(horizontal: 11),
+//               child: Row(
+//                 children: [
+//                   Icon(
+//                     icon,
+//                     size: 19,
+//                     color: sectionActive
+//                         ? (accentColor ?? AppTheme.tealData)
+//                         : Colors.white.withValues(alpha: 0.62),
+//                   ),
+
+//                   const SizedBox(width: 11),
+
+//                   Expanded(
+//                     child: Text(
+//                       title,
+//                       maxLines: 1,
+//                       overflow: TextOverflow.ellipsis,
+//                       style: TextStyle(
+//                         color: sectionActive
+//                             ? Colors.white
+//                             : Colors.white.withValues(alpha: 0.78),
+//                         fontSize: 12,
+//                         fontWeight: sectionActive
+//                             ? FontWeight.w600
+//                             : FontWeight.w400,
+//                       ),
+//                     ),
+//                   ),
+
+//                   Icon(
+//                     expanded
+//                         ? Icons.keyboard_arrow_up_rounded
+//                         : Icons.keyboard_arrow_down_rounded,
+//                     size: 17,
+//                     color: Colors.white.withValues(alpha: 0.45),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+
+//         AnimatedCrossFade(
+//           duration: const Duration(milliseconds: 180),
+//           crossFadeState: expanded
+//               ? CrossFadeState.showFirst
+//               : CrossFadeState.showSecond,
+//           firstChild: Padding(
+//             padding: const EdgeInsets.only(left: 7, right: 2, bottom: 5),
+//             child: Column(
+//               children: children.map((item) {
+//                 return _SidebarChildItem(
+//                   item: item,
+//                   currentRoute: currentRoute,
+//                   onNavigate: onNavigate,
+//                 );
+//               }).toList(),
+//             ),
+//           ),
+//           secondChild: const SizedBox.shrink(),
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+// // ============================================================================
+// // SIDEBAR CHILD ITEM
+// // ============================================================================
+
+// class _SidebarChildItem extends StatelessWidget {
+//   final _NavItem item;
+//   final String currentRoute;
+//   final Function(String route) onNavigate;
+
+//   const _SidebarChildItem({
+//     required this.item,
+//     required this.currentRoute,
+//     required this.onNavigate,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final selected = currentRoute == item.route;
+
+//     return Padding(
+//       padding: const EdgeInsets.only(bottom: 2),
+//       child: Material(
+//         color: selected
+//             ? Colors.white.withValues(alpha: 0.09)
+//             : Colors.transparent,
+//         borderRadius: BorderRadius.circular(7),
+//         child: InkWell(
+//           borderRadius: BorderRadius.circular(7),
+//           hoverColor: Colors.white.withValues(alpha: 0.05),
+//           onTap: () {
+//             onNavigate(item.route);
+//           },
+//           child: Container(
+//             height: 37,
+//             padding: const EdgeInsets.only(left: 12, right: 7),
+//             child: Row(
+//               children: [
+//                 Container(
+//                   width: 3,
+//                   height: selected ? 19 : 13,
+//                   decoration: BoxDecoration(
+//                     color: selected
+//                         ? AppTheme.tealData
+//                         : Colors.white.withValues(alpha: 0.16),
+//                     borderRadius: BorderRadius.circular(3),
+//                   ),
+//                 ),
+
+//                 const SizedBox(width: 9),
+
+//                 Icon(
+//                   item.icon,
+//                   size: 16,
+//                   color: selected
+//                       ? Colors.white
+//                       : Colors.white.withValues(alpha: 0.48),
+//                 ),
+
+//                 const SizedBox(width: 9),
+
+//                 Expanded(
+//                   child: Text(
+//                     item.title,
+//                     maxLines: 1,
+//                     overflow: TextOverflow.ellipsis,
+//                     style: TextStyle(
+//                       color: selected
+//                           ? Colors.white
+//                           : Colors.white.withValues(alpha: 0.65),
+//                       fontSize: 11,
+//                       fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+//                     ),
+//                   ),
+//                 ),
+
+//                 if (selected)
+//                   Icon(
+//                     Icons.chevron_right_rounded,
+//                     size: 15,
+//                     color: Colors.white.withValues(alpha: 0.5),
+//                   ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================================
+// // NORMAL SIDEBAR ITEM
+// // ============================================================================
+
+// class _SidebarItem extends StatelessWidget {
+//   final String title;
+//   final IconData icon;
+//   final String route;
+//   final String currentRoute;
+//   final bool collapsed;
+//   final Color? accentColor;
+//   final Function(String route) onTap;
+
+//   const _SidebarItem({
+//     required this.title,
+//     required this.icon,
+//     required this.route,
+//     required this.currentRoute,
+//     required this.collapsed,
+//     required this.onTap,
+//     this.accentColor,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final selected = currentRoute == route;
+
+//     return Padding(
+//       padding: const EdgeInsets.only(bottom: 3),
+//       child: Tooltip(
+//         message: collapsed ? title : '',
+//         preferBelow: false,
+//         child: Material(
+//           color: selected
+//               ? Colors.white.withValues(alpha: 0.10)
+//               : Colors.transparent,
+//           borderRadius: BorderRadius.circular(8),
+//           child: InkWell(
+//             borderRadius: BorderRadius.circular(8),
+//             hoverColor: Colors.white.withValues(alpha: 0.05),
+//             onTap: () {
+//               onTap(route);
+//             },
+//             child: AnimatedContainer(
+//               duration: const Duration(milliseconds: 150),
+//               height: 42,
+//               padding: EdgeInsets.symmetric(horizontal: collapsed ? 17 : 11),
+//               decoration: BoxDecoration(
+//                 borderRadius: BorderRadius.circular(8),
+//                 border: selected
+//                     ? Border.all(
+//                         color: (accentColor ?? AppTheme.tealData).withValues(
+//                           alpha: 0.55,
+//                         ),
+//                       )
+//                     : null,
+//               ),
+//               child: Row(
+//                 children: [
+//                   if (selected && !collapsed)
+//                     Container(
+//                       width: 3,
+//                       height: 23,
+//                       margin: const EdgeInsets.only(right: 9),
+//                       decoration: BoxDecoration(
+//                         color: accentColor ?? AppTheme.tealData,
+//                         borderRadius: BorderRadius.circular(3),
+//                       ),
+//                     ),
+
+//                   Icon(
+//                     icon,
+//                     size: 19,
+//                     color: selected
+//                         ? (accentColor ?? Colors.white)
+//                         : Colors.white.withValues(alpha: 0.60),
+//                   ),
+
+//                   if (!collapsed) ...[
+//                     const SizedBox(width: 11),
+
+//                     Expanded(
+//                       child: Text(
+//                         title,
+//                         maxLines: 1,
+//                         overflow: TextOverflow.ellipsis,
+//                         style: TextStyle(
+//                           color: selected
+//                               ? Colors.white
+//                               : Colors.white.withValues(alpha: 0.75),
+//                           fontSize: 12,
+//                           fontWeight: selected
+//                               ? FontWeight.w600
+//                               : FontWeight.w400,
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================================
+// // SIDEBAR BOTTOM
+// // ============================================================================
+
+// class _SidebarBottom extends StatelessWidget {
+//   final String adminName;
+//   final VoidCallback onProfile;
+
+//   const _SidebarBottom({required this.adminName, required this.onProfile});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+//       decoration: BoxDecoration(
+//         border: Border(
+//           top: BorderSide(color: Colors.white.withValues(alpha: 0.07)),
+//         ),
+//       ),
+//       child: Column(
+//         children: [
+//           // Language
+//           Row(
+//             children: [
+//               Icon(
+//                 Icons.language_outlined,
+//                 size: 17,
+//                 color: Colors.white.withValues(alpha: 0.55),
+//               ),
+//               const SizedBox(width: 10),
+//               Expanded(
+//                 child: Text(
+//                   'Language',
+//                   style: TextStyle(
+//                     color: Colors.white.withValues(alpha: 0.62),
+//                     fontSize: 11,
+//                   ),
+//                 ),
+//               ),
+//               Text(
+//                 'English',
+//                 style: TextStyle(
+//                   color: Colors.white.withValues(alpha: 0.62),
+//                   fontSize: 10,
+//                 ),
+//               ),
+//               const SizedBox(width: 3),
+//               Icon(
+//                 Icons.keyboard_arrow_down_rounded,
+//                 size: 15,
+//                 color: Colors.white.withValues(alpha: 0.45),
+//               ),
+//             ],
+//           ),
+
+//           const SizedBox(height: 10),
+
+//           // User
+//           Material(
+//             color: Colors.transparent,
+//             borderRadius: BorderRadius.circular(9),
+//             child: InkWell(
+//               borderRadius: BorderRadius.circular(9),
+//               onTap: onProfile,
+//               child: Padding(
+//                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+//                 child: Row(
+//                   children: [
+//                     Container(
+//                       width: 34,
+//                       height: 34,
+//                       decoration: BoxDecoration(
+//                         shape: BoxShape.circle,
+//                         color: AppTheme.ink3,
+//                       ),
+//                       child: const Icon(
+//                         Icons.person_outline_rounded,
+//                         color: Colors.white,
+//                         size: 18,
+//                       ),
+//                     ),
+
+//                     const SizedBox(width: 9),
+
+//                     Expanded(
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           Text(
+//                             adminName,
+//                             style: TextStyle(
+//                               color: Colors.white,
+//                               fontSize: 11,
+//                               fontWeight: FontWeight.w600,
+//                             ),
+//                           ),
+//                           SizedBox(height: 2),
+//                           Text(
+//                             'Super Admin',
+//                             style: TextStyle(
+//                               color: AppTheme.textMuted,
+//                               fontSize: 9,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================================
+// // NAVIGATION ITEM MODEL
+// // ============================================================================
+
+// class _NavItem {
+//   final String title;
+//   final IconData icon;
+//   final String route;
+
+//   const _NavItem(this.title, this.icon, this.route);
+// }
+
+// // ============================================================================
+// // APP FOOTER
+// // ============================================================================
+
+// class AppFooter extends StatelessWidget {
+//   const AppFooter({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       height: 42,
+//       padding: const EdgeInsets.symmetric(horizontal: 20),
+//       decoration: BoxDecoration(
+//         color: AppTheme.paper,
+//         border: Border(top: BorderSide(color: AppTheme.border)),
+//       ),
+//       child: Row(
+//         children: [
+//           Text(
+//             'One Enterprise Cloud Platform',
+//             style: TextStyle(
+//               color: AppTheme.textMuted,
+//               fontSize: 10,
+//               fontWeight: FontWeight.w600,
+//             ),
+//           ),
+
+//           const SizedBox(width: 10),
+
+//           Container(
+//             width: 3,
+//             height: 3,
+//             decoration: BoxDecoration(
+//               color: AppTheme.tealData,
+//               shape: BoxShape.circle,
+//             ),
+//           ),
+
+//           const SizedBox(width: 10),
+
+//           Text(
+//             '© 2026',
+//             style: TextStyle(color: AppTheme.textMuted, fontSize: 10),
+//           ),
+
+//           const Spacer(),
+
+//           if (MediaQuery.of(context).size.width > 600) ...[
+//             Icon(Icons.shield_outlined, size: 13, color: AppTheme.textMuted),
+
+//             const SizedBox(width: 5),
+
+//             Text(
+//               'Enterprise Security',
+//               style: TextStyle(color: AppTheme.textMuted, fontSize: 10),
+//             ),
+
+//             const SizedBox(width: 18),
+
+//             Icon(Icons.cloud_done_outlined, size: 13, color: AppTheme.tealData),
+
+//             const SizedBox(width: 5),
+
+//             Text(
+//               'Platform Operational',
+//               style: TextStyle(color: AppTheme.textMuted, fontSize: 10),
+//             ),
+//           ],
+//         ],
+//       ),
+//     );
+//   }
+// }
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -211,14 +2702,60 @@ class AppHeader extends StatelessWidget {
     required this.onLogout,
   });
 
+  void _showNotifications(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isMobile = screenSize.width < 600;
+
+    showGeneralDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Close notifications',
+      barrierColor: AppTheme.ink.withValues(alpha: 0.42),
+      transitionDuration: const Duration(milliseconds: 200),
+      pageBuilder: (dialogContext, animation, secondaryAnimation) {
+        return SafeArea(
+          minimum: EdgeInsets.symmetric(
+            horizontal: isMobile ? 8 : 24,
+            vertical: isMobile ? 8 : 20,
+          ),
+          child: Center(
+            child: Material(
+              color: Colors.transparent,
+              child: SizedBox(
+                width: isMobile
+                    ? screenSize.width - 16
+                    : (screenSize.width * 0.86).clamp(640.0, 1120.0).toDouble(),
+                height: isMobile
+                    ? screenSize.height * 0.90
+                    : (screenSize.height * 0.88).clamp(520.0, 900.0).toDouble(),
+                child: NotificationCenterPopup(
+                  onClose: () => Navigator.of(dialogContext).pop(),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        );
+        return FadeTransition(
+          opacity: curved,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.97, end: 1).animate(curved),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // ============================================================
-    // MOBILE HEADER
-    // ============================================================
     if (isMobile) {
       final topInset = MediaQuery.of(context).padding.top;
-
       return Container(
         height: topInset + 58,
         padding: EdgeInsets.only(top: topInset),
@@ -264,19 +2801,13 @@ class AppHeader extends StatelessWidget {
                   icon: Icons.notifications_none_rounded,
                   tooltip: 'Notifications',
                   showNotificationDot: true,
-                  onPressed: () {
-                    onNavigate(AppRoutes.notificationCenter);
-                  },
+                  onPressed: () => _showNotifications(context),
                 ),
                 const SizedBox(width: 8),
                 _ProfileMenu(
                   adminName: adminName,
-                  onDashboard: () {
-                    onNavigate(AppRoutes.dashboard);
-                  },
-                  onProfile: () {
-                    onNavigate(AppRoutes.profile);
-                  },
+                  onDashboard: () => onNavigate(AppRoutes.dashboard),
+                  onProfile: () => onNavigate(AppRoutes.profile),
                   onLogout: onLogout,
                 ),
               ],
@@ -286,9 +2817,6 @@ class AppHeader extends StatelessWidget {
       );
     }
 
-    // ============================================================
-    // DESKTOP / TABLET HEADER
-    // ============================================================
     return Container(
       height: 72,
       decoration: BoxDecoration(
@@ -298,7 +2826,6 @@ class AppHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          // MENU
           _HeaderIconButton(
             icon: sidebarExpanded
                 ? Icons.menu_open_rounded
@@ -308,65 +2835,793 @@ class AppHeader extends StatelessWidget {
                 : 'Expand navigation',
             onPressed: onMenuPressed,
           ),
-
           const SizedBox(width: 16),
-
-          // SEARCH
           Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 520),
-                child: _SearchBar(
-                  onTap: () {
-                    onNavigate(AppRoutes.search);
-                  },
-                ),
+                child: _SearchBar(onTap: () => onNavigate(AppRoutes.search)),
               ),
             ),
           ),
-
           const SizedBox(width: 16),
-
-          // NOTIFICATION
-          // NOTIFICATION
           _HeaderIconButton(
             icon: Icons.notifications_none_rounded,
             tooltip: 'Notifications',
             showNotificationDot: true,
-            onPressed: () {
-              onNavigate(AppRoutes.notificationCenter);
-            },
+            onPressed: () => _showNotifications(context),
           ),
-
           const SizedBox(width: 8),
-
-          // SETTINGS
           _HeaderIconButton(
             icon: Icons.settings_outlined,
             tooltip: 'Settings',
-            onPressed: () {
-              onNavigate(AppRoutes.globalSettings);
-            },
+            onPressed: () => onNavigate(AppRoutes.globalSettings),
           ),
-
           const SizedBox(width: 12),
-
-          // PROFILE
           _ProfileMenu(
             adminName: adminName,
-            onDashboard: () {
-              onNavigate(AppRoutes.dashboard);
-            },
-            onProfile: () {
-              onNavigate(AppRoutes.profile);
-            },
+            onDashboard: () => onNavigate(AppRoutes.dashboard),
+            onProfile: () => onNavigate(AppRoutes.profile),
             onLogout: onLogout,
           ),
         ],
       ),
     );
   }
+}
+
+// ============================================================================
+// FULL NOTIFICATION CENTER POPUP
+// Uses the full notification-page layout, adapted to the One Enterprise theme.
+// ============================================================================
+
+class NotificationCenterPopup extends StatefulWidget {
+  final VoidCallback onClose;
+
+  const NotificationCenterPopup({super.key, required this.onClose});
+
+  @override
+  State<NotificationCenterPopup> createState() =>
+      _NotificationCenterPopupState();
+}
+
+class _NotificationCenterPopupState extends State<NotificationCenterPopup> {
+  String selectedFilter = 'All';
+
+  // Keep notification state outside the popup's State object so read/unread
+  // changes and deletions survive closing and reopening the dialog.
+  static final List<_NotificationRecord> _notifications = [
+    _NotificationRecord(
+      title: 'New employee onboarded',
+      description: 'A new employee has been added to the HRMS module.',
+      time: '5 minutes ago',
+      category: 'HRMS',
+      icon: Icons.person_add_alt_1_rounded,
+      color: AppTheme.info,
+      isRead: false,
+    ),
+    _NotificationRecord(
+      title: 'Low stock alert',
+      description: 'Some inventory items have reached their minimum level.',
+      time: '20 minutes ago',
+      category: 'Inventory',
+      icon: Icons.inventory_2_outlined,
+      color: AppTheme.amberAI,
+      isRead: false,
+    ),
+    _NotificationRecord(
+      title: 'Workflow completed',
+      description: 'The purchase approval workflow has been completed.',
+      time: '1 hour ago',
+      category: 'Workflow',
+      icon: Icons.task_alt_rounded,
+      color: AppTheme.success,
+      isRead: true,
+    ),
+    _NotificationRecord(
+      title: 'Security verification',
+      description: 'A new sign-in was detected on your account.',
+      time: '2 hours ago',
+      category: 'Security',
+      icon: Icons.shield_outlined,
+      color: AppTheme.ink3,
+      isRead: false,
+    ),
+    _NotificationRecord(
+      title: 'Monthly report available',
+      description: 'Your latest enterprise report is ready to view.',
+      time: '4 hours ago',
+      category: 'Reports',
+      icon: Icons.analytics_outlined,
+      color: AppTheme.tealData,
+      isRead: true,
+    ),
+    _NotificationRecord(
+      title: 'Subscription updated',
+      description: 'Your enterprise subscription details were updated.',
+      time: 'Yesterday',
+      category: 'Platform',
+      icon: Icons.workspace_premium_outlined,
+      color: AppTheme.amberAI,
+      isRead: true,
+    ),
+    _NotificationRecord(
+      title: 'New message received',
+      description: 'You have received a new message from your team.',
+      time: 'Yesterday',
+      category: 'Messages',
+      icon: Icons.mail_outline_rounded,
+      color: AppTheme.info,
+      isRead: false,
+    ),
+    _NotificationRecord(
+      title: 'System maintenance completed',
+      description: 'The scheduled system maintenance is complete.',
+      time: '2 days ago',
+      category: 'System',
+      icon: Icons.settings_suggest_outlined,
+      color: AppTheme.ink3,
+      isRead: true,
+    ),
+  ];
+
+  List<_NotificationRecord> get notifications => _notifications;
+
+  int get unreadCount => notifications.where((item) => !item.isRead).length;
+
+  List<_NotificationRecord> get filteredNotifications {
+    switch (selectedFilter) {
+      case 'Unread':
+        return notifications.where((item) => !item.isRead).toList();
+      case 'Read':
+        return notifications.where((item) => item.isRead).toList();
+      default:
+        return notifications;
+    }
+  }
+
+  void _markAllAsRead() {
+    setState(() {
+      for (final item in notifications) {
+        item.isRead = true;
+      }
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('All notifications marked as read'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _toggleRead(_NotificationRecord item) {
+    setState(() => item.isRead = !item.isRead);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final isMobile = width < 600;
+        final isTablet = width >= 600 && width < 900;
+        final compact = isMobile || isTablet;
+        final items = filteredNotifications;
+
+        return Material(
+          color: AppTheme.paperDim,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(isMobile ? 16 : 20),
+            side: const BorderSide(color: AppTheme.border),
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 10 : (isTablet ? 18 : 28),
+              vertical: isMobile ? 8 : 18,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(isMobile),
+                SizedBox(height: isMobile ? 10 : 16),
+                _buildSummary(isMobile, compact),
+                SizedBox(height: isMobile ? 10 : 16),
+                _buildFilterBar(isMobile),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: items.isEmpty
+                      ? _buildEmptyState(isMobile)
+                      : _buildNotificationList(
+                          items,
+                          isMobile: isMobile,
+                          compact: compact,
+                        ),
+                ),
+                SizedBox(height: isMobile ? 4 : 8),
+                _buildFooter(isMobile),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHeader(bool isMobile) {
+    return Row(
+      children: [
+        Container(
+          width: isMobile ? 36 : 42,
+          height: isMobile ? 36 : 42,
+          decoration: BoxDecoration(
+            color: AppTheme.paper,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppTheme.border),
+          ),
+          child: IconButton(
+            tooltip: 'Close notifications',
+            padding: EdgeInsets.zero,
+            onPressed: widget.onClose,
+            icon: Icon(
+              Icons.close_rounded,
+              size: isMobile ? 18 : 20,
+              color: AppTheme.ink,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Notifications',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: AppTheme.text,
+                  fontSize: isMobile ? 18 : 24,
+                  height: 1.15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                isMobile
+                    ? 'Your latest updates'
+                    : 'Stay updated with your enterprise activity',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: AppTheme.textMuted,
+                  fontSize: isMobile ? 10 : 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (unreadCount > 0) ...[
+          const SizedBox(width: 8),
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 8 : 10,
+              vertical: 6,
+            ),
+            decoration: BoxDecoration(
+              color: AppTheme.tealData.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+            ),
+            child: Text(
+              '$unreadCount unread',
+              style: TextStyle(
+                color: AppTheme.ink,
+                fontSize: isMobile ? 10 : 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildSummary(bool isMobile, bool compact) {
+    final cards = [
+      _NotificationSummaryData(
+        title: 'Total',
+        value: '${notifications.length}',
+        icon: Icons.notifications_none_rounded,
+        color: AppTheme.info,
+      ),
+      _NotificationSummaryData(
+        title: 'Unread',
+        value: '$unreadCount',
+        icon: Icons.mark_email_unread_outlined,
+        color: AppTheme.amberAI,
+      ),
+      _NotificationSummaryData(
+        title: 'Read',
+        value: '${notifications.length - unreadCount}',
+        icon: Icons.drafts_outlined,
+        color: AppTheme.tealData,
+      ),
+    ];
+
+    return Row(
+      children: [
+        for (int i = 0; i < cards.length; i++) ...[
+          Expanded(child: _buildSummaryCard(cards[i], compact: compact)),
+          if (i != cards.length - 1) SizedBox(width: isMobile ? 6 : 12),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildSummaryCard(
+    _NotificationSummaryData data, {
+    required bool compact,
+  }) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 7 : 14,
+        vertical: compact ? 8 : 14,
+      ),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        border: Border.all(color: AppTheme.border),
+        borderRadius: BorderRadius.circular(AppTheme.radiusDefault),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: compact ? 28 : 38,
+            height: compact ? 28 : 38,
+            decoration: BoxDecoration(
+              color: data.color.withValues(alpha: 0.13),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(data.icon, color: data.color, size: compact ? 15 : 20),
+          ),
+          SizedBox(width: compact ? 6 : 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  data.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: compact ? 10 : 12,
+                    color: AppTheme.textMuted,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  data.value,
+                  style: TextStyle(
+                    fontSize: compact ? 16 : 22,
+                    height: 1.1,
+                    color: AppTheme.text,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterBar(bool isMobile) {
+    const filters = ['All', 'Unread', 'Read'];
+    return Container(
+      padding: EdgeInsets.all(isMobile ? 3 : 4),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        border: Border.all(color: AppTheme.border),
+        borderRadius: BorderRadius.circular(AppTheme.radiusDefault),
+      ),
+      child: Row(
+        children: [
+          for (final filter in filters)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(7),
+                  onTap: () => setState(() => selectedFilter = filter),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    padding: EdgeInsets.symmetric(
+                      vertical: isMobile ? 7 : 9,
+                      horizontal: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: selectedFilter == filter
+                          ? AppTheme.ink
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Center(
+                      child: Text(
+                        filter,
+                        style: TextStyle(
+                          color: selectedFilter == filter
+                              ? Colors.white
+                              : AppTheme.textMuted,
+                          fontSize: isMobile ? 10 : 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          const SizedBox(width: 6),
+          TextButton.icon(
+            onPressed: unreadCount == 0 ? null : _markAllAsRead,
+            icon: const Icon(Icons.done_all_rounded, size: 15),
+            label: Text(isMobile ? 'Read all' : 'Mark all read'),
+            style: TextButton.styleFrom(
+              foregroundColor: AppTheme.ink,
+              padding: EdgeInsets.symmetric(horizontal: isMobile ? 5 : 10),
+              minimumSize: const Size(0, 32),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              textStyle: TextStyle(
+                fontSize: isMobile ? 9 : 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotificationList(
+    List<_NotificationRecord> items, {
+    required bool isMobile,
+    required bool compact,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        border: Border.all(color: AppTheme.border),
+        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 10 : 16,
+              vertical: 11,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Recent activity',
+                    style: TextStyle(
+                      color: AppTheme.text,
+                      fontWeight: FontWeight.w700,
+                      fontSize: isMobile ? 12 : 14,
+                    ),
+                  ),
+                ),
+                Text(
+                  '${items.length} items',
+                  style: TextStyle(
+                    color: AppTheme.textMuted,
+                    fontSize: isMobile ? 10 : 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1, color: AppTheme.border),
+          Expanded(
+            child: ListView.separated(
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 8 : 16,
+                vertical: 2,
+              ),
+              itemCount: items.length,
+              separatorBuilder: (_, __) => const Divider(
+                height: 1,
+                indent: 3,
+                endIndent: 3,
+                color: AppTheme.border,
+              ),
+              itemBuilder: (context, index) {
+                final item = items[index];
+                return _buildNotificationTile(
+                  item,
+                  isMobile: isMobile,
+                  compact: compact,
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotificationTile(
+    _NotificationRecord item, {
+    required bool isMobile,
+    required bool compact,
+  }) {
+    return InkWell(
+      onTap: () => _toggleRead(item),
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          vertical: isMobile ? 8 : 12,
+          horizontal: 2,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: compact ? 34 : 42,
+              height: compact ? 34 : 42,
+              decoration: BoxDecoration(
+                color: item.color.withValues(alpha: 0.13),
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: Icon(
+                item.icon,
+                color: item.color,
+                size: compact ? 17 : 21,
+              ),
+            ),
+            SizedBox(width: isMobile ? 8 : 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: AppTheme.text,
+                            fontSize: compact ? 11 : 13,
+                            height: 1.25,
+                            fontWeight: item.isRead
+                                ? FontWeight.w500
+                                : FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      if (!item.isRead) ...[
+                        const SizedBox(width: 5),
+                        Container(
+                          width: 6,
+                          height: 6,
+                          margin: const EdgeInsets.only(top: 4),
+                          decoration: const BoxDecoration(
+                            color: AppTheme.info,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    item.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: AppTheme.textMuted,
+                      height: 1.3,
+                      fontSize: compact ? 10 : 12,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 3,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        item.time,
+                        style: TextStyle(
+                          color: AppTheme.textMuted,
+                          fontSize: compact ? 9 : 10,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppTheme.paperDim,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Text(
+                          item.category,
+                          style: TextStyle(
+                            color: AppTheme.ink3,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 2),
+            SizedBox(
+              width: 28,
+              height: 28,
+              child: PopupMenuButton<String>(
+                tooltip: 'Notification options',
+                padding: EdgeInsets.zero,
+                iconSize: 18,
+                icon: Icon(Icons.more_horiz_rounded, color: AppTheme.textMuted),
+                onSelected: (value) {
+                  if (value == 'toggle') {
+                    _toggleRead(item);
+                  } else if (value == 'delete') {
+                    setState(() => notifications.remove(item));
+                  }
+                },
+                itemBuilder: (_) => [
+                  PopupMenuItem(
+                    value: 'toggle',
+                    child: Text(
+                      item.isRead ? 'Mark as unread' : 'Mark as read',
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Text('Delete notification'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(bool isMobile) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(isMobile ? 16 : 28),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        border: Border.all(color: AppTheme.border),
+        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: isMobile ? 52 : 64,
+              height: isMobile ? 52 : 64,
+              decoration: BoxDecoration(
+                color: AppTheme.tealData.withValues(alpha: 0.18),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.notifications_none_rounded,
+                size: isMobile ? 25 : 30,
+                color: AppTheme.ink,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              selectedFilter == 'Unread'
+                  ? 'You are all caught up!'
+                  : selectedFilter == 'Read'
+                  ? 'No read notifications'
+                  : 'No notifications yet',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: isMobile ? 15 : 18,
+                color: AppTheme.text,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              'Your notifications will appear here.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 11, color: AppTheme.textMuted),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFooter(bool isMobile) {
+    return Row(
+      children: [
+        Icon(Icons.verified_user_outlined, size: 14, color: AppTheme.textMuted),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            'Your latest updates',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: AppTheme.textMuted, fontSize: 10),
+          ),
+        ),
+        if (isMobile)
+          TextButton(
+            onPressed: unreadCount == 0 ? null : _markAllAsRead,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              minimumSize: const Size(0, 28),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              'Mark all read',
+              style: TextStyle(
+                color: AppTheme.ink,
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _NotificationRecord {
+  _NotificationRecord({
+    required this.title,
+    required this.description,
+    required this.time,
+    required this.category,
+    required this.icon,
+    required this.color,
+    required this.isRead,
+  });
+
+  final String title;
+  final String description;
+  final String time;
+  final String category;
+  final IconData icon;
+  final Color color;
+  bool isRead;
+}
+
+class _NotificationSummaryData {
+  const _NotificationSummaryData({
+    required this.title,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
+
+  final String title;
+  final String value;
+  final IconData icon;
+  final Color color;
 }
 
 // ============================================================================
