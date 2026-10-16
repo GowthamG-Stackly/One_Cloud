@@ -1278,7 +1278,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
       ref.read(userProvider.notifier).login(emailController.text.trim());
 
-      context.go(AppRoutes.dashboard);
+      // context.go(AppRoutes.dashboard);
+      context.go(AppRoutes.superAdminDashboard);
     });
   }
 
@@ -1289,7 +1290,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void loginWithGoogle() {
     ref.read(userProvider.notifier).login('googleuser@gmail.com');
 
-    context.go(AppRoutes.dashboard);
+    // context.go(AppRoutes.dashboard);
+    context.go(AppRoutes.superAdminDashboard);
   }
 
   // ============================================================

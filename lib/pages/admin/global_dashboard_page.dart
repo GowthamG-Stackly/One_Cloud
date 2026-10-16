@@ -1,4 +1,11 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:excel/excel.dart' as xl;
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
+import 'package:pdf/pdf.dart' as pdf;
+import 'package:pdf/widgets.dart' as pw;
 
 const Color _blue = Color(0xFF2638E8);
 const Color _navy = Color(0xFF242B5F);
@@ -368,299 +375,296 @@ class _ExportGlobalDashboardPageState extends State<ExportGlobalDashboardPage> {
   String _interval = 'Last 30 Days';
   bool _includeCharts = false;
   bool _includeTables = false;
-  bool _downloading = false;
+  bool _exporting = false;
 
   @override
   Widget build(BuildContext context) {
+    final mobile = MediaQuery.sizeOf(context).width < 700;
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9FC),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-            _DetailHeader(
-              title: 'Export Global Dashboard Report',
-              subtitle:
-                  'Configure and generate a report of your platform insights.',
-              onBack: widget.onBack,
+            Container(
+              padding: EdgeInsets.fromLTRB(
+                mobile ? 10 : 22,
+                mobile ? 6 : 12,
+                mobile ? 10 : 22,
+                mobile ? 7 : 12,
+              ),
+              decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: Color(0xFFDCE3E9))),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: widget.onBack,
+                    icon: Icon(
+                      Icons.arrow_back_rounded,
+                      size: mobile ? 21 : 27,
+                    ),
+                    style: IconButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFFDCE3E9)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      fixedSize: Size(mobile ? 34 : 42, mobile ? 34 : 42),
+                    ),
+                  ),
+                  SizedBox(width: mobile ? 6 : 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Export Global Dashboard Report',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: mobile ? 15 : 18,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF20243A),
+                          ),
+                        ),
+                        SizedBox(height: mobile ? 2 : 3),
+                        Text(
+                          'Download a detailed summary of global platform insights and performance.',
+                          style: TextStyle(
+                            fontSize: mobile ? 9 : 11,
+                            height: 1.15,
+                            color: Color(0xFF70798A),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final mobile = constraints.maxWidth < 680;
-                  final horizontal = mobile ? 16.0 : 28.0;
-                  return SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(
-                      horizontal,
-                      20,
-                      horizontal,
-                      24,
-                    ),
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 980),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(18),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: _line),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 48,
-                                    height: 48,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFE9EDFF),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: const Icon(
-                                      Icons.file_download_outlined,
-                                      color: _blue,
-                                      size: 25,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  const Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Create a dashboard report',
-                                          style: TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w700,
-                                            color: _ink,
-                                          ),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Text(
-                                          'Choose a format, reporting period, and the information to include.',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            height: 1.4,
-                                            color: _muted,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 22),
-                            _exportSection(
-                              title: '1. File format',
-                              subtitle: 'Select the file type that best fits your workflow.',
-                              child: LayoutBuilder(
-                                builder: (context, c) {
-                                  final narrow = c.maxWidth < 520;
-                                  final options = [
-                                    _FormatOption(
-                                      'PDF Document',
-                                      Icons.picture_as_pdf_outlined,
-                                    ),
-                                    _FormatOption(
-                                      'CSV (Raw Data)',
-                                      Icons.data_object_outlined,
-                                    ),
-                                    _FormatOption(
-                                      'Excel Spreadsheet',
-                                      Icons.table_chart_outlined,
-                                    ),
-                                  ];
-                                  return narrow
-                                      ? Column(
-                                          children: options
-                                              .map(
-                                                (o) => Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        bottom: 9,
-                                                      ),
-                                                  child: _FormatRow(
-                                                    option: o,
-                                                    selected:
-                                                        _format == o.label,
-                                                    onTap: () => setState(
-                                                      () => _format = o.label,
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
-                                              .toList(),
-                                        )
-                                      : Row(
-                                          children: options
-                                              .map(
-                                                (o) => Expanded(
-                                                  child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                      right: o == options.last
-                                                          ? 0
-                                                          : 10,
-                                                    ),
-                                                    child: _FormatCard(
-                                                      option: o,
-                                                      selected:
-                                                          _format == o.label,
-                                                      compact: false,
-                                                      onTap: () => setState(
-                                                        () => _format = o.label,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
-                                              .toList(),
-                                        );
-                                },
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            _exportSection(
-                              title: '2. Reporting period',
-                              subtitle: 'Choose the time range for dashboard metrics and activity.',
-                              child: Wrap(
-                                spacing: 9,
-                                runSpacing: 9,
-                                children:
-                                    ['Today', 'Last 7 Days', 'Last 30 Days']
-                                        .map(
-                                          (value) => _ChoicePill(
-                                            label: value,
-                                            selected: _interval == value,
-                                            onTap: () => setState(
-                                              () => _interval = value,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(
+                  mobile ? 10 : 24,
+                  mobile ? 10 : 16,
+                  mobile ? 10 : 24,
+                  mobile ? 10 : 16,
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 900),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'File Format',
+                          style: TextStyle(
+                            fontSize: mobile ? 13 : 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF20232B),
+                          ),
+                        ),
+                        SizedBox(height: mobile ? 8 : 14),
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final options = <(String, IconData)>[
+                              ('PDF Document', Icons.picture_as_pdf_outlined),
+                              ('CSV (Raw Data)', Icons.data_object_outlined),
+                              ('Excel Spreadsheet', Icons.table_chart_outlined),
+                            ];
+                            final narrow = constraints.maxWidth < 520;
+                            return Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              children: options
+                                  .map(
+                                    (option) => SizedBox(
+                                      width: narrow
+                                          ? constraints.maxWidth
+                                          : (constraints.maxWidth - 20) / 3,
+                                      child: InkWell(
+                                        onTap: () =>
+                                            setState(() => _format = option.$1),
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Container(
+                                          height: mobile ? 76 : 116,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: _format == option.$1
+                                                  ? const Color(0xFF2939FF)
+                                                  : const Color(0xFFDCE3E9),
+                                              width: _format == option.$1
+                                                  ? 1.7
+                                                  : 1.2,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
                                             ),
                                           ),
-                                        )
-                                        .toList(),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            _exportSection(
-                              title: '3. Report contents',
-                              subtitle: 'Customize which sections are included in the export.',
-                              child: Column(
-                                children: [
-                                  _OptionToggle(
-                                    title: 'Include charts and visualizations',
-                                    subtitle: 'Add platform health and system performance charts.',
-                                    value: _includeCharts,
-                                    onChanged: (v) =>
-                                        setState(() => _includeCharts = v),
-                                  ),
-                                  const Divider(
-                                    height: 1,
-                                    color: Color(0xFFE6E9EF),
-                                  ),
-                                  _OptionToggle(
-                                    title: 'Include detailed data tables',
-                                    subtitle: 'Append detailed metric rows for further analysis.',
-                                    value: _includeTables,
-                                    onChanged: (v) =>
-                                        setState(() => _includeTables = v),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(17),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF0F5FF),
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: const Color(0xFFDCE7FF),
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Row(
-                                    children: [
-                                      Icon(
-                                        Icons.preview_outlined,
-                                        color: _blue,
-                                        size: 20,
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        'Export summary',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w700,
-                                          color: _ink,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                option.$2,
+                                                size: mobile ? 24 : 36,
+                                                color: const Color(0xFF707887),
+                                              ),
+                                              SizedBox(height: mobile ? 4 : 10),
+                                              Text(
+                                                option.$1,
+                                                style: TextStyle(
+                                                  fontSize: mobile ? 10 : 12,
+                                                  color: Color(0xFF707887),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 13),
-                                  _SummaryLine(
-                                    label: 'File format',
-                                    value: _format,
-                                  ),
-                                  _SummaryLine(
-                                    label: 'Reporting period',
-                                    value: _interval,
-                                  ),
-                                  _SummaryLine(
-                                    label: 'Charts',
-                                    value: _includeCharts
-                                        ? 'Included'
-                                        : 'Not included',
-                                  ),
-                                  _SummaryLine(
-                                    label: 'Detailed tables',
-                                    value: _includeTables
-                                        ? 'Included'
-                                        : 'Not included',
-                                  ),
-                                  const SizedBox(height: 5),
-                                  const Text(
-                                    'Note: this screen currently simulates report generation; connect your export service to create a downloadable file.',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      height: 1.4,
-                                      color: _muted,
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                                  )
+                                  .toList(),
+                            );
+                          },
                         ),
-                      ),
+                        SizedBox(height: mobile ? 14 : 24),
+                        const Text(
+                          'Telemetry & Usage Interval',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF20232B),
+                          ),
+                        ),
+                        SizedBox(height: mobile ? 7 : 13),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: ['Today', 'Last 7 Days', 'Last 30 Days']
+                              .map(
+                                (v) => ChoiceChip(
+                                  label: Text(v),
+                                  selected: _interval == v,
+                                  onSelected: (_) =>
+                                      setState(() => _interval = v),
+                                  selectedColor: const Color(0xFF242B62),
+                                  backgroundColor: const Color(0xFFF3F5F8),
+                                  labelStyle: TextStyle(
+                                    color: _interval == v
+                                        ? Colors.white
+                                        : const Color(0xFF172033),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  showCheckmark: false,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(28),
+                                    side: BorderSide.none,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                        SizedBox(height: mobile ? 12 : 22),
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(mobile ? 10 : 18),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: const Color(0xFFDCE3E9)),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Options',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              SwitchListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  'Include Charts',
+                                  style: TextStyle(
+                                    fontSize: mobile ? 12 : 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                subtitle: const Text(
+                                  'Embed visual usage summaries in output',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                value: _includeCharts,
+                                onChanged: (v) =>
+                                    setState(() => _includeCharts = v),
+                                activeTrackColor: const Color(0xFF2939E8),
+                              ),
+                              const Divider(height: 1),
+                              SwitchListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  'Include Detailed Tables',
+                                  style: TextStyle(
+                                    fontSize: mobile ? 12 : 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                subtitle: const Text(
+                                  'Append alert and activity data rows',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                value: _includeTables,
+                                onChanged: (v) =>
+                                    setState(() => _includeTables = v),
+                                activeTrackColor: const Color(0xFF2939E8),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        const Text(
+                          'The export includes Global Dashboard KPIs, platform health, system health and security alerts. Detailed tables add the current alert and recent activity rows.',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Color(0xFF70798A),
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
             ),
             Container(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              padding: EdgeInsets.fromLTRB(
+                mobile ? 10 : 24,
+                mobile ? 5 : 8,
+                mobile ? 10 : 24,
+                mobile ? 5 : 8,
+              ),
               decoration: const BoxDecoration(
                 color: Colors.white,
-                border: Border(top: BorderSide(color: _line)),
+                border: Border(top: BorderSide(color: Color(0xFFDCE3E9))),
               ),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 980),
+                  constraints: const BoxConstraints(maxWidth: 900),
                   child: Row(
                     children: [
                       Expanded(
                         child: OutlinedButton(
-                          onPressed: widget.onBack,
+                          onPressed: _exporting ? null : widget.onBack,
                           style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(0, 50),
-                            foregroundColor: _ink,
-                            side: const BorderSide(color: _line, width: 1.4),
+                            minimumSize: Size(0, mobile ? 36 : 44),
+                            side: const BorderSide(color: Color(0xFFDCE3E9)),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -672,27 +676,27 @@ class _ExportGlobalDashboardPageState extends State<ExportGlobalDashboardPage> {
                       Expanded(
                         flex: 2,
                         child: ElevatedButton.icon(
-                          onPressed: _downloading ? null : _downloadExport,
-                          icon: _downloading
+                          onPressed: _exporting ? null : _downloadExport,
+                          icon: _exporting
                               ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
+                                  width: 17,
+                                  height: 17,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     color: Colors.white,
                                   ),
                                 )
-                              : const Icon(Icons.download_outlined, size: 19),
+                              : const Icon(Icons.download_rounded, size: 19),
                           label: Text(
-                            _downloading
-                                ? 'Preparing report...'
-                                : 'Generate Export',
+                            _exporting
+                                ? 'Preparing file...'
+                                : 'Download Export',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(0, 50),
-                            backgroundColor: _blue,
+                            minimumSize: Size(0, mobile ? 36 : 44),
+                            backgroundColor: const Color(0xFF182CE5),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -712,18 +716,206 @@ class _ExportGlobalDashboardPageState extends State<ExportGlobalDashboardPage> {
     );
   }
 
-  void _downloadExport() {
-    setState(() => _downloading = true);
-    Future<void>.delayed(const Duration(milliseconds: 450), () {
-      if (!mounted) return;
-      setState(() => _downloading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Export options selected: $_format • $_interval'),
-          behavior: SnackBarBehavior.floating,
-        ),
+  List<List<String>> _rows() {
+    final rows = <List<String>>[
+      ['Section', 'Metric', 'Value', 'Details'],
+      ['Platform Overview', 'Total Tenants', '132', '+8% this month'],
+      ['Platform Overview', 'Total Users', '48,920', '+13% this month'],
+      ['Platform Overview', 'Active Subscriptions', '1,233', '+10% this month'],
+      ['Platform Overview', 'Active Sessions', '789', '+6% this month'],
+      ['Platform Health', 'CPU Usage', '67%', 'Current dashboard sample'],
+      [
+        'Platform Health',
+        'Memory Utilization',
+        '54%',
+        'Current dashboard sample',
+      ],
+      ['Platform Health', 'Disk I/O', '32%', 'Current dashboard sample'],
+      [
+        'Platform Health',
+        'Network Bandwidth',
+        '78%',
+        'Current dashboard sample',
+      ],
+    ];
+    if (_includeCharts) {
+      rows.addAll([
+        [
+          'Platform Health Chart',
+          'CPU Usage',
+          '67%',
+          'Text-based chart: #######---',
+        ],
+        [
+          'Platform Health Chart',
+          'Memory Utilization',
+          '54%',
+          'Text-based chart: #####-----',
+        ],
+        [
+          'Platform Health Chart',
+          'Disk I/O',
+          '32%',
+          'Text-based chart: ###-------',
+        ],
+        [
+          'Platform Health Chart',
+          'Network Bandwidth',
+          '78%',
+          'Text-based chart: ########--',
+        ],
+      ]);
+    }
+    if (_includeTables) {
+      for (final alert in _alertData) {
+        rows.add([
+          'Security Alert',
+          alert.title,
+          alert.time,
+          alert.description,
+        ]);
+      }
+      for (final activity in _activityData) {
+        rows.add([
+          'Recent Activity',
+          activity.title,
+          activity.time,
+          activity.description,
+        ]);
+      }
+    }
+    return rows;
+  }
+
+  Future<void> _downloadExport() async {
+    setState(() => _exporting = true);
+    try {
+      final rows = _rows();
+      final stamp = DateTime.now().toIso8601String().substring(0, 10);
+      final baseName = 'onecloud_global_dashboard_$stamp';
+      late Uint8List bytes;
+      late String extension;
+      late MimeType mimeType;
+      if (_format == 'CSV (Raw Data)') {
+        final csv = rows
+            .map(
+              (row) => row
+                  .map((cell) {
+                    final escapedCell = cell.replaceAll('"', '""');
+                    return '"$escapedCell"';
+                  })
+                  .join(','),
+            )
+            .join('\r\n');
+        bytes = Uint8List.fromList([
+          0xEF,
+          0xBB,
+          0xBF,
+          ...utf8.encode(
+            'Report Period,$_interval\r\nGenerated,$stamp\r\nCharts Included,${_includeCharts ? 'Yes' : 'No'}\r\nDetailed Tables Included,${_includeTables ? 'Yes' : 'No'}\r\n\r\n$csv',
+          ),
+        ]);
+        extension = 'csv';
+        mimeType = MimeType.csv;
+      } else if (_format == 'Excel Spreadsheet') {
+        final workbook = xl.Excel.createExcel();
+        // Rename the default active sheet so Excel opens directly on the
+        // worksheet that contains the exported report data.
+        const sheetName = 'Dashboard Report';
+        workbook.rename('Sheet1', sheetName);
+        final sheet = workbook[sheetName];
+        sheet.appendRow([
+          xl.TextCellValue('Report Period'),
+          xl.TextCellValue(_interval),
+        ]);
+        sheet.appendRow([
+          xl.TextCellValue('Generated'),
+          xl.TextCellValue(stamp),
+        ]);
+        sheet.appendRow([xl.TextCellValue('')]);
+        for (final row in rows) {
+          sheet.appendRow(
+            row.map<xl.CellValue>((cell) => xl.TextCellValue(cell)).toList(),
+          );
+        }
+        final result = workbook.encode();
+        if (result == null) throw Exception('Could not create Excel workbook.');
+        bytes = Uint8List.fromList(result);
+        extension = 'xlsx';
+        mimeType = MimeType.microsoftExcel;
+      } else {
+        final doc = pw.Document();
+        doc.addPage(
+          pw.MultiPage(
+            build: (ctx) => [
+              pw.Text(
+                'OneCloud — Global Dashboard Report',
+                style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 5),
+              pw.Text('Reporting period: $_interval    Generated: $stamp'),
+              pw.SizedBox(height: 16),
+              pw.TableHelper.fromTextArray(
+                data: rows
+                    .map(
+                      (row) => row
+                          .map(
+                            (cell) => cell
+                                .replaceAll('—', '-')
+                                .replaceAll('–', '-')
+                                .replaceAll('█', '#')
+                                .replaceAll('░', '-'),
+                          )
+                          .toList(),
+                    )
+                    .toList(),
+                headerStyle: pw.TextStyle(
+                  fontWeight: pw.FontWeight.bold,
+                  color: const pdf.PdfColor(1, 1, 1),
+                ),
+                headerDecoration: const pw.BoxDecoration(
+                  color: pdf.PdfColor(.12, .18, .55),
+                ),
+                cellStyle: const pw.TextStyle(fontSize: 8),
+                cellPadding: const pw.EdgeInsets.all(5),
+                border: pw.TableBorder.all(
+                  color: const pdf.PdfColor(.82, .85, .9),
+                ),
+              ),
+            ],
+          ),
+        );
+        bytes = Uint8List.fromList(await doc.save());
+        extension = 'pdf';
+        mimeType = MimeType.pdf;
+      }
+      await FileSaver.instance.saveFile(
+        name: baseName,
+        bytes: bytes,
+        fileExtension: extension,
+        mimeType: mimeType,
       );
-    });
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Report downloaded as $baseName.$extension'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+    } catch (e) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not download report: $e'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
   }
 }
 

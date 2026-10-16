@@ -1,4 +1,11 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:excel/excel.dart' as xl;
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
+import 'package:pdf/pdf.dart' as pdf;
+import 'package:pdf/widgets.dart' as pw;
 
 import '../../app_theme.dart';
 
@@ -20,7 +27,9 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
 
   final Set<int> _selectedLicenses = <int>{};
 
-  final List<_License> _licenses = [
+  // Shared in-memory license store: keeps edits when this page is rebuilt or revisited.
+  // For persistence across app restarts, connect this store to local storage or a backend.
+  static final List<_License> _licenses = [
     _License(
       keyValue: 'LIC-4421-MNPR',
 
@@ -85,6 +94,45 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
       status: 'Rejected',
     ),
   ];
+
+  List<MapEntry<int, _License>> get _filteredLicenses {
+    final query = _searchController.text.trim().toLowerCase();
+
+    return _licenses.asMap().entries.where((entry) {
+      final license = entry.value;
+      final matchesSearch =
+          query.isEmpty ||
+          <String>[
+            license.keyValue,
+            license.organization,
+            license.plan,
+            license.seats,
+            license.type,
+            license.expiry,
+            license.status,
+          ].any((value) => value.toLowerCase().contains(query));
+
+      final matchesOrganization =
+          _organization == 'Organization' ||
+          license.organization.toLowerCase() == _organization.toLowerCase();
+
+      // The existing UI's license-type choices overlap with plan names, so
+      // accept either the type field or the plan field for those selections.
+      final matchesType =
+          _licenseType == 'License Type' ||
+          license.type.toLowerCase() == _licenseType.toLowerCase() ||
+          license.plan.toLowerCase() == _licenseType.toLowerCase();
+
+      final matchesStatus =
+          _status == 'Status' ||
+          license.status.toLowerCase() == _status.toLowerCase();
+
+      return matchesSearch &&
+          matchesOrganization &&
+          matchesType &&
+          matchesStatus;
+    }).toList();
+  }
 
   @override
   void dispose() {
@@ -249,11 +297,14 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
 
         const SizedBox(width: 8),
 
-        OutlinedButton.icon(
+        ElevatedButton.icon(
           onPressed: _showExportDialog,
-
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppTheme.ink,
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
           icon: const Icon(Icons.download_outlined, size: 18),
-
           label: const Text('Export'),
         ),
 
@@ -546,7 +597,7 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
                 child: _filter(
                   value: _organization,
 
-                  items: const ['Organization', '123 Inc'],
+                  items: _organizationFilterItems,
 
                   onChanged: (value) {
                     setState(() {
@@ -562,7 +613,7 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
                 child: _filter(
                   value: _licenseType,
 
-                  items: const ['License Type', 'Standard', 'Enterprise'],
+                  items: _licenseTypeFilterItems,
 
                   onChanged: (value) {
                     setState(() {
@@ -578,7 +629,7 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
                 child: _filter(
                   value: _status,
 
-                  items: const ['Status', 'Active', 'Expiring', 'Rejected'],
+                  items: _statusFilterItems,
 
                   onChanged: (value) {
                     setState(() {
@@ -648,7 +699,7 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
 
           value: _organization,
 
-          items: const ['Organization', '123 Inc'],
+          items: _organizationFilterItems,
 
           onChanged: (value) {
             setState(() {
@@ -664,7 +715,7 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
 
           value: _licenseType,
 
-          items: const ['License Type', 'Standard', 'Enterprise'],
+          items: _licenseTypeFilterItems,
 
           onChanged: (value) {
             setState(() {
@@ -680,7 +731,7 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
 
           value: _status,
 
-          items: const ['Status', 'Active', 'Expiring', 'Rejected'],
+          items: _statusFilterItems,
 
           onChanged: (value) {
             setState(() {
@@ -690,6 +741,37 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
         ),
       ],
     );
+  }
+
+  // Build filter options from the current records so edits and newly created
+  // licenses are reflected in the dropdowns immediately.
+  List<String> get _organizationFilterItems {
+    final values = _licenses
+        .map((license) => license.organization.trim())
+        .where((value) => value.isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return ['Organization', ...values];
+  }
+
+  List<String> get _licenseTypeFilterItems {
+    final values = <String>{
+      ..._licenses.map((license) => license.type.trim()),
+      ..._licenses.map((license) => license.plan.trim()),
+    }.where((value) => value.isNotEmpty).toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return ['License Type', ...values];
+  }
+
+  List<String> get _statusFilterItems {
+    final values = _licenses
+        .map((license) => license.status.trim())
+        .where((value) => value.isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return ['Status', ...values];
   }
 
   Widget _filter({
@@ -749,15 +831,57 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
   // ============================================================
 
   Widget _buildMobileLicenses() {
+    final filtered = _filteredLicenses;
+    if (filtered.isEmpty) {
+      return _buildEmptySearchResult();
+    }
+
     return Column(
       children: [
-        for (int index = 0; index < _licenses.length; index++)
+        for (final entry in filtered)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-
-            child: _buildMobileLicenseCard(_licenses[index], index),
+            child: _buildMobileLicenseCard(entry.value, entry.key),
           ),
       ],
+    );
+  }
+
+  Widget _buildEmptySearchResult() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        border: Border.all(color: AppTheme.border),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.search_off_outlined,
+            size: 30,
+            color: AppTheme.textMuted,
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'No licenses found',
+            style: TextStyle(color: AppTheme.text, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Try a different search term or clear the filters.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
+          ),
+          const SizedBox(height: 10),
+          TextButton.icon(
+            onPressed: _clearFilters,
+            icon: const Icon(Icons.filter_alt_off_outlined, size: 16),
+            label: const Text('Clear filters'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -804,18 +928,44 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
               const SizedBox(width: 7),
 
               _statusBadge(license.status),
+              const SizedBox(width: 4),
+              IconButton(
+                tooltip: 'Edit license',
+                visualDensity: VisualDensity.compact,
+                constraints: const BoxConstraints.tightFor(
+                  width: 34,
+                  height: 34,
+                ),
+                padding: EdgeInsets.zero,
+                onPressed: () => _showEditLicenseDialog(index),
+                icon: const Icon(
+                  Icons.edit_outlined,
+                  size: 18,
+                  color: AppTheme.ink,
+                ),
+              ),
             ],
           ),
 
           const SizedBox(height: 5),
 
           Text(
-            '${license.plan} · ${license.seats}',
-
+            license.organization,
             maxLines: 1,
-
             overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: AppTheme.text,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
 
+          const SizedBox(height: 3),
+
+          Text(
+            '${license.plan} · ${license.seats}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(color: AppTheme.textMuted, fontSize: 11),
           ),
 
@@ -977,7 +1127,7 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
         scrollDirection: Axis.horizontal,
 
         child: SizedBox(
-          width: 1050,
+          width: 1190,
 
           child: Column(
             children: [
@@ -1002,13 +1152,20 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
 
                     SizedBox(width: 190, child: _HeaderText('EXPIRY DATE')),
 
-                    Expanded(child: _HeaderText('LICENSE STATUS')),
+                    SizedBox(width: 120, child: _HeaderText('LICENSE STATUS')),
+                    SizedBox(width: 90, child: _HeaderText('ACTIONS')),
                   ],
                 ),
               ),
 
-              for (int index = 0; index < _licenses.length; index++)
-                _buildDesktopRow(_licenses[index], index),
+              if (_filteredLicenses.isEmpty)
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildEmptySearchResult(),
+                )
+              else
+                for (final entry in _filteredLicenses)
+                  _buildDesktopRow(entry.value, entry.key),
             ],
           ),
         ),
@@ -1082,13 +1239,12 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
 
               children: [
                 Text(
-                  license.plan,
-
+                  license.organization,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppTheme.text,
-
                     fontSize: 13,
-
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1096,11 +1252,11 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
                 const SizedBox(height: 2),
 
                 Text(
-                  license.seats,
-
+                  '${license.plan} · ${license.seats}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppTheme.textMuted,
-
                     fontSize: 11,
                   ),
                 ),
@@ -1136,7 +1292,22 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
             ),
           ),
 
-          Expanded(child: _statusBadge(license.status)),
+          SizedBox(width: 120, child: _statusBadge(license.status)),
+          SizedBox(
+            width: 90,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: IconButton(
+                tooltip: 'Edit license',
+                onPressed: () => _showEditLicenseDialog(index),
+                icon: const Icon(
+                  Icons.edit_outlined,
+                  color: AppTheme.ink,
+                  size: 19,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -1235,9 +1406,9 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
       children: [
         Expanded(
           child: Text(
-            isMobile
-                ? 'Showing 1–5 of 65 features'
-                : 'Showing 1 to 5 of 2,458 entries',
+            _filteredLicenses.isEmpty
+                ? 'Showing 0 of ${_licenses.length} licenses'
+                : 'Showing ${_filteredLicenses.length} of ${_licenses.length} licenses',
 
             maxLines: 1,
 
@@ -1312,11 +1483,14 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
             child: SizedBox(
               height: 46,
 
-              child: OutlinedButton.icon(
+              child: ElevatedButton.icon(
                 onPressed: _showExportDialog,
-
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.ink,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                ),
                 icon: const Icon(Icons.download_outlined, size: 17),
-
                 label: const Text('Export'),
               ),
             ),
@@ -1548,6 +1722,166 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
     ).whenComplete(seatsController.dispose);
   }
 
+  void _showEditLicenseDialog(int index) {
+    final license = _licenses[index];
+    String organization = license.organization;
+    String plan = license.plan;
+    String type = license.type;
+    String status = license.status;
+    final seatsController = TextEditingController(
+      text: license.seats.replaceAll(RegExp(r'[^0-9]'), ''),
+    );
+    DateTime expiryDate =
+        _parseLicenseDate(license.expiry) ??
+        DateTime.now().add(const Duration(days: 365));
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => _SimpleDialogBox(
+          title: 'Edit License',
+          actionText: 'Save Changes',
+          onAction: () {
+            final seats = int.tryParse(seatsController.text.trim()) ?? 0;
+            if (seats < 1) {
+              _message('Enter a valid number of seats.');
+              return;
+            }
+            setState(() {
+              license.organization = organization;
+              license.plan = plan;
+              license.type = type;
+              license.seats = '$seats Seats';
+              license.expiry = _formatLicenseDate(expiryDate);
+              license.status = status;
+
+              // Keep filters valid after editing values used by the dropdowns.
+              if (!_organizationFilterItems.contains(_organization)) {
+                _organization = 'Organization';
+              }
+              if (!_licenseTypeFilterItems.contains(_licenseType)) {
+                _licenseType = 'License Type';
+              }
+              if (!_statusFilterItems.contains(_status)) {
+                _status = 'Status';
+              }
+            });
+            Navigator.of(dialogContext, rootNavigator: true).pop();
+            _message('License details updated successfully.');
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _dialogLabel('License Key'),
+              const SizedBox(height: 6),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppTheme.paperDim,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppTheme.border),
+                ),
+                child: Text(
+                  license.keyValue,
+                  style: AppTheme.mono(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _dialogLabel('Organization'),
+              const SizedBox(height: 6),
+              _licenseDropdown(organization, [
+                '123 Inc',
+                'ABC Pvt Ltd',
+                'XYZ Ltd',
+                'Demo Company',
+              ], (v) => setDialogState(() => organization = v)),
+              const SizedBox(height: 12),
+              _dialogLabel('Organization Plan'),
+              const SizedBox(height: 6),
+              _licenseDropdown(plan, [
+                'Standard',
+                'Professional',
+                'Enterprise',
+                'Custom',
+              ], (v) => setDialogState(() => plan = v)),
+              const SizedBox(height: 12),
+              _dialogLabel('License Type'),
+              const SizedBox(height: 6),
+              _licenseDropdown(type, [
+                '123 Inc',
+                'Trial',
+                'Free',
+                'Standard',
+                'Professional',
+                'Enterprise',
+                'Custom',
+              ], (v) => setDialogState(() => type = v)),
+              const SizedBox(height: 12),
+              _dialogLabel('Number of Seats'),
+              const SizedBox(height: 6),
+              TextField(
+                controller: seatsController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  hintText: '50',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _dialogLabel('License Status'),
+              const SizedBox(height: 6),
+              _licenseDropdown(status, [
+                'Active',
+                'Expiring',
+                'Pending',
+                'Suspended',
+                'Expired',
+                'Rejected',
+              ], (v) => setDialogState(() => status = v)),
+              const SizedBox(height: 12),
+              _dialogLabel('Expiry Date'),
+              const SizedBox(height: 6),
+              _licenseDateButton(
+                context,
+                expiryDate,
+                (v) => setDialogState(() => expiryDate = v),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ).whenComplete(seatsController.dispose);
+  }
+
+  DateTime? _parseLicenseDate(String value) {
+    const months = {
+      'Jan': 1,
+      'Feb': 2,
+      'Mar': 3,
+      'Apr': 4,
+      'May': 5,
+      'Jun': 6,
+      'Jul': 7,
+      'Aug': 8,
+      'Sep': 9,
+      'Oct': 10,
+      'Nov': 11,
+      'Dec': 12,
+    };
+    final match = RegExp(r'^(\w{3})\s+(\d{1,2}),\s*(\d{4})$')
+        .firstMatch(value.trim());
+    if (match == null) return null;
+    final month = months[match.group(1)];
+    final day = int.tryParse(match.group(2)!);
+    final year = int.tryParse(match.group(3)!);
+    if (month == null || day == null || year == null) return null;
+    return DateTime(year, month, day);
+  }
+
   void _showExportDialog() {
     final selected = <String>{
       'License Key',
@@ -1557,27 +1891,46 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
       'License Status',
     };
     String format = 'Excel (XLSX)';
-    DateTime startDate = DateTime(2026, 9, 1), endDate = DateTime(2027, 9, 1);
+    DateTime startDate = DateTime(2026, 9, 1);
+    DateTime endDate = DateTime(2027, 9, 1);
+    bool isExporting = false;
+
     showDialog<void>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => _SimpleDialogBox(
           title: 'Export Options',
-          actionText: 'Download Export',
-          onAction: () {
-            if (selected.isEmpty) {
-              _message('Select at least one data field.');
-              return;
-            }
-            if (endDate.isBefore(startDate)) {
-              _message('End date must be after start date.');
-              return;
-            }
-            Navigator.of(dialogContext, rootNavigator: true).pop();
-            _message(
-              '$format report prepared with ${selected.length} selected fields.',
-            );
-          },
+          actionText: isExporting ? 'Preparing...' : 'Download Export',
+          onAction: isExporting
+              ? () {}
+              : () async {
+                  if (selected.isEmpty) {
+                    _message('Select at least one data field.');
+                    return;
+                  }
+                  if (endDate.isBefore(startDate)) {
+                    _message('End date must be on or after start date.');
+                    return;
+                  }
+                  setDialogState(() => isExporting = true);
+                  try {
+                    await _exportLicenses(
+                      fields: selected.toList(),
+                      format: format,
+                      startDate: startDate,
+                      endDate: endDate,
+                    );
+                    if (dialogContext.mounted) {
+                      Navigator.of(dialogContext, rootNavigator: true).pop();
+                    }
+                    _message('$format license report downloaded successfully.');
+                  } catch (error) {
+                    if (dialogContext.mounted) {
+                      setDialogState(() => isExporting = false);
+                    }
+                    _message('Export failed: $error');
+                  }
+                },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1596,16 +1949,18 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
                   controlAffinity: ListTileControlAffinity.leading,
                   title: Text(field),
                   value: selected.contains(field),
-                  onChanged: (v) => setDialogState(() {
-                    if (v == true) {
-                      selected.add(field);
-                    } else {
-                      selected.remove(field);
-                    }
-                  }),
+                  onChanged: isExporting
+                      ? null
+                      : (v) => setDialogState(() {
+                          if (v == true) {
+                            selected.add(field);
+                          } else {
+                            selected.remove(field);
+                          }
+                        }),
                 ),
               const SizedBox(height: 8),
-              _dialogLabel('Date Range'),
+              _dialogLabel('Report Date Range'),
               const SizedBox(height: 8),
               LayoutBuilder(
                 builder: (context, c) {
@@ -1660,12 +2015,142 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
                   value: option,
                   groupValue: format,
                   title: Text(option),
-                  onChanged: (v) => setDialogState(() => format = v!),
+                  onChanged: isExporting
+                      ? null
+                      : (v) => setDialogState(() => format = v!),
                 ),
+              if (isExporting) ...[
+                const SizedBox(height: 8),
+                const LinearProgressIndicator(),
+              ],
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _exportLicenses({
+    required List<String> fields,
+    required String format,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    final headers = <String, String>{
+      'License Key': 'License Key',
+      'Organization Plan': 'Organization Plan',
+      'License Type': 'License Type',
+      'Expiry Date': 'Expiry Date',
+      'License Status': 'License Status',
+    };
+    final exportFields = headers.keys.where(fields.contains).toList();
+    final chosenHeaders = exportFields.map((key) => headers[key]!).toList();
+
+    String valueFor(_License license, String field) {
+      switch (field) {
+        case 'License Key':
+          return license.keyValue;
+        case 'Organization Plan':
+          return '${license.plan} (${license.seats})';
+        case 'License Type':
+          return license.type;
+        case 'Expiry Date':
+          return license.expiry;
+        case 'License Status':
+          return license.status;
+        default:
+          return '';
+      }
+    }
+
+    // Export the currently available license records. The selected date range
+    // is included as report metadata because this demo model has expiry dates,
+    // not license-created/updated timestamps to filter reliably.
+    final rows = _licenses.map((license) {
+      return exportFields.map((field) => valueFor(license, field)).toList();
+    }).toList();
+    final rangeLabel =
+        '${_formatLicenseDate(startDate)} - ${_formatLicenseDate(endDate)}';
+    final stamp = DateTime.now().toIso8601String().split('T').first;
+    final baseName = 'onecloud_license_management_$stamp';
+
+    if (format == 'CSV (Comma-Separated Values)') {
+      String csvCell(String value) => '"${value.replaceAll('"', '""')}"';
+      final content = <String>[
+        csvCell('License Management Report'),
+        csvCell('Report Date Range: $rangeLabel'),
+        chosenHeaders.map(csvCell).join(','),
+        ...rows.map((row) => row.map(csvCell).join(',')),
+      ].join('\r\n');
+      await FileSaver.instance.saveFile(
+        name: baseName,
+        bytes: Uint8List.fromList([0xEF, 0xBB, 0xBF, ...utf8.encode(content)]),
+        fileExtension: 'csv',
+        mimeType: MimeType.csv,
+      );
+      return;
+    }
+
+    if (format == 'PDF') {
+      final document = pw.Document();
+      document.addPage(
+        pw.MultiPage(
+          build: (context) => [
+            pw.Text(
+              'License Management Report',
+              style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 6),
+            pw.Text('Report date range: $rangeLabel'),
+            pw.SizedBox(height: 16),
+            pw.TableHelper.fromTextArray(
+              headers: chosenHeaders,
+              data: rows,
+              headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              headerDecoration: const pw.BoxDecoration(
+                color: pdf.PdfColor.fromInt(0xFFEAF2FF),
+              ),
+              cellStyle: const pw.TextStyle(fontSize: 9),
+              cellAlignment: pw.Alignment.centerLeft,
+            ),
+            pw.SizedBox(height: 12),
+            pw.Text('Total licenses exported: ${rows.length}'),
+          ],
+        ),
+      );
+      await FileSaver.instance.saveFile(
+        name: baseName,
+        bytes: await document.save(),
+        fileExtension: 'pdf',
+        mimeType: MimeType.pdf,
+      );
+      return;
+    }
+
+    final workbook = xl.Excel.createExcel();
+    // Rename the default active sheet instead of creating a second sheet.
+    // This ensures Excel opens on the sheet that contains the exported data.
+    workbook.rename('Sheet1', 'License Management');
+    final sheet = workbook['License Management'];
+    sheet.appendRow([xl.TextCellValue('License Management Report')]);
+    sheet.appendRow([xl.TextCellValue('Report Date Range: $rangeLabel')]);
+    sheet.appendRow(
+      chosenHeaders.map((value) => xl.TextCellValue(value)).toList(),
+    );
+    for (final row in rows) {
+      sheet.appendRow(row.map((value) => xl.TextCellValue(value)).toList());
+    }
+    // Explicitly keep the populated sheet as the workbook's default sheet.
+    workbook.setDefaultSheet('License Management');
+    final bytes = workbook.encode();
+    if (bytes == null) {
+      throw Exception('Could not generate the Excel workbook.');
+    }
+    await FileSaver.instance.saveFile(
+      name: baseName,
+      bytes: Uint8List.fromList(bytes),
+      fileExtension: 'xlsx',
+      mimeType: MimeType.microsoftExcel,
     );
   }
 
@@ -1705,6 +2190,68 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
     );
   }
 
+  Future<bool?> _confirmLicenseAction({
+    required String title,
+    required String description,
+    required String action,
+    required IconData icon,
+    required Color color,
+  }) {
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        title: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: color.withAlpha(24),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color, size: 21),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: AppTheme.text,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          description,
+          style: const TextStyle(
+            color: AppTheme.textMuted,
+            fontSize: 13,
+            height: 1.5,
+          ),
+        ),
+        actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+        actions: [
+          OutlinedButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('No, Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.ink,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text('Yes, $action'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showLicenseActionDialog({
     required String title,
     required String action,
@@ -1720,14 +2267,42 @@ class _LicenseManagementPageState extends State<LicenseManagementPage> {
         builder: (context, setDialogState) => _SimpleDialogBox(
           title: title,
           actionText: action,
-          onAction: () {
+          onAction: () async {
             if ((action == 'Renew' || action == 'Suspend') &&
                 reasonController.text.trim().isEmpty) {
               _message('Please enter a reason.');
               return;
             }
-            if (action == 'Renew')
+
+            final descriptions = <String, String>{
+              'Renew':
+                  'Are you sure you want to renew license ${license.keyValue}? '
+                  'The expiry date will be updated to ${_formatLicenseDate(newExpiry)}.',
+              'Suspend':
+                  'Are you sure you want to suspend license ${license.keyValue}? '
+                  'The organization may lose access to services until the license is activated again.',
+              'Activate':
+                  'Are you sure you want to activate license ${license.keyValue}? '
+                  'This will restore access for the organization associated with this license.',
+            };
+            final details = <String, (IconData, Color)>{
+              'Renew': (Icons.autorenew_outlined, AppTheme.info),
+              'Suspend': (Icons.pause_circle_outline, AppTheme.warning),
+              'Activate': (Icons.play_circle_outline, AppTheme.success),
+            }[action]!;
+
+            final confirmed = await _confirmLicenseAction(
+              title: 'Confirm $action?',
+              description: descriptions[action]!,
+              action: action,
+              icon: details.$1,
+              color: details.$2,
+            );
+            if (confirmed != true || !mounted) return;
+
+            if (action == 'Renew') {
               license.expiry = _formatLicenseDate(newExpiry);
+            }
             Navigator.of(dialogContext, rootNavigator: true).pop();
             onDone();
           },
@@ -2130,13 +2705,13 @@ class _HeaderText extends StatelessWidget {
 class _License {
   final String keyValue;
 
-  final String organization;
+  String organization;
 
-  final String plan;
+  String plan;
 
-  final String seats;
+  String seats;
 
-  final String type;
+  String type;
 
   String expiry;
 

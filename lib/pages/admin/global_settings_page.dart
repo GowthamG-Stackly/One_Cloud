@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_theme.dart';
 
@@ -10,6 +13,106 @@ class GlobalSettingsPage extends StatefulWidget {
 }
 
 class _GlobalSettingsPageState extends State<GlobalSettingsPage> {
+  static const String _storageKey = 'onecloud_global_settings';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Map<String, dynamic> _settingsToMap() => {
+    'maintenanceMode': maintenanceMode,
+    'forceMfa': forceMfa,
+    'allowTenantSelfSignup': allowTenantSelfSignup,
+    'enableAiCopilot': enableAiCopilot,
+    'dataResidencyLock': dataResidencyLock,
+    'multiFactorAuthentication': multiFactorAuthentication,
+    'emailNotifications': emailNotifications,
+    'smsNotifications': smsNotifications,
+    'pushNotifications': pushNotifications,
+    'platformMaintenanceMode': platformMaintenanceMode,
+    'defaultLanguage': defaultLanguage,
+    'timeZone': timeZone,
+    'dateFormat': dateFormat,
+    'timeFormat': timeFormat,
+    'defaultCurrency': defaultCurrency,
+    'passwordExpiry': passwordExpiry,
+    'sessionTimeout': sessionTimeout,
+    'maximumLoginAttempts': maximumLoginAttempts,
+    'maximumFileUploadSize': maximumFileUploadSize,
+    'defaultTheme': defaultTheme,
+  };
+
+  Future<void> _persistSettings() async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(_storageKey, jsonEncode(_settingsToMap()));
+  }
+
+  Future<void> _loadSettings() async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      final rawSettings = preferences.getString(_storageKey);
+      if (rawSettings == null || rawSettings.isEmpty || !mounted) return;
+
+      final decoded = jsonDecode(rawSettings);
+      if (decoded is! Map<String, dynamic>) return;
+
+      setState(() {
+        maintenanceMode = decoded['maintenanceMode'] as bool? ?? false;
+        forceMfa = decoded['forceMfa'] as bool? ?? true;
+        allowTenantSelfSignup =
+            decoded['allowTenantSelfSignup'] as bool? ?? false;
+        enableAiCopilot = decoded['enableAiCopilot'] as bool? ?? true;
+        dataResidencyLock = decoded['dataResidencyLock'] as bool? ?? true;
+        multiFactorAuthentication =
+            decoded['multiFactorAuthentication'] as bool? ?? true;
+        emailNotifications = decoded['emailNotifications'] as bool? ?? false;
+        smsNotifications = decoded['smsNotifications'] as bool? ?? false;
+        pushNotifications = decoded['pushNotifications'] as bool? ?? false;
+        platformMaintenanceMode =
+            decoded['platformMaintenanceMode'] as bool? ?? false;
+        defaultLanguage = decoded['defaultLanguage'] as String? ?? 'English';
+        timeZone =
+            decoded['timeZone'] as String? ?? 'Asia/Kolkata (UTC +05:30)';
+        dateFormat = decoded['dateFormat'] as String? ?? 'DD/MM/YYYY';
+        timeFormat = decoded['timeFormat'] as String? ?? '24 Hours';
+        defaultCurrency = decoded['defaultCurrency'] as String? ?? 'INR (₹)';
+        passwordExpiry = decoded['passwordExpiry'] as String? ?? '90 Days';
+        sessionTimeout = decoded['sessionTimeout'] as String? ?? '30 Minutes';
+        maximumLoginAttempts =
+            decoded['maximumLoginAttempts'] as String? ?? '5';
+        maximumFileUploadSize =
+            decoded['maximumFileUploadSize'] as String? ?? '100 MB';
+        defaultTheme = decoded['defaultTheme'] as String? ?? 'Light';
+      });
+    } catch (error) {
+      debugPrint('Unable to load Global Settings: $error');
+    }
+  }
+
+  void _setDefaultValues() {
+    maintenanceMode = false;
+    forceMfa = true;
+    allowTenantSelfSignup = false;
+    enableAiCopilot = true;
+    dataResidencyLock = true;
+    multiFactorAuthentication = true;
+    emailNotifications = false;
+    smsNotifications = false;
+    pushNotifications = false;
+    platformMaintenanceMode = false;
+    defaultLanguage = 'English';
+    timeZone = 'Asia/Kolkata (UTC +05:30)';
+    dateFormat = 'DD/MM/YYYY';
+    timeFormat = '24 Hours';
+    defaultCurrency = 'INR (₹)';
+    passwordExpiry = '90 Days';
+    sessionTimeout = '30 Minutes';
+    maximumLoginAttempts = '5';
+    maximumFileUploadSize = '100 MB';
+    defaultTheme = 'Light';
+  }
   // ============================================================
 
   // PLATFORM BEHAVIOR
@@ -1089,64 +1192,42 @@ class _GlobalSettingsPageState extends State<GlobalSettingsPage> {
 
   // ============================================================
 
-  void _resetSettings() {
-    setState(() {
-      maintenanceMode = false;
+  Future<void> _resetSettings() async {
+    setState(_setDefaultValues);
 
-      forceMfa = true;
-
-      allowTenantSelfSignup = false;
-
-      enableAiCopilot = true;
-
-      dataResidencyLock = true;
-
-      multiFactorAuthentication = true;
-
-      emailNotifications = false;
-
-      smsNotifications = false;
-
-      pushNotifications = false;
-
-      platformMaintenanceMode = false;
-
-      defaultLanguage = 'English';
-
-      timeZone = 'Asia/Kolkata (UTC +05:30)';
-
-      dateFormat = 'DD/MM/YYYY';
-
-      timeFormat = '24 Hours';
-
-      defaultCurrency = 'INR (₹)';
-
-      passwordExpiry = '90 Days';
-
-      sessionTimeout = '30 Minutes';
-
-      maximumLoginAttempts = '5';
-
-      maximumFileUploadSize = '100 MB';
-
-      defaultTheme = 'Light';
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Settings reset successfully.')),
-    );
+    try {
+      // Reset is the only action that restores defaults, and those defaults
+      // are persisted so they remain in effect after navigating away/reopening.
+      await _persistSettings();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Settings reset to defaults and saved.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unable to save reset settings: $error')),
+      );
+    }
   }
 
   // ============================================================
-
   // SAVE
-
   // ============================================================
 
-  void _saveSettings() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Global settings saved successfully.')),
-    );
+  Future<void> _saveSettings() async {
+    try {
+      await _persistSettings();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Global settings saved successfully.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unable to save Global Settings: $error')),
+      );
+    }
   }
 }
 

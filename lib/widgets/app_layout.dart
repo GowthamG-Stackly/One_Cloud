@@ -2806,7 +2806,7 @@ class AppHeader extends StatelessWidget {
                 const SizedBox(width: 8),
                 _ProfileMenu(
                   adminName: adminName,
-                  onDashboard: () => onNavigate(AppRoutes.dashboard),
+                  onDashboard: () => onNavigate(AppRoutes.superAdminDashboard),
                   onProfile: () => onNavigate(AppRoutes.profile),
                   onLogout: onLogout,
                 ),
@@ -2861,7 +2861,7 @@ class AppHeader extends StatelessWidget {
           const SizedBox(width: 12),
           _ProfileMenu(
             adminName: adminName,
-            onDashboard: () => onNavigate(AppRoutes.dashboard),
+            onDashboard: () => onNavigate(AppRoutes.superAdminDashboard),
             onProfile: () => onNavigate(AppRoutes.profile),
             onLogout: onLogout,
           ),

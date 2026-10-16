@@ -454,7 +454,7 @@ class AppRoutes {
 
         // Logged-in users should not return to login.
         if (loggedIn && isLoginPage) {
-          return dashboard;
+          return superAdminDashboard;
         }
 
         // Protect the application.
