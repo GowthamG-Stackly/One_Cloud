@@ -38,7 +38,8 @@ import '../pages/admin/license_management_page.dart';
 import '../pages/admin/feature_management_page.dart';
 import '../pages/admin/platform_branding_page.dart';
 import '../pages/admin/system_health_page.dart';
-import '../pages/admin/tenant_templates_page.dart';
+
+import '../pages/tenant_management/tenant_management.dart';
 
 import '../pages/hrms/employee_management_page.dart';
 import '../pages/hrms/attendance_page.dart';
@@ -218,6 +219,7 @@ class AppRoutes {
   // ==============================================================
 
   static const String admin = '/admin';
+  static const String tenantManagement = '/tenant-management';
   static const String hrms = '/hrms';
   static const String crm = '/crm';
   static const String erp = '/erp';
@@ -243,7 +245,6 @@ class AppRoutes {
   static const String featureManagement = '/admin/feature-management';
   static const String platformBranding = '/admin/platform-branding';
   static const String systemHealth = '/admin/system-health';
-  static const String tenantTemplates = '/admin/tenant-templates';
 
   // HRMS MODULES
   static const String hrmsEmployees = '/hrms/employees';
@@ -578,10 +579,13 @@ class AppRoutes {
               },
             ),
 
+            // ==========================================================
+            // TENANT MANAGEMENT
+            // ==========================================================
             GoRoute(
-              path: tenantTemplates,
+              path: tenantManagement,
               builder: (context, state) {
-                return const TenantTemplatesPage();
+                return const TenantManagementPage();
               },
             ),
 

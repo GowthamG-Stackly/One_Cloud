@@ -721,17 +721,6 @@ class _ModuleQuickActions extends StatelessWidget {
 
       route: AppRoutes.systemHealth,
     ),
-
-    _AdminAction(
-      title: 'Tenant Templates',
-
-      description:
-          'Create and manage reusable templates for tenant configuration.',
-
-      icon: Icons.view_quilt_outlined,
-
-      route: AppRoutes.tenantTemplates,
-    ),
   ];
 
   @override

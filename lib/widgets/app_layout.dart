@@ -4042,11 +4042,32 @@ class _AppSidebarState extends State<AppSidebar> {
                           Icons.monitor_heart_outlined,
                           AppRoutes.systemHealth,
                         ),
+                      ],
+                    ),
 
+                    // ==========================================================
+                    // TENANT MANAGEMENT - MAIN MODULE
+                    // ==========================================================
+                    _SidebarSection(
+                      title: 'Tenant Management',
+                      icon: Icons.business_outlined,
+                      route: AppRoutes.tenantManagement,
+                      currentRoute: currentRoute,
+                      collapsed: widget.collapsed,
+                      expanded: _isSectionExpanded(
+                        'Tenant Management',
+                        AppRoutes.tenantManagement,
+                        currentRoute,
+                      ),
+                      onToggle: () {
+                        _toggleSection('Tenant Management');
+                      },
+                      onNavigate: widget.onNavigate,
+                      children: [
                         _NavItem(
-                          'Tenant Templates',
-                          Icons.view_quilt_outlined,
-                          AppRoutes.tenantTemplates,
+                          'Tenant Management',
+                          Icons.business_outlined,
+                          AppRoutes.tenantManagement,
                         ),
                       ],
                     ),
