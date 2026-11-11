@@ -3,12 +3,14 @@ import 'dart:typed_data';
 
 import 'package:excel/excel.dart' as xl;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:pdf/pdf.dart' as pdf;
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/services.dart';
 
 import '../../app_theme.dart';
+import '../../routes/routes.dart';
 
 class TenantManagementPage extends StatefulWidget {
   const TenantManagementPage({super.key});
@@ -31,7 +33,7 @@ class _TenantManagementPageState extends State<TenantManagementPage> {
 
   static const Color _navy = AppTheme.ink3;
   static const Color _deepNavy = AppTheme.ink;
-  static const Color _blue = Color(0xFF3046FF);
+  static const Color _blue = AppTheme.ink3;
   static const Color _green = Color(0xFF16A34A);
   static const Color _red = Color(0xFFDC2626);
   static const Color _muted = Color(0xFF687386);
@@ -127,15 +129,49 @@ class _TenantManagementPageState extends State<TenantManagementPage> {
   }
 
   Widget _buildPageHeader({required bool compact, required bool mobile}) {
-    final actions = Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        _outlineButton('Refresh', Icons.sync, _refresh),
-        _outlineButton('Export', Icons.download_outlined, _showExportDialog),
-        _primaryButton('Create Tenant', Icons.add, _showCreateTenant),
-      ],
-    );
+    final actions = mobile
+        ? Row(
+            children: [
+              Expanded(
+                child: _headerActionButton(
+                  label: 'Refresh',
+                  icon: Icons.sync,
+                  onPressed: _refresh,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: _headerActionButton(
+                  label: 'Export',
+                  icon: Icons.download_outlined,
+                  onPressed: _showExportDialog,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                flex: 2,
+                child: _headerActionButton(
+                  label: 'Create Tenant',
+                  icon: Icons.add,
+                  onPressed: _openCreateTenantPage,
+                  primary: true,
+                ),
+              ),
+            ],
+          )
+        : Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _outlineButton('Refresh', Icons.sync, _refresh),
+              _outlineButton(
+                'Export',
+                Icons.download_outlined,
+                _showExportDialog,
+              ),
+              _primaryButton('Create Tenant', Icons.add, _openCreateTenantPage),
+            ],
+          );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -381,7 +417,7 @@ class _TenantManagementPageState extends State<TenantManagementPage> {
                           _page = 1;
                         }),
                         style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFF5145FF),
+                          foregroundColor: AppTheme.ink3,
                           padding: EdgeInsets.symmetric(
                             horizontal: compact ? 1 : 4,
                             vertical: 9,
@@ -460,7 +496,7 @@ class _TenantManagementPageState extends State<TenantManagementPage> {
                     _page = 1;
                   }),
                   style: TextButton.styleFrom(
-                    foregroundColor: const Color(0xFF5145FF),
+                    foregroundColor: AppTheme.ink3,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 7,
                       vertical: 9,
@@ -1131,13 +1167,66 @@ class _TenantManagementPageState extends State<TenantManagementPage> {
         ),
       );
 
+  Widget _headerActionButton({
+    required String label,
+    required IconData icon,
+    required VoidCallback onPressed,
+    bool primary = false,
+  }) {
+    return SizedBox(
+      height: 40,
+      child: primary
+          ? ElevatedButton.icon(
+              onPressed: _busy ? null : onPressed,
+              icon: Icon(icon, size: 15),
+              label: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(label, maxLines: 1, softWrap: false),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.ink3,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 7),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            )
+          : OutlinedButton.icon(
+              onPressed: _busy ? null : onPressed,
+              icon: Icon(icon, size: 14),
+              label: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(label, maxLines: 1, softWrap: false),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppTheme.ink,
+                side: const BorderSide(color: _line),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+    );
+  }
+
   Widget _outlineButton(String label, IconData icon, VoidCallback onPressed) =>
       OutlinedButton.icon(
         onPressed: _busy ? null : onPressed,
         icon: Icon(icon, size: 17),
         label: Text(label),
         style: OutlinedButton.styleFrom(
-          foregroundColor: const Color(0xFF1C2938),
+          foregroundColor: AppTheme.ink,
           side: const BorderSide(color: _line),
           padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
@@ -1213,6 +1302,10 @@ class _TenantManagementPageState extends State<TenantManagementPage> {
       ],
     ),
   );
+
+  void _openCreateTenantPage() {
+    context.push(AppRoutes.createTenant);
+  }
 
   Future<void> _showCreateTenant() async {
     final result = await _showTenantForm();

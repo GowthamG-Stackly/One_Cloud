@@ -40,6 +40,11 @@ import '../pages/admin/platform_branding_page.dart';
 import '../pages/admin/system_health_page.dart';
 
 import '../pages/tenant_management/tenant_management.dart';
+import '../pages/tenant_management/create_tenant.dart';
+import '../pages/tenant_management/tenant_configuration.dart';
+import '../pages/tenant_management/tenant_branding.dart';
+import '../pages/tenant_management/tenant_database.dart';
+import '../pages/tenant_management/tenant_isolation_page.dart';
 
 import '../pages/hrms/employee_management_page.dart';
 import '../pages/hrms/attendance_page.dart';
@@ -245,6 +250,14 @@ class AppRoutes {
   static const String featureManagement = '/admin/feature-management';
   static const String platformBranding = '/admin/platform-branding';
   static const String systemHealth = '/admin/system-health';
+
+  // TENANT MANAGEMENT MODULES
+  static const String createTenant = '/tenant-management/create-tenant';
+  static const String tenantConfiguration =
+      '/tenant-management/tenant-configuration';
+  static const String tenantBranding = '/tenant-management/branding';
+  static const String tenantDatabase = '/tenant-management/database';
+  static const String tenantIsolation = '/tenant-management/tenant-isolation';
 
   // HRMS MODULES
   static const String hrmsEmployees = '/hrms/employees';
@@ -586,6 +599,36 @@ class AppRoutes {
               path: tenantManagement,
               builder: (context, state) {
                 return const TenantManagementPage();
+              },
+            ),
+            GoRoute(
+              path: createTenant,
+              builder: (context, state) {
+                return const CreateTenantPage();
+              },
+            ),
+            GoRoute(
+              path: tenantConfiguration,
+              builder: (context, state) {
+                return const TenantConfigurationPage();
+              },
+            ),
+            GoRoute(
+              path: tenantBranding,
+              builder: (context, state) {
+                return const TenantBrandingPage();
+              },
+            ),
+            GoRoute(
+              path: tenantDatabase,
+              builder: (context, state) {
+                return const TenantDatabasePage();
+              },
+            ),
+            GoRoute(
+              path: tenantIsolation,
+              builder: (context, state) {
+                return const TenantIsolationPage();
               },
             ),
 
